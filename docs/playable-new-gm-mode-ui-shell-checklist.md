@@ -4,6 +4,8 @@ Manual verification for the static shell:
 
 - Open `C:\Users\vinni\OneDrive\Documents\next_gm\ui\playable-new-gm-mode\index.html` directly in a browser.
 - Confirm the left navigation lists Dashboard, Save Selection, New GM Setup, Draft Room, Roster, Rivalries, Championships, Calendar, IWC, Analytics, and Settings.
+- Confirm the Dashboard reads like a wrestling GM hub/front office cockpit, not a generic admin dashboard.
+- Confirm the visual direction uses premium dark sports broadcast/game-panel energy with clear show identity.
 - Confirm Save Selection shows Continue Save, New GM Mode, and Empty Slot as mock-only cards.
 - Confirm New GM Setup shows Choose Brand, Choose GM Identity, Difficulty / Experience, Draft Setup, and Review Setup as static sections.
 - Confirm Setup Review shows selected brand, GM identity, difficulty / experience, draft setup, and blocked-state labels.
@@ -18,6 +20,8 @@ Manual verification for the static shell:
 - Confirm the static next-step controls move through Save Selection -> New GM Setup -> Setup Review -> Draft Preview only as frontend DOM switching.
 - Confirm locked future sections remain marked as placeholder/mock/future and do not expose functional systems.
 - Confirm Roster shows an empty post-draft placeholder state with roster assignment and gameplay start locked.
+- Confirm Roster, Rivalries, and Championships feel visually connected as future roster-adjacent hubs.
+- Confirm IWC, Analytics, and Calendar read as game systems with presentation value, not blank placeholders.
 - Confirm blocked labels remain visible for draft execution, roster assignment, gameplay start, persistence, SQLite writes, and GenAI.
 - Confirm future draft integration notes say to consume existing Real Draft System v1.0 services instead of rebuilding draft services.
 - Confirm the read-only draft integration boundary projects existing candidate/readiness data only.
@@ -32,6 +36,7 @@ Open this local file directly in a browser:
 Screens and sections to inspect:
 
 - Dashboard command board preview.
+- Dashboard GM hub, brand identity panel, status cards, alerts, upcoming draft board, roster spotlight, rivalry heat, championships, IWC, analytics, and calendar cues.
 - Static player flow strip.
 - Save Selection.
 - New GM Setup.
@@ -50,11 +55,20 @@ Screens and sections to inspect:
 Expected visual behavior:
 
 - The screen should keep a premium dark command-center feel.
+- Dashboard should feel like a playable wrestling management game hub with show identity, GM alerts, status cards, and next-event pressure.
+- Draft Room should feel like a draft-night broadcast command desk rather than a plain admin table.
+- Roster should feel like the future locker-room command hub, with Rivalries and Championships visually nearby.
+- Rivalries should show heat-oriented game presentation even while locked.
+- Championships should use title-desk presentation with clear future champion/title-scene slots.
+- IWC should look like an audience pulse system waiting for the first show.
+- Analytics should look like command intelligence previews, not raw diagnostics.
+- Calendar should read as Road to PLE orientation, not a generic schedule widget.
 - The left nav should remain readable and hover-expand on laptop/desktop widths.
 - The top command header should keep Brand, Calendar, Budget, Fans, and Deadline visible.
 - The current step, next step, and blocked step labels should be visually distinct.
 - Section switching should make the active screen obvious in the nav and header.
 - Mock/locked labels should feel like intentional preview-state badges, not raw developer diagnostics.
+- Player-facing lock language should prefer Preview Mode, Locked for this build, Draft execution not enabled, and Coming after draft confirmation over raw technical phrasing.
 - Cards should have readable spacing at common laptop widths.
 
 Expected mock/blocked behavior:

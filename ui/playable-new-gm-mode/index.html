@@ -29,9 +29,9 @@
 
       <main class="command-center">
         <header class="top-command">
-          <div>
-            <p class="eyebrow">New GM command hub</p>
-            <h1>Playable New GM Mode</h1>
+          <div class="top-title-lockup">
+            <p class="eyebrow">Voltage Wrestling command desk</p>
+            <h1>Next GM</h1>
             <p class="active-screen-label" id="active-screen-label">Viewing Dashboard - interactive preview</p>
           </div>
           <dl class="status-strip" aria-label="Mock command status">
@@ -58,32 +58,116 @@
           </dl>
         </header>
 
-        <section id="dashboard" class="app-section hero-panel active-section" aria-labelledby="dashboard-title" data-screen-title="Dashboard">
-          <div class="hero-copy">
-            <p class="eyebrow">Command board preview</p>
-            <h2 id="dashboard-title">Sign the contract, enter the war room, own draft night.</h2>
-            <p>
-              This front door frames the first playable loop: choose a save slot, shape the GM setup,
-              review the contract packet, then step into a read-only draft room preview.
-            </p>
-            <div class="hero-actions" aria-label="Static front-door actions">
-              <button class="primary-link" type="button" data-go-to="save-selection">Review mock saves</button>
-              <button class="secondary-link" type="button" data-go-to="draft-room">Enter draft room preview</button>
+        <section id="dashboard" class="app-section dashboard-hub active-section" aria-labelledby="dashboard-title" data-screen-title="Dashboard">
+          <div class="show-identity-panel">
+            <div class="show-brand-bug" aria-hidden="true">VX</div>
+            <div class="show-identity-copy">
+              <p class="eyebrow">Brand HQ / Draft Night desk</p>
+              <h2 id="dashboard-title">Voltage Wrestling is on the clock.</h2>
+              <p>
+                Run the front office, protect the brand, and prepare the first draft-night decision.
+                This build is a polished preview with read-only draft data and locked game actions.
+              </p>
+              <div class="hero-actions" aria-label="Static front-door actions">
+                <button class="primary-link" type="button" data-go-to="save-selection">Open GM office</button>
+                <button class="secondary-link" type="button" data-go-to="draft-room">View draft war room</button>
+              </div>
+            </div>
+            <div class="next-event-card" aria-label="Mock next event">
+              <span class="signal-label">Next live desk</span>
+              <strong>Draft Night</strong>
+              <p>Preview Mode. Draft execution not enabled.</p>
             </div>
           </div>
-          <div class="signal-board" aria-label="Mock readiness board">
-            <div>
-              <span class="signal-label">Opening phase</span>
-              <strong>Contract signing</strong>
-            </div>
-            <div>
-              <span class="signal-label">First playable moment</span>
-              <strong>Draft night</strong>
-            </div>
-            <div>
-              <span class="signal-label">Current build</span>
-              <strong>Interactive preview</strong>
-            </div>
+
+          <div class="gm-metrics-grid" aria-label="Mock brand status">
+            <article class="metric-card budget-card">
+              <span class="signal-label">Budget</span>
+              <strong>$2.4M</strong>
+              <p>Opening office estimate</p>
+            </article>
+            <article class="metric-card fan-card">
+              <span class="signal-label">Fans</span>
+              <strong>1.2M</strong>
+              <p>Launch audience base</p>
+            </article>
+            <article class="metric-card momentum-card">
+              <span class="signal-label">Momentum</span>
+              <strong>Draft buzz</strong>
+              <p>Preseason signal</p>
+            </article>
+            <article class="metric-card health-card">
+              <span class="signal-label">Brand health</span>
+              <strong>Stable</strong>
+              <p>Preview signal only</p>
+            </article>
+          </div>
+
+          <div class="dashboard-board-grid">
+            <article class="gm-alert-panel">
+              <p class="card-kicker">GM alerts</p>
+              <h3>Tonight's desk notes</h3>
+              <ul class="alert-list">
+                <li><strong>Contract packet ready</strong><span>Finish the mock setup review before entering the war room.</span></li>
+                <li><strong>Draft feed connected</strong><span>Read-only candidate/readiness projection is available.</span></li>
+                <li><strong>Game actions locked</strong><span>Pick confirmation, roster creation, and saves come after approval.</span></li>
+              </ul>
+            </article>
+
+            <article class="broadcast-card draft-feature-card">
+              <p class="card-kicker">Upcoming board</p>
+              <h3>Voltage opens Round 1</h3>
+              <div class="mini-draft-board">
+                <div><span>1</span><strong>Voltage</strong><em>On the clock</em></div>
+                <div><span>2</span><strong>Dynasty</strong><em>Waiting</em></div>
+                <div><span>3</span><strong>Frontier</strong><em>Waiting</em></div>
+              </div>
+              <button class="secondary-action enabled-action" type="button" data-go-to="draft-room">Preview draft desk</button>
+            </article>
+
+            <article class="broadcast-card roster-spotlight-card">
+              <p class="card-kicker">Roster spotlight</p>
+              <h3>Locker room not formed yet</h3>
+              <div class="spotlight-strip">
+                <span>Main event lane</span>
+                <span>Women's division</span>
+                <span>Tag depth</span>
+              </div>
+              <p>Coming after draft confirmation. Roster assignment remains locked.</p>
+            </article>
+
+            <article class="broadcast-card rivalry-heat-card">
+              <p class="card-kicker">Rivalries heat</p>
+              <h3>No feuds booked</h3>
+              <div class="heat-meter" aria-label="Mock rivalry heat meter"><span></span></div>
+              <p>Future story heat will live near the roster hub after gameplay starts.</p>
+            </article>
+
+            <article class="broadcast-card championship-card">
+              <p class="card-kicker">Championship desk</p>
+              <h3>Titles awaiting brand setup</h3>
+              <ul class="title-chip-list">
+                <li>World Title</li>
+                <li>Women's Title</li>
+                <li>Tag Titles</li>
+              </ul>
+            </article>
+
+            <article class="broadcast-card iwc-pulse-card">
+              <p class="card-kicker">IWC pulse</p>
+              <h3>No buzz yet</h3>
+              <p>Book your first show later and let the internet react. Preview Mode keeps social systems locked.</p>
+            </article>
+
+            <article class="broadcast-card analytics-card">
+              <p class="card-kicker">Analytics preview</p>
+              <h3>Command reads</h3>
+              <dl class="mini-analytics-list">
+                <div><dt>Roster balance</dt><dd>Pending draft</dd></div>
+                <div><dt>Brand heat</dt><dd>Preseason</dd></div>
+                <div><dt>Road to PLE</dt><dd>Not started</dd></div>
+              </dl>
+            </article>
           </div>
         </section>
 
@@ -109,8 +193,8 @@
           <button class="flow-step flow-locked" type="button" data-flow-target="draft-room">
             <span>04</span>
             <strong>Draft Preview</strong>
-            <p>View blocked draft-night shell.</p>
-            <small>Backend wiring blocked</small>
+            <p>Enter the war-room preview.</p>
+            <small>Read-only draft feed</small>
           </button>
         </section>
 
@@ -119,7 +203,7 @@
             <div>
               <p class="eyebrow">Mock screen</p>
               <h2 id="save-title">Save Selection</h2>
-              <p class="section-note">Pick a static demo slot. Nothing reads from disk, SQLite, or a backend service.</p>
+              <p class="section-note">Pick a static demo slot. Preview Mode only: no save loading or game state changes.</p>
             </div>
             <span class="badge">No save reads</span>
           </div>
@@ -174,9 +258,9 @@
                 <p class="card-kicker">Empty Slot</p>
                 <h3>No save identity</h3>
                 <div class="state-row">
-                  <span class="state-pill blocked">Identity write blocked</span>
+                  <span class="state-pill blocked">Save creation locked</span>
                 </div>
-                <p class="muted">Reserved for a future approved identity-only save surface.</p>
+                <p class="muted">Reserved for the future save identity surface.</p>
                 <button class="secondary-action" type="button" disabled>Unavailable</button>
               </div>
             </article>
@@ -195,7 +279,7 @@
               <h2 id="setup-title">New GM Setup</h2>
               <p class="section-note">All setup choices are hardcoded visual placeholders for the future flow.</p>
             </div>
-            <span class="badge">No draft flow calls</span>
+            <span class="badge">Preview Mode</span>
           </div>
 
           <div class="setup-layout">
@@ -248,7 +332,7 @@
                 <h3>Voltage Wrestling</h3>
                 <div class="state-row">
                   <span class="state-pill ready">Ready for visual review</span>
-                  <span class="state-pill blocked">No save mutation</span>
+                  <span class="state-pill blocked">Save changes locked</span>
                 </div>
                 <dl class="compact-list">
                   <div><dt>GM identity</dt><dd>Avery Cross</dd></div>
@@ -259,14 +343,14 @@
                 </dl>
               </div>
               <div class="blocked-panel">
-                <h3>Blocked in this shell</h3>
+                <h3>Locked for this build</h3>
                 <ul>
-                  <li>Draft execution</li>
+                  <li>Draft confirmation</li>
                   <li>Roster assignment</li>
-                  <li>Gameplay start</li>
-                  <li>Save payload persistence</li>
-                  <li>SQLite writes</li>
-                  <li>Generated text or GenAI</li>
+                  <li>Start season</li>
+                  <li>Save payloads</li>
+                  <li>Database writes</li>
+                  <li>AI flavor text</li>
                 </ul>
               </div>
             </div>
@@ -285,7 +369,7 @@
               <h2 id="review-title">Setup Review</h2>
               <p class="section-note">This review summarizes fake setup choices and makes blocked capabilities visible.</p>
             </div>
-            <span class="badge">Demo data only</span>
+            <span class="badge">Preview Mode</span>
           </div>
 
           <div class="review-grid">
@@ -325,7 +409,7 @@
               <p class="card-kicker">Difficulty / experience</p>
               <h3>Standard contract</h3>
               <div class="state-row">
-                <span class="state-pill blocked">No tuning applied</span>
+                <span class="state-pill blocked">Tuning not applied</span>
               </div>
               <p class="muted">
                 Mock difficulty label for early layout review. It does not tune simulation, economy, or AI.
@@ -341,7 +425,7 @@
               <p class="card-kicker">Draft setup</p>
               <h3>Serpentine mock board</h3>
               <div class="state-row">
-                <span class="state-pill blocked">No draft service call</span>
+                <span class="state-pill blocked">Draft execution not enabled</span>
               </div>
               <p class="muted">
                 Static rules summary for visual flow only. No candidate loading, pick creation, or roster mutation.
@@ -355,11 +439,11 @@
           </div>
 
           <div class="blocked-state-strip" aria-label="Blocked capability labels">
-            <span>Draft execution blocked</span>
-            <span>Roster assignment blocked</span>
-            <span>Gameplay start blocked</span>
-            <span>Persistence blocked</span>
-            <span>GenAI blocked</span>
+            <span>Draft execution not enabled</span>
+            <span>Roster assignment locked</span>
+            <span>Start season locked</span>
+            <span>Save system locked</span>
+            <span>AI flavor locked</span>
           </div>
 
           <div class="section-actions">
@@ -373,14 +457,14 @@
             <div>
               <p class="eyebrow">Draft-night war room</p>
               <h2 id="draft-title">Draft Room Command Screen</h2>
-              <p class="section-note">Premium read-only draft surface using demo data. Future real draft data should consume existing Real Draft System v1.0 services, not rebuilt or duplicated draft services.</p>
+              <p class="section-note">Premium draft-night surface with a read-only candidate/readiness feed. Future real draft play must consume existing Real Draft System v1.0 services, not rebuilt or duplicated draft services.</p>
             </div>
-            <span class="badge feature-badge">Preview only</span>
+            <span class="badge feature-badge">Preview Mode</span>
           </div>
 
           <div class="draft-room-banner" aria-label="Mock draft night broadcast strip">
             <div>
-              <span class="signal-label">On the clock</span>
+              <span class="signal-label">Live desk</span>
               <strong>Voltage Wrestling</strong>
             </div>
             <div>
@@ -388,7 +472,7 @@
               <strong>1 / 5 mock</strong>
             </div>
             <div>
-              <span class="signal-label">Board status</span>
+              <span class="signal-label">Draft feed</span>
               <strong>Read-only</strong>
             </div>
             <div>
@@ -403,24 +487,24 @@
               <h3>Voltage is on the clock</h3>
               <div class="state-row">
                 <span class="state-pill next">Pick 1 - Round 1</span>
-                <span class="state-pill blocked">Pick controls locked</span>
+                <span class="state-pill blocked">Draft execution not enabled</span>
               </div>
               <p class="muted">Preview the pressure of the first pick without creating a pick, assigning a roster slot, or changing state.</p>
               <div class="draft-action-row">
-                <button class="primary-action" type="button" disabled>Make Pick locked</button>
-                <button class="secondary-action" type="button" disabled>Auto Draft locked</button>
+                <button class="primary-action" type="button" disabled>Make Pick locked for this build</button>
+                <button class="secondary-action" type="button" disabled>Auto Draft unavailable</button>
               </div>
             </article>
 
             <article class="readiness-panel">
               <p class="card-kicker">Readiness</p>
-              <h3>Integration boundary</h3>
+              <h3>Read-only draft feed</h3>
               <dl class="readiness-list">
                 <div><dt>Draft data</dt><dd>Read-only adapter ready</dd></div>
                 <div><dt>Real draft v1</dt><dd>Candidate/readiness projection</dd></div>
-                <div><dt>Draft picks</dt><dd>Locked</dd></div>
-                <div><dt>Roster state</dt><dd>Locked</dd></div>
-                <div><dt>Persistence</dt><dd>Locked</dd></div>
+                <div><dt>Draft picks</dt><dd>Not enabled</dd></div>
+                <div><dt>Roster state</dt><dd>Coming after draft</dd></div>
+                <div><dt>Save system</dt><dd>Locked for this build</dd></div>
                 <div><dt>UI runtime</dt><dd>Static preview</dd></div>
               </dl>
             </article>
@@ -454,9 +538,9 @@
             </article>
 
             <article class="talent-pool-panel">
-              <p class="card-kicker">Mock talent pool</p>
-              <h3>Scout the demo board</h3>
-              <p class="muted">Click a name to update the war-room profile. These are presentation labels, not real candidate data.</p>
+              <p class="card-kicker">Talent pool</p>
+              <h3>Scout the board</h3>
+              <p class="muted">Click a name to update the war-room profile. The current page remains frontend-only and read-only.</p>
               <div class="talent-card-list" aria-label="Mock talent pool preview">
                 <button class="talent-card selected" type="button" aria-pressed="true" data-talent-name="Rex Nova" data-talent-role="Main event upside" data-talent-style="Explosive heavyweight" data-talent-read="High ceiling, high spotlight pressure" data-talent-fit="Voltage needs a first-face centerpiece."><strong>Rex Nova</strong><span>Main event upside</span><small>Priority preview</small></button>
                 <button class="talent-card" type="button" aria-pressed="false" data-talent-name="Maya Steele" data-talent-role="Breakout striker" data-talent-style="Athletic workhorse" data-talent-read="Reliable TV match engine with future headline path" data-talent-fit="Strong weekly-show foundation without roster mutation."><strong>Maya Steele</strong><span>Breakout striker</span><small>Workhorse preview</small></button>
@@ -471,14 +555,14 @@
               <h3 id="talent-detail-name">Rex Nova</h3>
               <div class="state-row">
                 <span class="state-pill next" id="talent-detail-role">Main event upside</span>
-                <span class="state-pill blocked">Pick creation locked</span>
+                <span class="state-pill blocked">Pick confirmation locked</span>
               </div>
               <dl class="readiness-list">
                 <div><dt>Style</dt><dd id="talent-detail-style">Explosive heavyweight</dd></div>
                 <div><dt>Read</dt><dd id="talent-detail-read">High ceiling, high spotlight pressure</dd></div>
                 <div><dt>Brand fit</dt><dd id="talent-detail-fit">Voltage needs a first-face centerpiece.</dd></div>
               </dl>
-              <p class="integration-note">Read-only boundary now projects existing Real Draft System v1.0 candidate/readiness outputs for future UI wiring. This static page still does not create picks.</p>
+              <p class="integration-note">Read-only boundary projects existing Real Draft System v1.0 candidate/readiness outputs for future UI wiring. This static page still does not create picks.</p>
             </article>
           </div>
 
@@ -491,23 +575,23 @@
         <section id="roster" class="app-section section-block locked-section" aria-labelledby="roster-title" data-screen-title="Roster Placeholder" hidden>
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Locked placeholder</p>
-              <h2 id="roster-title">Roster</h2>
-              <p class="section-note">Post-draft roster hub preview. The lanes show where drafted talent will land after approved draft completion and roster assignment exist.</p>
+              <p class="eyebrow">Roster command hub</p>
+              <h2 id="roster-title">Roster War Room</h2>
+              <p class="section-note">Post-draft roster hub preview. The lanes show where drafted talent, rivalry heat, and title scenes will live after draft confirmation.</p>
             </div>
-            <span class="badge feature-badge">Awaiting draft completion</span>
+            <span class="badge feature-badge">Coming after draft confirmation</span>
           </div>
           <div class="roster-command-grid">
-            <article class="placeholder-card roster-empty-card">
+            <article class="placeholder-card roster-empty-card roster-hero-card">
               <strong>Roster board waiting on draft night</strong>
               <p>Future drafted wrestlers would appear here only after approved draft execution and roster assignment behavior exists.</p>
               <div class="state-row">
                 <span class="state-pill blocked">Roster assignment locked</span>
-                <span class="state-pill blocked">Gameplay start locked</span>
+                <span class="state-pill blocked">Start season locked</span>
               </div>
             </article>
             <article class="placeholder-card">
-              <strong>Main event lane</strong>
+              <strong>Main event scene</strong>
               <p>Empty mock slots for future brand leaders.</p>
               <ul class="empty-slot-list">
                 <li>Slot locked</li>
@@ -516,7 +600,7 @@
               </ul>
             </article>
             <article class="placeholder-card">
-              <strong>Women's division lane</strong>
+              <strong>Women's division</strong>
               <p>Empty mock slots for future division setup.</p>
               <ul class="empty-slot-list">
                 <li>Slot locked</li>
@@ -525,7 +609,7 @@
               </ul>
             </article>
             <article class="placeholder-card">
-              <strong>Tag and depth lane</strong>
+              <strong>Tag and depth board</strong>
               <p>Empty mock slots for future balance review.</p>
               <ul class="empty-slot-list">
                 <li>Slot locked</li>
@@ -533,85 +617,90 @@
                 <li>Slot locked</li>
               </ul>
             </article>
-            <article class="placeholder-card"><strong>Rivalries</strong><p>Locked future relationship and feud surface.</p></article>
-            <article class="placeholder-card"><strong>Championships</strong><p>Locked future title assignment surface.</p></article>
+            <article class="placeholder-card connected-hub-card"><strong>Rivalries heat</strong><p>Future feud pressure sits beside roster context.</p></article>
+            <article class="placeholder-card connected-hub-card"><strong>Championship desk</strong><p>Future title scenes connect directly to divisions.</p></article>
           </div>
         </section>
 
         <section id="rivalries" class="app-section section-block locked-section" aria-labelledby="rivalries-title" data-screen-title="Rivalries Placeholder" hidden>
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Locked placeholder</p>
-              <h2 id="rivalries-title">Rivalries</h2>
-              <p class="section-note">Static future-state screen. No feud scoring, social reaction, or storyline systems are active.</p>
+              <p class="eyebrow">Roster-adjacent system</p>
+              <h2 id="rivalries-title">Rivalries Heat Board</h2>
+              <p class="section-note">Static future-state screen. Story heat, grudges, and audience pressure are shown as presentation only.</p>
             </div>
-            <span class="badge">Gameplay systems blocked</span>
+            <span class="badge">Locked for this build</span>
           </div>
-          <div class="empty-command-panel">
-            <strong>Rivalry planner locked</strong>
-            <p>Reserved for a future approved player-facing workflow after roster and booking state exist.</p>
+          <div class="hub-preview-grid">
+            <article class="placeholder-card rivalry-preview-card"><strong>Blood feud lane</strong><p>Awaiting roster and booking state.</p><div class="heat-meter"><span></span></div></article>
+            <article class="placeholder-card rivalry-preview-card"><strong>Title chase lane</strong><p>Coming after championship scenes exist.</p><div class="heat-meter low-heat"><span></span></div></article>
+            <article class="placeholder-card rivalry-preview-card"><strong>IWC debate lane</strong><p>Future social pulse will react after shows.</p><div class="heat-meter mid-heat"><span></span></div></article>
           </div>
         </section>
 
         <section id="championships" class="app-section section-block locked-section" aria-labelledby="championships-title" data-screen-title="Championships Placeholder" hidden>
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Locked placeholder</p>
-              <h2 id="championships-title">Championships</h2>
-              <p class="section-note">Static future-state screen. No title lineage, assignment, or match consequence behavior exists.</p>
+              <p class="eyebrow">Roster-adjacent system</p>
+              <h2 id="championships-title">Championship Desk</h2>
+              <p class="section-note">Static future-state screen. Title scenes are staged like a broadcast desk, but no assignment or lineage behavior exists.</p>
             </div>
-            <span class="badge">Title assignment blocked</span>
+            <span class="badge">Title scenes locked</span>
           </div>
-          <div class="empty-command-panel">
-            <strong>Championship desk locked</strong>
-            <p>Demo shell only until championship/domain wiring is explicitly scoped later.</p>
+          <div class="championship-preview-grid">
+            <article class="title-panel world-title"><span>World</span><strong>Champion TBD</strong><p>Prestige board locked until roster setup.</p></article>
+            <article class="title-panel womens-title"><span>Women's</span><strong>Champion TBD</strong><p>Division board awaiting draft completion.</p></article>
+            <article class="title-panel tag-title"><span>Tag</span><strong>Champions TBD</strong><p>Team scene coming after roster creation.</p></article>
           </div>
         </section>
 
         <section id="calendar" class="app-section section-block locked-section" aria-labelledby="calendar-title" data-screen-title="Calendar Placeholder" hidden>
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Locked placeholder</p>
-              <h2 id="calendar-title">Calendar</h2>
-              <p class="section-note">Static calendar surface only. No Week 1 initialization, week advancement, or show booking is active.</p>
+              <p class="eyebrow">Road to PLE</p>
+              <h2 id="calendar-title">Calendar Desk</h2>
+              <p class="section-note">Static road-to-PLE surface only. No Week 1 initialization, week advancement, or show booking is active.</p>
             </div>
-            <span class="badge">Calendar advancement blocked</span>
+            <span class="badge">Calendar locked</span>
           </div>
-          <div class="placeholder-grid">
-            <article class="placeholder-card"><strong>Week 0</strong><p>Draft-night preview remains mock-only.</p></article>
-            <article class="placeholder-card"><strong>Week 1</strong><p>Locked until gameplay start is approved.</p></article>
-            <article class="placeholder-card"><strong>PLE runway</strong><p>Static label with no schedule generation.</p></article>
+          <div class="calendar-road-grid">
+            <article class="road-card active-road"><span>Now</span><strong>Draft Night</strong><p>Preview desk active.</p></article>
+            <article class="road-card"><span>Next</span><strong>Week 1 TV</strong><p>Locked until start season is approved.</p></article>
+            <article class="road-card"><span>Endpoint</span><strong>Clash Point PLE</strong><p>Road marker only.</p></article>
           </div>
         </section>
 
         <section id="iwc" class="app-section section-block locked-section" aria-labelledby="iwc-title" data-screen-title="IWC Placeholder" hidden>
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Locked placeholder</p>
-              <h2 id="iwc-title">IWC</h2>
-              <p class="section-note">Static discourse hub placeholder. No fan/social engines, reports, generated posts, or GenAI are active.</p>
+              <p class="eyebrow">Audience pulse</p>
+              <h2 id="iwc-title">IWC Desk</h2>
+              <p class="section-note">Static discourse hub placeholder. No fan/social engines, reports, generated posts, or AI flavor are active.</p>
             </div>
-            <span class="badge">Fan/social systems blocked</span>
+            <span class="badge">No buzz yet</span>
           </div>
-          <div class="empty-command-panel">
-            <strong>Audience pulse locked</strong>
-            <p>Future player-facing signals will need structured simulation truth first.</p>
+          <div class="social-preview-panel">
+            <strong>No buzz yet. Book your first show and let the internet react.</strong>
+            <div class="mock-feed-row"><span>Trending topics</span><em>Locked</em></div>
+            <div class="mock-feed-row"><span>Most talked-about star</span><em>Pending roster</em></div>
+            <div class="mock-feed-row"><span>Brand buzz comparison</span><em>Future system</em></div>
           </div>
         </section>
 
         <section id="analytics" class="app-section section-block locked-section" aria-labelledby="analytics-title" data-screen-title="Analytics Placeholder" hidden>
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Locked placeholder</p>
-              <h2 id="analytics-title">Analytics</h2>
+              <p class="eyebrow">Command intelligence</p>
+              <h2 id="analytics-title">Analytics Preview</h2>
               <p class="section-note">Static command analytics placeholder. No formulas, hidden values, or backend reads are exposed.</p>
             </div>
-            <span class="badge">Data wiring blocked</span>
+            <span class="badge">Preview signals only</span>
           </div>
-          <div class="placeholder-grid">
-            <article class="placeholder-card"><strong>Roster balance</strong><p>Mock signal space only.</p></article>
-            <article class="placeholder-card"><strong>Brand heat</strong><p>Future signal summary placeholder.</p></article>
-            <article class="placeholder-card"><strong>Budget pressure</strong><p>Static UI label only.</p></article>
+          <div class="analytics-preview-grid">
+            <article class="analytics-tile"><span>Roster balance</span><strong>Pending draft</strong><p>Future post-draft composition read.</p></article>
+            <article class="analytics-tile"><span>Brand heat</span><strong>Preseason</strong><p>Future audience trend space.</p></article>
+            <article class="analytics-tile"><span>Budget pressure</span><strong>Stable</strong><p>Static office estimate.</p></article>
+            <article class="analytics-tile"><span>Road to PLE</span><strong>Not started</strong><p>Calendar endpoint preview.</p></article>
           </div>
         </section>
 
