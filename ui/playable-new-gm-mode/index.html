@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Next GM - Playable Mode Static Shell</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="nav-rail" aria-label="Main">
+        <div class="brand-mark" aria-label="Next GM">NG</div>
+        <nav class="nav-list">
+          <a class="nav-item active" href="#dashboard">Dashboard</a>
+          <a class="nav-item" href="#save-selection">Save Selection</a>
+          <a class="nav-item" href="#new-gm-setup">New GM Setup</a>
+          <a class="nav-item disabled" href="#draft-room" aria-disabled="true">Draft Room</a>
+          <a class="nav-item disabled" href="#roster" aria-disabled="true">Roster</a>
+          <a class="nav-item disabled" href="#rivalries" aria-disabled="true">Rivalries</a>
+          <a class="nav-item disabled" href="#championships" aria-disabled="true">Championships</a>
+          <a class="nav-item disabled" href="#calendar" aria-disabled="true">Calendar</a>
+          <a class="nav-item disabled" href="#iwc" aria-disabled="true">IWC</a>
+          <a class="nav-item disabled" href="#analytics" aria-disabled="true">Analytics</a>
+          <a class="nav-item disabled" href="#settings" aria-disabled="true">Settings</a>
+        </nav>
+      </aside>
+
+      <main class="command-center">
+        <header class="top-command">
+          <div>
+            <p class="eyebrow">Static mock shell</p>
+            <h1>Playable New GM Mode</h1>
+          </div>
+          <dl class="status-strip" aria-label="Mock command status">
+            <div>
+              <dt>Brand</dt>
+              <dd>Voltage</dd>
+            </div>
+            <div>
+              <dt>Calendar</dt>
+              <dd>Season 1 - Week 0</dd>
+            </div>
+            <div>
+              <dt>Budget</dt>
+              <dd>$2.4M</dd>
+            </div>
+            <div>
+              <dt>Fans</dt>
+              <dd>1.2M</dd>
+            </div>
+            <div>
+              <dt>Deadline</dt>
+              <dd>Draft Night</dd>
+            </div>
+          </dl>
+        </header>
+
+        <section id="dashboard" class="hero-panel" aria-labelledby="dashboard-title">
+          <div class="hero-copy">
+            <p class="eyebrow">Command board preview</p>
+            <h2 id="dashboard-title">Build the promotion before the first bell.</h2>
+            <p>
+              Save selection and setup are presented as static demo states only. Draft execution,
+              roster mutation, gameplay start, persistence, SQLite writes, and GenAI remain blocked.
+            </p>
+          </div>
+          <div class="signal-board" aria-label="Mock readiness board">
+            <div>
+              <span class="signal-label">Identity foundation</span>
+              <strong>Snapshotted</strong>
+            </div>
+            <div>
+              <span class="signal-label">Real draft v1</span>
+              <strong>Domain only</strong>
+            </div>
+            <div>
+              <span class="signal-label">Playable UI</span>
+              <strong>Static mock</strong>
+            </div>
+          </div>
+        </section>
+
+        <section id="save-selection" class="section-block" aria-labelledby="save-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Mock screen</p>
+              <h2 id="save-title">Save Selection</h2>
+            </div>
+            <span class="badge">No save reads</span>
+          </div>
+
+          <div class="save-grid">
+            <article class="save-card featured">
+              <div class="poster-frame poster-voltage" aria-hidden="true">
+                <span>VX</span>
+              </div>
+              <div class="card-body">
+                <p class="card-kicker">Continue Save</p>
+                <h3>Voltage Wrestling</h3>
+                <dl class="compact-list">
+                  <div><dt>GM</dt><dd>Avery Cross</dd></div>
+                  <div><dt>Season</dt><dd>1 - Week 0</dd></div>
+                  <div><dt>Difficulty</dt><dd>Standard</dd></div>
+                  <div><dt>Last played</dt><dd>Demo state</dd></div>
+                  <div><dt>Next show</dt><dd>Draft Night</dd></div>
+                  <div><dt>Next PLE</dt><dd>Clash Point</dd></div>
+                </dl>
+                <button class="primary-action" type="button" disabled>Static preview</button>
+              </div>
+            </article>
+
+            <article class="save-card">
+              <div class="poster-frame poster-new" aria-hidden="true">
+                <span>GM</span>
+              </div>
+              <div class="card-body">
+                <p class="card-kicker">New GM Mode</p>
+                <h3>Contract Signing</h3>
+                <p class="muted">
+                  Static setup preview for brand, GM identity, experience, draft rules, and review.
+                </p>
+                <button class="secondary-action" type="button" disabled>Mock setup only</button>
+              </div>
+            </article>
+
+            <article class="save-card empty">
+              <div class="poster-frame poster-empty" aria-hidden="true">
+                <span>--</span>
+              </div>
+              <div class="card-body">
+                <p class="card-kicker">Empty Slot</p>
+                <h3>No save identity</h3>
+                <p class="muted">Reserved for a future approved identity-only save surface.</p>
+                <button class="secondary-action" type="button" disabled>Unavailable</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="new-gm-setup" class="section-block" aria-labelledby="setup-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Mock screen</p>
+              <h2 id="setup-title">New GM Setup</h2>
+            </div>
+            <span class="badge">No draft flow calls</span>
+          </div>
+
+          <div class="setup-layout">
+            <ol class="setup-steps" aria-label="Static setup sections">
+              <li class="setup-step active">
+                <span>01</span>
+                <div>
+                  <strong>Choose Brand</strong>
+                  <p>Voltage, Dynasty, or Frontier mock options.</p>
+                </div>
+              </li>
+              <li class="setup-step">
+                <span>02</span>
+                <div>
+                  <strong>Choose GM Identity</strong>
+                  <p>Name, avatar style, and executive profile placeholders.</p>
+                </div>
+              </li>
+              <li class="setup-step">
+                <span>03</span>
+                <div>
+                  <strong>Difficulty / Experience</strong>
+                  <p>Standard, hard, and sandbox labels only.</p>
+                </div>
+              </li>
+              <li class="setup-step">
+                <span>04</span>
+                <div>
+                  <strong>Draft Setup</strong>
+                  <p>Mock rule cards with no draft service invocation.</p>
+                </div>
+              </li>
+              <li class="setup-step">
+                <span>05</span>
+                <div>
+                  <strong>Review Setup</strong>
+                  <p>Static summary before a future draft-night preview.</p>
+                </div>
+              </li>
+            </ol>
+
+            <div class="setup-preview" aria-label="Mock setup review">
+              <div class="contract-card">
+                <p class="eyebrow">Contract packet</p>
+                <h3>Voltage Wrestling</h3>
+                <dl class="compact-list">
+                  <div><dt>GM identity</dt><dd>Avery Cross</dd></div>
+                  <div><dt>Experience</dt><dd>Standard</dd></div>
+                  <div><dt>Draft style</dt><dd>Serpentine mock</dd></div>
+                  <div><dt>Roster need</dt><dd>Balanced mock board</dd></div>
+                  <div><dt>Status</dt><dd>Static review only</dd></div>
+                </dl>
+              </div>
+              <div class="blocked-panel">
+                <h3>Blocked in this shell</h3>
+                <ul>
+                  <li>Draft execution</li>
+                  <li>Roster assignment</li>
+                  <li>Gameplay start</li>
+                  <li>Save payload persistence</li>
+                  <li>SQLite writes</li>
+                  <li>Generated text or GenAI</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
