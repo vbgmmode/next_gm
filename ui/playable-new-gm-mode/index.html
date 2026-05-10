@@ -63,6 +63,10 @@
               Save selection and setup are presented as static demo states only. Draft execution,
               roster mutation, gameplay start, persistence, SQLite writes, and GenAI remain blocked.
             </p>
+            <div class="hero-actions" aria-label="Static front-door actions">
+              <a class="primary-link" href="#save-selection">Review mock saves</a>
+              <a class="secondary-link" href="#new-gm-setup">Preview setup</a>
+            </div>
           </div>
           <div class="signal-board" aria-label="Mock readiness board">
             <div>
@@ -81,25 +85,29 @@
         </section>
 
         <section class="flow-strip" aria-label="Static player flow">
-          <div class="flow-step">
+          <div class="flow-step flow-complete">
             <span>01</span>
             <strong>Save Selection</strong>
             <p>Choose a mock slot.</p>
+            <small>Static demo</small>
           </div>
-          <div class="flow-step">
+          <div class="flow-step flow-current">
             <span>02</span>
             <strong>New GM Setup</strong>
             <p>Preview static setup choices.</p>
+            <small>Current mock step</small>
           </div>
           <div class="flow-step">
             <span>03</span>
             <strong>Setup Review</strong>
             <p>Confirm demo-only state.</p>
+            <small>Next intended step</small>
           </div>
-          <div class="flow-step">
+          <div class="flow-step flow-locked">
             <span>04</span>
             <strong>Draft Preview</strong>
             <p>View blocked draft-night shell.</p>
+            <small>Backend wiring blocked</small>
           </div>
         </section>
 
@@ -108,6 +116,7 @@
             <div>
               <p class="eyebrow">Mock screen</p>
               <h2 id="save-title">Save Selection</h2>
+              <p class="section-note">Pick a static demo slot. Nothing reads from disk, SQLite, or a backend service.</p>
             </div>
             <span class="badge">No save reads</span>
           </div>
@@ -120,6 +129,10 @@
               <div class="card-body">
                 <p class="card-kicker">Continue Save</p>
                 <h3>Voltage Wrestling</h3>
+                <div class="state-row">
+                  <span class="state-pill ready">Mock slot</span>
+                  <span class="state-pill blocked">Load disabled</span>
+                </div>
                 <dl class="compact-list">
                   <div><dt>GM</dt><dd>Avery Cross</dd></div>
                   <div><dt>Season</dt><dd>1 - Week 0</dd></div>
@@ -128,7 +141,7 @@
                   <div><dt>Next show</dt><dd>Draft Night</dd></div>
                   <div><dt>Next PLE</dt><dd>Clash Point</dd></div>
                 </dl>
-                <button class="primary-action" type="button" disabled>Static preview</button>
+                <button class="primary-action" type="button" disabled>Continue disabled - static preview</button>
               </div>
             </article>
 
@@ -139,10 +152,14 @@
               <div class="card-body">
                 <p class="card-kicker">New GM Mode</p>
                 <h3>Contract Signing</h3>
+                <div class="state-row">
+                  <span class="state-pill ready">Mock setup</span>
+                  <span class="state-pill next">Next visual step</span>
+                </div>
                 <p class="muted">
                   Static setup preview for brand, GM identity, experience, draft rules, and review.
                 </p>
-                <button class="secondary-action" type="button" disabled>Mock setup only</button>
+                <button class="secondary-action" type="button" disabled>Setup action disabled</button>
               </div>
             </article>
 
@@ -153,6 +170,9 @@
               <div class="card-body">
                 <p class="card-kicker">Empty Slot</p>
                 <h3>No save identity</h3>
+                <div class="state-row">
+                  <span class="state-pill blocked">Identity write blocked</span>
+                </div>
                 <p class="muted">Reserved for a future approved identity-only save surface.</p>
                 <button class="secondary-action" type="button" disabled>Unavailable</button>
               </div>
@@ -165,6 +185,7 @@
             <div>
               <p class="eyebrow">Mock screen</p>
               <h2 id="setup-title">New GM Setup</h2>
+              <p class="section-note">All setup choices are hardcoded visual placeholders for the future flow.</p>
             </div>
             <span class="badge">No draft flow calls</span>
           </div>
@@ -176,6 +197,7 @@
                 <div>
                   <strong>Choose Brand</strong>
                   <p>Voltage, Dynasty, or Frontier mock options.</p>
+                  <small>Selected mock: Voltage</small>
                 </div>
               </li>
               <li class="setup-step">
@@ -183,6 +205,7 @@
                 <div>
                   <strong>Choose GM Identity</strong>
                   <p>Name, avatar style, and executive profile placeholders.</p>
+                  <small>Selected mock: Avery Cross</small>
                 </div>
               </li>
               <li class="setup-step">
@@ -190,6 +213,7 @@
                 <div>
                   <strong>Difficulty / Experience</strong>
                   <p>Standard, hard, and sandbox labels only.</p>
+                  <small>Selected mock: Standard</small>
                 </div>
               </li>
               <li class="setup-step">
@@ -197,6 +221,7 @@
                 <div>
                   <strong>Draft Setup</strong>
                   <p>Mock rule cards with no draft service invocation.</p>
+                  <small>Selected mock: Serpentine board</small>
                 </div>
               </li>
               <li class="setup-step">
@@ -204,6 +229,7 @@
                 <div>
                   <strong>Review Setup</strong>
                   <p>Static summary before the mock draft-night preview.</p>
+                  <small>Next intended visual step</small>
                 </div>
               </li>
             </ol>
@@ -212,6 +238,10 @@
               <div class="contract-card">
                 <p class="eyebrow">Contract packet</p>
                 <h3>Voltage Wrestling</h3>
+                <div class="state-row">
+                  <span class="state-pill ready">Ready for visual review</span>
+                  <span class="state-pill blocked">No save mutation</span>
+                </div>
                 <dl class="compact-list">
                   <div><dt>GM identity</dt><dd>Avery Cross</dd></div>
                   <div><dt>Experience</dt><dd>Standard</dd></div>
@@ -240,6 +270,7 @@
             <div>
               <p class="eyebrow">Mock screen</p>
               <h2 id="review-title">Setup Review</h2>
+              <p class="section-note">This review summarizes fake setup choices and makes blocked capabilities visible.</p>
             </div>
             <span class="badge">Demo data only</span>
           </div>
@@ -248,6 +279,9 @@
             <article class="review-card brand-review">
               <p class="card-kicker">Selected brand</p>
               <h3>Voltage Wrestling</h3>
+              <div class="state-row">
+                <span class="state-pill ready">Selected mock</span>
+              </div>
               <p class="muted">
                 Broadcast-forward mock brand with a fast weekly show identity and a young audience profile.
               </p>
@@ -261,6 +295,9 @@
             <article class="review-card">
               <p class="card-kicker">GM identity</p>
               <h3>Avery Cross</h3>
+              <div class="state-row">
+                <span class="state-pill ready">Static profile</span>
+              </div>
               <p class="muted">
                 Mock executive profile for a TV producer who wants star-making stories and controlled risk.
               </p>
@@ -274,6 +311,9 @@
             <article class="review-card">
               <p class="card-kicker">Difficulty / experience</p>
               <h3>Standard contract</h3>
+              <div class="state-row">
+                <span class="state-pill blocked">No tuning applied</span>
+              </div>
               <p class="muted">
                 Mock difficulty label for early layout review. It does not tune simulation, economy, or AI.
               </p>
@@ -287,6 +327,9 @@
             <article class="review-card">
               <p class="card-kicker">Draft setup</p>
               <h3>Serpentine mock board</h3>
+              <div class="state-row">
+                <span class="state-pill blocked">No draft service call</span>
+              </div>
               <p class="muted">
                 Static rules summary for visual flow only. No candidate loading, pick creation, or roster mutation.
               </p>
@@ -312,6 +355,7 @@
             <div>
               <p class="eyebrow">Mock screen</p>
               <h2 id="draft-title">Draft-Night Preview</h2>
+              <p class="section-note">Preview the shape of draft night without loading candidates or creating picks.</p>
             </div>
             <span class="badge">No real candidate loading</span>
           </div>
@@ -320,6 +364,10 @@
             <article class="draft-board-panel">
               <p class="card-kicker">Mock draft board</p>
               <h3>Round 1 preview</h3>
+              <div class="state-row">
+                <span class="state-pill next">Next intended player moment</span>
+                <span class="state-pill blocked">Selection disabled</span>
+              </div>
               <div class="draft-board-list" aria-label="Mock draft board preview">
                 <div><span>Pick 1</span><strong>Voltage</strong><em>On the clock mock</em></div>
                 <div><span>Pick 2</span><strong>Dynasty</strong><em>Waiting mock</em></div>
@@ -331,6 +379,7 @@
             <article class="talent-pool-panel">
               <p class="card-kicker">Mock talent pool</p>
               <h3>Top board preview</h3>
+              <p class="muted">Demo names only. No real candidate list is loaded.</p>
               <div class="talent-card-list" aria-label="Mock talent pool preview">
                 <div class="talent-card"><strong>Rex Nova</strong><span>Main event upside</span></div>
                 <div class="talent-card"><strong>Maya Steele</strong><span>Breakout striker</span></div>
@@ -342,6 +391,7 @@
             <article class="pick-order-panel">
               <p class="card-kicker">Mock pick order</p>
               <h3>Brand cadence</h3>
+              <p class="muted">Static order preview for layout and hierarchy only.</p>
               <ol class="pick-order-list">
                 <li><span>Voltage</span><strong>Pick 1</strong></li>
                 <li><span>Dynasty</span><strong>Pick 2</strong></li>
@@ -353,13 +403,14 @@
             <article class="readiness-panel">
               <p class="card-kicker">Mock readiness</p>
               <h3>Preview boundaries</h3>
+              <p class="muted">Everything past this point remains blocked until explicit backend wiring approval.</p>
               <dl class="readiness-list">
                 <div><dt>Candidate data</dt><dd>Demo only</dd></div>
                 <div><dt>Draft pick creation</dt><dd>Blocked</dd></div>
                 <div><dt>Roster state</dt><dd>Blocked</dd></div>
                 <div><dt>Backend services</dt><dd>Not called</dd></div>
               </dl>
-              <button class="secondary-action" type="button" disabled>Draft action disabled</button>
+              <button class="secondary-action" type="button" disabled>Draft action disabled - mock only</button>
             </article>
           </div>
         </section>

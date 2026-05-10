@@ -13,6 +13,9 @@
   --red: #d85757;
   --blue: #4f8bd9;
   --green: #4ca87b;
+  --amber-soft: rgba(216, 180, 93, 0.12);
+  --red-soft: rgba(216, 87, 87, 0.1);
+  --blue-soft: rgba(79, 139, 217, 0.12);
   --shadow: rgba(0, 0, 0, 0.34);
 }
 
@@ -220,6 +223,36 @@ dd {
   max-width: 860px;
 }
 
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.primary-link,
+.secondary-link {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 16px;
+  color: var(--text);
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.primary-link {
+  border: 1px solid rgba(216, 180, 93, 0.65);
+  background: rgba(216, 180, 93, 0.16);
+}
+
+.secondary-link {
+  border: 1px solid var(--line-strong);
+  background: var(--panel);
+}
+
 .signal-board {
   display: grid;
   gap: 10px;
@@ -260,6 +293,19 @@ dd {
   padding: 16px;
 }
 
+.flow-step.flow-current {
+  border-color: rgba(216, 180, 93, 0.75);
+  background: linear-gradient(180deg, var(--amber-soft), var(--panel));
+}
+
+.flow-step.flow-complete {
+  border-color: rgba(76, 168, 123, 0.45);
+}
+
+.flow-step.flow-locked {
+  border-color: rgba(216, 87, 87, 0.45);
+}
+
 .flow-step span {
   display: inline-grid;
   width: 32px;
@@ -280,6 +326,16 @@ dd {
 .flow-step p {
   margin: 5px 0 0;
   font-size: 0.9rem;
+}
+
+.flow-step small,
+.setup-step small {
+  display: inline-flex;
+  margin-top: 10px;
+  color: var(--subtle);
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-transform: uppercase;
 }
 
 .flow-step:not(:last-child)::after {
@@ -305,6 +361,11 @@ dd {
   align-items: start;
   justify-content: space-between;
   margin-bottom: 18px;
+}
+
+.section-note {
+  max-width: 760px;
+  margin-bottom: 0;
 }
 
 .badge {
@@ -335,8 +396,13 @@ dd {
   background: var(--panel);
 }
 
-.save-card.featured {
+.save-card:hover {
   border-color: var(--line-strong);
+}
+
+.save-card.featured {
+  border-color: rgba(216, 180, 93, 0.58);
+  background: linear-gradient(180deg, rgba(216, 180, 93, 0.07), var(--panel));
 }
 
 .poster-frame {
@@ -368,8 +434,44 @@ dd {
 .card-body {
   display: grid;
   align-content: start;
-  gap: 14px;
+  gap: 13px;
   padding: 18px;
+}
+
+.state-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.state-pill {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  padding: 0 10px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 850;
+}
+
+.state-pill.ready {
+  border-color: rgba(76, 168, 123, 0.5);
+  background: rgba(76, 168, 123, 0.1);
+  color: #b6e4cc;
+}
+
+.state-pill.next {
+  border-color: rgba(79, 139, 217, 0.56);
+  background: var(--blue-soft);
+  color: #bed7f7;
+}
+
+.state-pill.blocked {
+  border-color: rgba(216, 87, 87, 0.48);
+  background: var(--red-soft);
+  color: #efb6b6;
 }
 
 .compact-list {
@@ -404,10 +506,11 @@ dd {
   color: var(--text);
   cursor: not-allowed;
   font-weight: 850;
+  opacity: 0.82;
 }
 
 .primary-action {
-  background: #5a1e22;
+  background: linear-gradient(180deg, #6a2429, #45191d);
 }
 
 .secondary-action {
@@ -440,6 +543,7 @@ dd {
 
 .setup-step.active {
   border-color: var(--gold);
+  background: linear-gradient(180deg, var(--amber-soft), var(--panel));
 }
 
 .setup-step span {
@@ -507,8 +611,19 @@ dd {
   padding: 18px;
 }
 
+.review-card,
+.draft-board-panel,
+.talent-pool-panel,
+.pick-order-panel,
+.readiness-panel {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
 .brand-review {
   border-color: rgba(216, 180, 93, 0.55);
+  background: linear-gradient(180deg, rgba(216, 180, 93, 0.08), var(--panel));
 }
 
 .blocked-state-strip {
@@ -535,6 +650,10 @@ dd {
   display: grid;
   grid-template-columns: minmax(320px, 1.1fr) minmax(260px, 0.9fr);
   gap: 16px;
+}
+
+.draft-board-panel {
+  border-color: rgba(79, 139, 217, 0.45);
 }
 
 .draft-board-list,
@@ -564,6 +683,11 @@ dd {
   align-items: center;
 }
 
+.draft-board-list div:first-child {
+  border-color: rgba(216, 180, 93, 0.55);
+  background: rgba(216, 180, 93, 0.08);
+}
+
 .draft-board-list span,
 .talent-card span,
 .pick-order-list span {
@@ -581,6 +705,10 @@ dd {
 .talent-card {
   display: grid;
   gap: 4px;
+}
+
+.talent-card:first-child {
+  border-color: rgba(76, 168, 123, 0.4);
 }
 
 .pick-order-list {
