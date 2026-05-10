@@ -80,6 +80,29 @@
           </div>
         </section>
 
+        <section class="flow-strip" aria-label="Static player flow">
+          <div class="flow-step">
+            <span>01</span>
+            <strong>Save Selection</strong>
+            <p>Choose a mock slot.</p>
+          </div>
+          <div class="flow-step">
+            <span>02</span>
+            <strong>New GM Setup</strong>
+            <p>Preview static setup choices.</p>
+          </div>
+          <div class="flow-step">
+            <span>03</span>
+            <strong>Setup Review</strong>
+            <p>Confirm demo-only state.</p>
+          </div>
+          <div class="flow-step">
+            <span>04</span>
+            <strong>Draft Preview</strong>
+            <p>View blocked draft-night shell.</p>
+          </div>
+        </section>
+
         <section id="save-selection" class="section-block" aria-labelledby="save-title">
           <div class="section-heading">
             <div>
@@ -180,7 +203,7 @@
                 <span>05</span>
                 <div>
                   <strong>Review Setup</strong>
-                  <p>Static summary before a future draft-night preview.</p>
+                  <p>Static summary before the mock draft-night preview.</p>
                 </div>
               </li>
             </ol>
@@ -209,6 +232,135 @@
                 </ul>
               </div>
             </div>
+          </div>
+        </section>
+
+        <section id="setup-review" class="section-block" aria-labelledby="review-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Mock screen</p>
+              <h2 id="review-title">Setup Review</h2>
+            </div>
+            <span class="badge">Demo data only</span>
+          </div>
+
+          <div class="review-grid">
+            <article class="review-card brand-review">
+              <p class="card-kicker">Selected brand</p>
+              <h3>Voltage Wrestling</h3>
+              <p class="muted">
+                Broadcast-forward mock brand with a fast weekly show identity and a young audience profile.
+              </p>
+              <dl class="compact-list">
+                <div><dt>Market</dt><dd>National demo</dd></div>
+                <div><dt>Style</dt><dd>High-energy TV</dd></div>
+                <div><dt>Pressure</dt><dd>Draft night launch</dd></div>
+              </dl>
+            </article>
+
+            <article class="review-card">
+              <p class="card-kicker">GM identity</p>
+              <h3>Avery Cross</h3>
+              <p class="muted">
+                Mock executive profile for a TV producer who wants star-making stories and controlled risk.
+              </p>
+              <dl class="compact-list">
+                <div><dt>Persona</dt><dd>Producer GM</dd></div>
+                <div><dt>Preference</dt><dd>Balanced roster</dd></div>
+                <div><dt>Authority</dt><dd>Static preview</dd></div>
+              </dl>
+            </article>
+
+            <article class="review-card">
+              <p class="card-kicker">Difficulty / experience</p>
+              <h3>Standard contract</h3>
+              <p class="muted">
+                Mock difficulty label for early layout review. It does not tune simulation, economy, or AI.
+              </p>
+              <dl class="compact-list">
+                <div><dt>Budget</dt><dd>Moderate mock</dd></div>
+                <div><dt>Expectations</dt><dd>Build momentum</dd></div>
+                <div><dt>AI brands</dt><dd>Preview only</dd></div>
+              </dl>
+            </article>
+
+            <article class="review-card">
+              <p class="card-kicker">Draft setup</p>
+              <h3>Serpentine mock board</h3>
+              <p class="muted">
+                Static rules summary for visual flow only. No candidate loading, pick creation, or roster mutation.
+              </p>
+              <dl class="compact-list">
+                <div><dt>Rounds</dt><dd>5 mock rounds</dd></div>
+                <div><dt>Order</dt><dd>Voltage opens</dd></div>
+                <div><dt>Roster need</dt><dd>Balanced mock</dd></div>
+              </dl>
+            </article>
+          </div>
+
+          <div class="blocked-state-strip" aria-label="Blocked capability labels">
+            <span>Draft execution blocked</span>
+            <span>Roster assignment blocked</span>
+            <span>Gameplay start blocked</span>
+            <span>Persistence blocked</span>
+            <span>GenAI blocked</span>
+          </div>
+        </section>
+
+        <section id="draft-room" class="section-block" aria-labelledby="draft-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Mock screen</p>
+              <h2 id="draft-title">Draft-Night Preview</h2>
+            </div>
+            <span class="badge">No real candidate loading</span>
+          </div>
+
+          <div class="draft-preview-grid">
+            <article class="draft-board-panel">
+              <p class="card-kicker">Mock draft board</p>
+              <h3>Round 1 preview</h3>
+              <div class="draft-board-list" aria-label="Mock draft board preview">
+                <div><span>Pick 1</span><strong>Voltage</strong><em>On the clock mock</em></div>
+                <div><span>Pick 2</span><strong>Dynasty</strong><em>Waiting mock</em></div>
+                <div><span>Pick 3</span><strong>Frontier</strong><em>Waiting mock</em></div>
+                <div><span>Pick 4</span><strong>Voltage</strong><em>Future turn mock</em></div>
+              </div>
+            </article>
+
+            <article class="talent-pool-panel">
+              <p class="card-kicker">Mock talent pool</p>
+              <h3>Top board preview</h3>
+              <div class="talent-card-list" aria-label="Mock talent pool preview">
+                <div class="talent-card"><strong>Rex Nova</strong><span>Main event upside</span></div>
+                <div class="talent-card"><strong>Maya Steele</strong><span>Breakout striker</span></div>
+                <div class="talent-card"><strong>Juno Vale</strong><span>Social buzz draw</span></div>
+                <div class="talent-card"><strong>Atlas King</strong><span>Powerhouse anchor</span></div>
+              </div>
+            </article>
+
+            <article class="pick-order-panel">
+              <p class="card-kicker">Mock pick order</p>
+              <h3>Brand cadence</h3>
+              <ol class="pick-order-list">
+                <li><span>Voltage</span><strong>Pick 1</strong></li>
+                <li><span>Dynasty</span><strong>Pick 2</strong></li>
+                <li><span>Frontier</span><strong>Pick 3</strong></li>
+                <li><span>Voltage</span><strong>Pick 4</strong></li>
+              </ol>
+            </article>
+
+            <article class="readiness-panel">
+              <p class="card-kicker">Mock readiness</p>
+              <h3>Preview boundaries</h3>
+              <dl class="readiness-list">
+                <div><dt>Candidate data</dt><dd>Demo only</dd></div>
+                <div><dt>Draft pick creation</dt><dd>Blocked</dd></div>
+                <div><dt>Roster state</dt><dd>Blocked</dd></div>
+                <div><dt>Backend services</dt><dd>Not called</dd></div>
+              </dl>
+              <button class="secondary-action" type="button" disabled>Draft action disabled</button>
+            </article>
           </div>
         </section>
       </main>
