@@ -372,63 +372,94 @@
           <div class="section-heading">
             <div>
               <p class="eyebrow">Mock screen</p>
-              <h2 id="draft-title">Draft-Night Preview</h2>
-              <p class="section-note">Preview the shape of draft night without loading candidates or creating picks.</p>
+              <h2 id="draft-title">Draft Room Command Screen</h2>
+              <p class="section-note">Read-only draft command surface using demo data only. Future real draft data should consume existing Real Draft System v1.0 services, not rebuilt or duplicated draft services.</p>
             </div>
-            <span class="badge">No real candidate loading</span>
+            <span class="badge">Draft execution blocked</span>
           </div>
 
-          <div class="draft-preview-grid">
-            <article class="draft-board-panel">
-              <p class="card-kicker">Mock draft board</p>
-              <h3>Round 1 preview</h3>
+          <div class="draft-command-grid">
+            <article class="current-pick-panel">
+              <p class="card-kicker">Current pick</p>
+              <h3>Voltage is on the clock</h3>
               <div class="state-row">
-                <span class="state-pill next">Next intended player moment</span>
-                <span class="state-pill blocked">Selection disabled</span>
+                <span class="state-pill next">Pick 1 - Round 1</span>
+                <span class="state-pill blocked">Selection read-only</span>
               </div>
-              <div class="draft-board-list" aria-label="Mock draft board preview">
-                <div><span>Pick 1</span><strong>Voltage</strong><em>On the clock mock</em></div>
-                <div><span>Pick 2</span><strong>Dynasty</strong><em>Waiting mock</em></div>
-                <div><span>Pick 3</span><strong>Frontier</strong><em>Waiting mock</em></div>
-                <div><span>Pick 4</span><strong>Voltage</strong><em>Future turn mock</em></div>
+              <p class="muted">This panel previews the future draft moment without creating a pick, assigning a roster slot, or mutating state.</p>
+              <div class="draft-action-row">
+                <button class="primary-action" type="button" disabled>Make Pick disabled</button>
+                <button class="secondary-action" type="button" disabled>Auto Draft disabled</button>
+              </div>
+            </article>
+
+            <article class="readiness-panel">
+              <p class="card-kicker">Readiness</p>
+              <h3>Integration boundary</h3>
+              <dl class="readiness-list">
+                <div><dt>Draft data</dt><dd>Demo only</dd></div>
+                <div><dt>Real draft v1</dt><dd>Consume later</dd></div>
+                <div><dt>Draft pick creation</dt><dd>Blocked</dd></div>
+                <div><dt>Roster state</dt><dd>Blocked</dd></div>
+                <div><dt>Persistence</dt><dd>Blocked</dd></div>
+                <div><dt>Backend services</dt><dd>Not called</dd></div>
+              </dl>
+            </article>
+
+            <article class="pick-order-panel">
+              <p class="card-kicker">Brand pick order</p>
+              <h3>Brand cadence</h3>
+              <p class="muted">Static order preview only. No draft session is loaded or advanced.</p>
+              <ol class="pick-order-list">
+                <li class="active-pick"><span>Voltage</span><strong>Pick 1</strong></li>
+                <li><span>Dynasty</span><strong>Pick 2</strong></li>
+                <li><span>Frontier</span><strong>Pick 3</strong></li>
+                <li><span>Voltage</span><strong>Pick 4</strong></li>
+                <li><span>Dynasty</span><strong>Pick 5</strong></li>
+                <li><span>Frontier</span><strong>Pick 6</strong></li>
+              </ol>
+            </article>
+
+            <article class="draft-board-panel">
+              <p class="card-kicker">Draft board</p>
+              <h3>Round 1 read-only board</h3>
+              <div class="draft-board-table" aria-label="Mock draft board table">
+                <div class="draft-board-row draft-board-head"><span>Pick</span><span>Brand</span><span>Status</span><span>Plan</span></div>
+                <div class="draft-board-row active-pick"><span>1</span><strong>Voltage</strong><em>On the clock</em><span>Main event anchor</span></div>
+                <div class="draft-board-row"><span>2</span><strong>Dynasty</strong><em>Waiting</em><span>TV centerpiece</span></div>
+                <div class="draft-board-row"><span>3</span><strong>Frontier</strong><em>Waiting</em><span>Athletic upside</span></div>
+                <div class="draft-board-row"><span>4</span><strong>Voltage</strong><em>Future turn</em><span>Division balance</span></div>
+                <div class="draft-board-row"><span>5</span><strong>Dynasty</strong><em>Future turn</em><span>Tag depth</span></div>
+                <div class="draft-board-row"><span>6</span><strong>Frontier</strong><em>Future turn</em><span>Prospect slot</span></div>
               </div>
             </article>
 
             <article class="talent-pool-panel">
               <p class="card-kicker">Mock talent pool</p>
-              <h3>Top board preview</h3>
-              <p class="muted">Demo names only. No real candidate list is loaded.</p>
+              <h3>Click a demo talent</h3>
+              <p class="muted">Frontend-only preview. These demo attributes are labels, not real candidate data.</p>
               <div class="talent-card-list" aria-label="Mock talent pool preview">
-                <div class="talent-card"><strong>Rex Nova</strong><span>Main event upside</span></div>
-                <div class="talent-card"><strong>Maya Steele</strong><span>Breakout striker</span></div>
-                <div class="talent-card"><strong>Juno Vale</strong><span>Social buzz draw</span></div>
-                <div class="talent-card"><strong>Atlas King</strong><span>Powerhouse anchor</span></div>
+                <button class="talent-card selected" type="button" data-talent-name="Rex Nova" data-talent-role="Main event upside" data-talent-style="Explosive heavyweight" data-talent-read="High ceiling, high spotlight pressure" data-talent-fit="Voltage needs a first-face centerpiece."><strong>Rex Nova</strong><span>Main event upside</span><small>Priority mock</small></button>
+                <button class="talent-card" type="button" data-talent-name="Maya Steele" data-talent-role="Breakout striker" data-talent-style="Athletic workhorse" data-talent-read="Reliable TV match engine with future headline path" data-talent-fit="Strong weekly-show foundation without roster mutation."><strong>Maya Steele</strong><span>Breakout striker</span><small>Workhorse mock</small></button>
+                <button class="talent-card" type="button" data-talent-name="Juno Vale" data-talent-role="Social buzz draw" data-talent-style="Charismatic wildcard" data-talent-read="Audience signal potential, booking discipline needed" data-talent-fit="Future IWC and fan systems remain blocked."><strong>Juno Vale</strong><span>Social buzz draw</span><small>Buzz mock</small></button>
+                <button class="talent-card" type="button" data-talent-name="Atlas King" data-talent-role="Powerhouse anchor" data-talent-style="Dominant base" data-talent-read="Stable presentation floor with title-scene shape" data-talent-fit="Championship assignment remains locked."><strong>Atlas King</strong><span>Powerhouse anchor</span><small>Anchor mock</small></button>
+                <button class="talent-card" type="button" data-talent-name="Sable Riot" data-talent-role="Tag division spark" data-talent-style="Fast-paced specialist" data-talent-read="Useful depth signal for future roster balance" data-talent-fit="Roster slots are still placeholders."><strong>Sable Riot</strong><span>Tag division spark</span><small>Depth mock</small></button>
               </div>
             </article>
 
-            <article class="pick-order-panel">
-              <p class="card-kicker">Mock pick order</p>
-              <h3>Brand cadence</h3>
-              <p class="muted">Static order preview for layout and hierarchy only.</p>
-              <ol class="pick-order-list">
-                <li><span>Voltage</span><strong>Pick 1</strong></li>
-                <li><span>Dynasty</span><strong>Pick 2</strong></li>
-                <li><span>Frontier</span><strong>Pick 3</strong></li>
-                <li><span>Voltage</span><strong>Pick 4</strong></li>
-              </ol>
-            </article>
-
-            <article class="readiness-panel">
-              <p class="card-kicker">Mock readiness</p>
-              <h3>Preview boundaries</h3>
-              <p class="muted">Everything past this point remains blocked until explicit backend wiring approval.</p>
+            <article class="talent-detail-panel" aria-live="polite">
+              <p class="card-kicker">Selected talent preview</p>
+              <h3 id="talent-detail-name">Rex Nova</h3>
+              <div class="state-row">
+                <span class="state-pill next" id="talent-detail-role">Main event upside</span>
+                <span class="state-pill blocked">Pick creation disabled</span>
+              </div>
               <dl class="readiness-list">
-                <div><dt>Candidate data</dt><dd>Demo only</dd></div>
-                <div><dt>Draft pick creation</dt><dd>Blocked</dd></div>
-                <div><dt>Roster state</dt><dd>Blocked</dd></div>
-                <div><dt>Backend services</dt><dd>Not called</dd></div>
+                <div><dt>Style</dt><dd id="talent-detail-style">Explosive heavyweight</dd></div>
+                <div><dt>Read</dt><dd id="talent-detail-read">High ceiling, high spotlight pressure</dd></div>
+                <div><dt>Brand fit</dt><dd id="talent-detail-fit">Voltage needs a first-face centerpiece.</dd></div>
               </dl>
-              <button class="secondary-action" type="button" disabled>Draft action disabled - mock only</button>
+              <p class="integration-note">Future integration should read existing Real Draft System v1.0 outputs. This screen must not rebuild draft objects or create picks.</p>
             </article>
           </div>
 
@@ -443,12 +474,46 @@
             <div>
               <p class="eyebrow">Locked placeholder</p>
               <h2 id="roster-title">Roster</h2>
-              <p class="section-note">Future roster management shell only. No wrestler assignment, real roster state, or gameplay mutation exists here.</p>
+              <p class="section-note">Post-draft roster shell preview only. No wrestler assignment, real roster state, or gameplay mutation exists here.</p>
             </div>
             <span class="badge">Roster assignment blocked</span>
           </div>
-          <div class="placeholder-grid">
-            <article class="placeholder-card"><strong>Unsigned roster board</strong><p>Static empty slots for future roster groups.</p></article>
+          <div class="roster-command-grid">
+            <article class="placeholder-card roster-empty-card">
+              <strong>Roster empty until draft completion</strong>
+              <p>Future drafted wrestlers would appear here only after approved draft execution and roster assignment behavior exists.</p>
+              <div class="state-row">
+                <span class="state-pill blocked">Roster assignment blocked</span>
+                <span class="state-pill blocked">Gameplay start blocked</span>
+              </div>
+            </article>
+            <article class="placeholder-card">
+              <strong>Main event lane</strong>
+              <p>Empty mock slots for future brand leaders.</p>
+              <ul class="empty-slot-list">
+                <li>Slot locked</li>
+                <li>Slot locked</li>
+                <li>Slot locked</li>
+              </ul>
+            </article>
+            <article class="placeholder-card">
+              <strong>Women's division lane</strong>
+              <p>Empty mock slots for future division setup.</p>
+              <ul class="empty-slot-list">
+                <li>Slot locked</li>
+                <li>Slot locked</li>
+                <li>Slot locked</li>
+              </ul>
+            </article>
+            <article class="placeholder-card">
+              <strong>Tag and depth lane</strong>
+              <p>Empty mock slots for future balance review.</p>
+              <ul class="empty-slot-list">
+                <li>Slot locked</li>
+                <li>Slot locked</li>
+                <li>Slot locked</li>
+              </ul>
+            </article>
             <article class="placeholder-card"><strong>Rivalries</strong><p>Locked future relationship and feud surface.</p></article>
             <article class="placeholder-card"><strong>Championships</strong><p>Locked future title assignment surface.</p></article>
           </div>

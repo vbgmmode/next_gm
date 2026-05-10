@@ -7,13 +7,17 @@ Manual verification for the static shell:
 - Confirm Save Selection shows Continue Save, New GM Mode, and Empty Slot as mock-only cards.
 - Confirm New GM Setup shows Choose Brand, Choose GM Identity, Difficulty / Experience, Draft Setup, and Review Setup as static sections.
 - Confirm Setup Review shows selected brand, GM identity, difficulty / experience, draft setup, and blocked-state labels.
-- Confirm Draft-Night Preview shows a mock draft board, mock talent pool, mock pick order, and mock readiness panel.
+- Confirm Draft Room shows a read-only current pick panel, draft board, brand pick order, mock talent pool, selected talent preview, and readiness/status panel.
+- Confirm the disabled Make Pick and Auto Draft actions remain disabled.
+- Confirm clicking a mock talent updates only the selected talent preview panel.
 - Confirm the player flow is visually clear: Save Selection -> New GM Setup -> Setup Review -> Draft Preview.
 - Confirm nav rail clicks switch between Dashboard, Save Selection, New GM Setup, Setup Review, Draft Room, Roster, Rivalries, Championships, Calendar, IWC, Analytics, and Settings without a page reload.
 - Confirm the active nav item and active screen label update after each section switch.
 - Confirm the static next-step controls move through Save Selection -> New GM Setup -> Setup Review -> Draft Preview only as frontend DOM switching.
 - Confirm locked future sections remain marked as placeholder/mock/future and do not expose functional systems.
+- Confirm Roster shows an empty post-draft placeholder state with roster assignment and gameplay start locked.
 - Confirm blocked labels remain visible for draft execution, roster assignment, gameplay start, persistence, SQLite writes, and GenAI.
+- Confirm future draft integration notes say to consume existing Real Draft System v1.0 services instead of rebuilding draft services.
 - Confirm there are no backend calls, no draft service imports, no save writes, and no gameplay state mutation in this static scaffold.
 
 ## Manual UI QA
@@ -29,7 +33,8 @@ Screens and sections to inspect:
 - Save Selection.
 - New GM Setup.
 - Setup Review.
-- Draft-Night Preview.
+- Draft Room command screen.
+- Selected talent preview.
 - Roster placeholder.
 - Rivalries placeholder.
 - Championships placeholder.
@@ -52,8 +57,10 @@ Expected mock/blocked behavior:
 - Save cards must remain demo-only and disabled.
 - New GM Setup must show static selections only.
 - Setup Review must show demo summaries only.
-- Draft-Night Preview must show demo board, talent pool, pick order, and readiness only.
+- Draft Room must show demo board, current pick, talent pool, selected talent details, pick order, and readiness only.
+- Talent clicks must update DOM text only.
 - Draft action must remain disabled.
+- Auto Draft action must remain disabled.
 - Next-step controls must only switch visible static sections.
 - Locked future areas must stay visibly non-functional.
 - Blocked labels must remain visible for draft execution, roster assignment, gameplay start, persistence, SQLite writes, and GenAI.
@@ -69,8 +76,11 @@ Responsive/laptop-width checks:
 Boundary checks:
 
 - JavaScript may only perform frontend DOM section switching.
+- JavaScript may update selected talent preview text from static page data only.
 - No backend calls should exist.
 - No draft service imports or calls should exist.
+- No real draft pick creation or draft execution should exist.
+- No real roster assignment should exist.
 - No save persistence or SQLite writes should exist.
 - No browser storage should exist.
 - No generated text or GenAI behavior should exist.

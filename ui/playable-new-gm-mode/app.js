@@ -3,7 +3,15 @@
   const navItems = Array.from(document.querySelectorAll("[data-nav-target]"));
   const flowSteps = Array.from(document.querySelectorAll("[data-flow-target]"));
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
+  const talentCards = Array.from(document.querySelectorAll("[data-talent-name]"));
   const activeLabel = document.getElementById("active-screen-label");
+  const talentDetail = {
+    name: document.getElementById("talent-detail-name"),
+    role: document.getElementById("talent-detail-role"),
+    style: document.getElementById("talent-detail-style"),
+    read: document.getElementById("talent-detail-read"),
+    fit: document.getElementById("talent-detail-fit"),
+  };
 
   const flowOrder = ["save-selection", "new-gm-setup", "setup-review", "draft-room"];
 
@@ -73,6 +81,28 @@
   jumpControls.forEach((control) => {
     control.addEventListener("click", () => {
       showSection(control.dataset.goTo);
+    });
+  });
+
+  talentCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      talentCards.forEach((item) => item.classList.toggle("selected", item === card));
+
+      if (talentDetail.name) {
+        talentDetail.name.textContent = card.dataset.talentName;
+      }
+      if (talentDetail.role) {
+        talentDetail.role.textContent = card.dataset.talentRole;
+      }
+      if (talentDetail.style) {
+        talentDetail.style.textContent = card.dataset.talentStyle;
+      }
+      if (talentDetail.read) {
+        talentDetail.read.textContent = card.dataset.talentRead;
+      }
+      if (talentDetail.fit) {
+        talentDetail.fit.textContent = card.dataset.talentFit;
+      }
     });
   });
 

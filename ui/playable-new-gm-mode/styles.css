@@ -696,17 +696,26 @@ dd {
   font-weight: 850;
 }
 
-.draft-preview-grid {
+.draft-preview-grid,
+.draft-command-grid {
   display: grid;
   grid-template-columns: minmax(320px, 1.1fr) minmax(260px, 0.9fr);
   gap: 16px;
 }
 
-.draft-board-panel {
+.draft-command-grid {
+  grid-template-columns: minmax(280px, 0.75fr) minmax(280px, 0.75fr) minmax(320px, 1fr);
+  align-items: start;
+}
+
+.draft-board-panel,
+.current-pick-panel,
+.talent-detail-panel {
   border-color: rgba(79, 139, 217, 0.45);
 }
 
 .draft-board-list,
+.draft-board-table,
 .talent-card-list,
 .pick-order-list,
 .readiness-list {
@@ -716,6 +725,7 @@ dd {
 }
 
 .draft-board-list div,
+.draft-board-row,
 .talent-card,
 .pick-order-list li,
 .readiness-list div {
@@ -724,6 +734,21 @@ dd {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.025);
   padding: 12px;
+}
+
+.draft-board-row {
+  display: grid;
+  grid-template-columns: 52px minmax(100px, 0.8fr) minmax(110px, 0.8fr) minmax(140px, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.draft-board-head {
+  border-color: rgba(216, 180, 93, 0.35);
+  color: var(--subtle);
+  font-size: 0.76rem;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .draft-board-list div {
@@ -738,15 +763,23 @@ dd {
   background: rgba(216, 180, 93, 0.08);
 }
 
+.draft-board-row.active-pick,
+.pick-order-list li.active-pick {
+  border-color: rgba(216, 180, 93, 0.55);
+  background: rgba(216, 180, 93, 0.08);
+}
+
 .draft-board-list span,
 .talent-card span,
-.pick-order-list span {
+.pick-order-list span,
+.draft-board-row span {
   color: var(--subtle);
   font-size: 0.82rem;
   font-weight: 800;
 }
 
-.draft-board-list em {
+.draft-board-list em,
+.draft-board-row em {
   color: var(--muted);
   font-size: 0.82rem;
   font-style: normal;
@@ -755,10 +788,23 @@ dd {
 .talent-card {
   display: grid;
   gap: 4px;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
 }
 
-.talent-card:first-child {
+.talent-card:hover,
+.talent-card:focus,
+.talent-card.selected {
   border-color: rgba(76, 168, 123, 0.4);
+  outline: none;
+}
+
+.talent-card small {
+  color: var(--subtle);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
 }
 
 .pick-order-list {
@@ -776,6 +822,20 @@ dd {
   color: #f0b0b0;
 }
 
+.draft-action-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.integration-note {
+  border: 1px solid rgba(216, 180, 93, 0.3);
+  border-radius: 8px;
+  background: rgba(216, 180, 93, 0.07);
+  padding: 12px;
+  font-size: 0.88rem;
+}
+
 .locked-section {
   border-color: rgba(216, 87, 87, 0.34);
 }
@@ -784,6 +844,16 @@ dd {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+}
+
+.roster-command-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.2fr) repeat(2, minmax(220px, 0.9fr));
+  gap: 16px;
+}
+
+.roster-empty-card {
+  grid-row: span 2;
 }
 
 .placeholder-card,
@@ -801,6 +871,23 @@ dd {
   margin-bottom: 8px;
 }
 
+.empty-slot-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty-slot-list li {
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  color: var(--subtle);
+  padding: 10px;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
 @media (max-width: 1120px) {
   .top-command,
   .hero-panel,
@@ -808,6 +895,8 @@ dd {
   .setup-layout,
   .review-grid,
   .draft-preview-grid,
+  .draft-command-grid,
+  .roster-command-grid,
   .placeholder-grid {
     grid-template-columns: 1fr;
   }
@@ -863,7 +952,9 @@ dd {
     grid-template-columns: 1fr;
   }
 
-  .draft-board-list div {
+  .draft-board-list div,
+  .draft-board-row,
+  .draft-action-row {
     grid-template-columns: 1fr;
   }
 }
