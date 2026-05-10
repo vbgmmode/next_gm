@@ -121,6 +121,19 @@ a {
   color: #566174;
 }
 
+.nav-item.locked {
+  color: #768399;
+}
+
+.nav-item.locked::after {
+  content: "Locked";
+  margin-left: auto;
+  color: var(--subtle);
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .command-center {
   display: grid;
   gap: 24px;
@@ -156,6 +169,13 @@ h1 {
   margin-bottom: 0;
   font-size: clamp(2rem, 4vw, 4.2rem);
   line-height: 0.95;
+}
+
+.active-screen-label {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 750;
 }
 
 h2 {
@@ -239,6 +259,7 @@ dd {
   border-radius: 8px;
   padding: 0 16px;
   color: var(--text);
+  cursor: pointer;
   font-weight: 850;
   text-decoration: none;
 }
@@ -290,7 +311,16 @@ dd {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
   padding: 16px;
+}
+
+.flow-step:hover,
+.flow-step:focus {
+  border-color: var(--line-strong);
+  outline: none;
 }
 
 .flow-step.flow-current {
@@ -353,6 +383,14 @@ dd {
 
 .section-block {
   padding: 24px;
+}
+
+.app-section[hidden] {
+  display: none;
+}
+
+.active-section {
+  outline: 1px solid rgba(216, 180, 93, 0.12);
 }
 
 .section-heading {
@@ -507,6 +545,18 @@ dd {
   cursor: not-allowed;
   font-weight: 850;
   opacity: 0.82;
+}
+
+.enabled-action {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .primary-action {
@@ -726,13 +776,39 @@ dd {
   color: #f0b0b0;
 }
 
+.locked-section {
+  border-color: rgba(216, 87, 87, 0.34);
+}
+
+.placeholder-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.placeholder-card,
+.empty-command-panel {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 18px;
+}
+
+.placeholder-card strong,
+.empty-command-panel strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
 @media (max-width: 1120px) {
   .top-command,
   .hero-panel,
   .save-grid,
   .setup-layout,
   .review-grid,
-  .draft-preview-grid {
+  .draft-preview-grid,
+  .placeholder-grid {
     grid-template-columns: 1fr;
   }
 
@@ -771,6 +847,10 @@ dd {
 
   .nav-item {
     white-space: normal;
+  }
+
+  .nav-item.locked::after {
+    display: none;
   }
 
   .command-center {
