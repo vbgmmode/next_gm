@@ -192,6 +192,8 @@ export { createNewGMModeDraftPickExecutionPrerequisiteSummaryShell } from "./new
 export type * from "./newGMModeDraftPickExecutionPrerequisiteSummaryShell.ts";
 export { createNewGMModeDraftPickCandidateObjects } from "./newGMModeDraftPickCandidateObject.ts";
 export type * from "./newGMModeDraftPickCandidateObject.ts";
+export { createPlayableNewGMModeDraftReadOnlyIntegrationBoundary } from "./playableNewGMModeDraftReadOnlyIntegrationBoundary.ts";
+export type * from "./playableNewGMModeDraftReadOnlyIntegrationBoundary.ts";
 export { createNewGMModeDraftPickCandidateObjectValidator } from "./newGMModeDraftPickCandidateObjectValidator.ts";
 export type * from "./newGMModeDraftPickCandidateObjectValidator.ts";
 export { createNewGMModeDraftPickCandidateReadinessSummary } from "./newGMModeDraftPickCandidateReadinessSummary.ts";

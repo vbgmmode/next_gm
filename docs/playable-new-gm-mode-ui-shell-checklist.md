@@ -20,6 +20,7 @@ Manual verification for the static shell:
 - Confirm Roster shows an empty post-draft placeholder state with roster assignment and gameplay start locked.
 - Confirm blocked labels remain visible for draft execution, roster assignment, gameplay start, persistence, SQLite writes, and GenAI.
 - Confirm future draft integration notes say to consume existing Real Draft System v1.0 services instead of rebuilding draft services.
+- Confirm the read-only draft integration boundary projects existing candidate/readiness data only.
 - Confirm there are no backend calls, no draft service imports, no save writes, and no gameplay state mutation in this static scaffold.
 
 ## Manual UI QA
@@ -37,6 +38,7 @@ Screens and sections to inspect:
 - Setup Review.
 - Draft Room command screen.
 - Selected talent preview.
+- Read-only draft integration boundary messaging.
 - Roster placeholder.
 - Rivalries placeholder.
 - Championships placeholder.
@@ -61,6 +63,7 @@ Expected mock/blocked behavior:
 - New GM Setup must show static selections only.
 - Setup Review must show demo summaries only.
 - Draft Room must show demo board, current pick, talent pool, selected talent details, pick order, and readiness only.
+- Draft Room readiness should clearly distinguish the read-only adapter boundary from locked draft execution.
 - Talent clicks must update DOM text only.
 - Make Pick must remain disabled.
 - Auto Draft must remain disabled.
@@ -85,6 +88,7 @@ Boundary checks:
 - No draft service imports or calls should exist.
 - No real draft pick creation or draft execution should exist.
 - No real roster assignment should exist.
+- No new parallel Real Draft System services should exist.
 - No save persistence or SQLite writes should exist.
 - No browser storage should exist.
 - No generated text or GenAI behavior should exist.
