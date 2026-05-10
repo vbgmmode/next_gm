@@ -126,7 +126,7 @@ a {
 }
 
 .nav-item.locked::after {
-  content: "Locked";
+  content: "Preview";
   margin-left: auto;
   color: var(--subtle);
   font-size: 0.62rem;
@@ -418,6 +418,12 @@ dd {
   font-weight: 800;
 }
 
+.feature-badge {
+  border-color: rgba(216, 180, 93, 0.48);
+  background: rgba(216, 180, 93, 0.08);
+  color: #f1d58c;
+}
+
 .save-grid {
   display: grid;
   grid-template-columns: 1.2fr repeat(2, minmax(220px, 0.9fr));
@@ -704,14 +710,51 @@ dd {
 }
 
 .draft-command-grid {
-  grid-template-columns: minmax(280px, 0.75fr) minmax(280px, 0.75fr) minmax(320px, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   align-items: start;
+}
+
+.draft-room-banner {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(216, 180, 93, 0.3);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  background: rgba(216, 180, 93, 0.18);
+}
+
+.draft-room-banner div {
+  min-width: 0;
+  background:
+    linear-gradient(180deg, rgba(216, 180, 93, 0.08), transparent),
+    var(--panel);
+  padding: 14px;
 }
 
 .draft-board-panel,
 .current-pick-panel,
 .talent-detail-panel {
   border-color: rgba(79, 139, 217, 0.45);
+}
+
+.current-pick-panel,
+.readiness-panel,
+.pick-order-panel {
+  grid-column: span 4;
+}
+
+.draft-board-panel,
+.talent-pool-panel,
+.talent-detail-panel {
+  grid-column: span 4;
+}
+
+.current-pick-panel {
+  background:
+    linear-gradient(180deg, rgba(79, 139, 217, 0.1), transparent),
+    var(--panel);
 }
 
 .draft-board-list,
@@ -798,6 +841,11 @@ dd {
 .talent-card.selected {
   border-color: rgba(76, 168, 123, 0.4);
   outline: none;
+}
+
+.talent-card.selected {
+  background:
+    linear-gradient(180deg, rgba(76, 168, 123, 0.12), rgba(255, 255, 255, 0.025));
 }
 
 .talent-card small {
@@ -896,9 +944,19 @@ dd {
   .review-grid,
   .draft-preview-grid,
   .draft-command-grid,
+  .draft-room-banner,
   .roster-command-grid,
   .placeholder-grid {
     grid-template-columns: 1fr;
+  }
+
+  .current-pick-panel,
+  .readiness-panel,
+  .pick-order-panel,
+  .draft-board-panel,
+  .talent-pool-panel,
+  .talent-detail-panel {
+    grid-column: auto;
   }
 
   .status-strip {

@@ -2,14 +2,16 @@
 
 Manual verification for the static shell:
 
-- Open `ui/playable-new-gm-mode/index.html` directly in a browser.
+- Open `C:\Users\vinni\OneDrive\Documents\next_gm\ui\playable-new-gm-mode\index.html` directly in a browser.
 - Confirm the left navigation lists Dashboard, Save Selection, New GM Setup, Draft Room, Roster, Rivalries, Championships, Calendar, IWC, Analytics, and Settings.
 - Confirm Save Selection shows Continue Save, New GM Mode, and Empty Slot as mock-only cards.
 - Confirm New GM Setup shows Choose Brand, Choose GM Identity, Difficulty / Experience, Draft Setup, and Review Setup as static sections.
 - Confirm Setup Review shows selected brand, GM identity, difficulty / experience, draft setup, and blocked-state labels.
-- Confirm Draft Room shows a read-only current pick panel, draft board, brand pick order, mock talent pool, selected talent preview, and readiness/status panel.
-- Confirm the disabled Make Pick and Auto Draft actions remain disabled.
+- Confirm Draft Room feels like a premium draft-night command screen, not a plain table.
+- Confirm Draft Room shows the broadcast strip, read-only current pick panel, draft board, brand pick order, mock talent pool, selected talent preview, and readiness/status panel.
+- Confirm the locked Make Pick and Auto Draft actions remain disabled.
 - Confirm clicking a mock talent updates only the selected talent preview panel.
+- Confirm the selected talent card has an obvious selected state.
 - Confirm the player flow is visually clear: Save Selection -> New GM Setup -> Setup Review -> Draft Preview.
 - Confirm nav rail clicks switch between Dashboard, Save Selection, New GM Setup, Setup Review, Draft Room, Roster, Rivalries, Championships, Calendar, IWC, Analytics, and Settings without a page reload.
 - Confirm the active nav item and active screen label update after each section switch.
@@ -50,6 +52,7 @@ Expected visual behavior:
 - The top command header should keep Brand, Calendar, Budget, Fans, and Deadline visible.
 - The current step, next step, and blocked step labels should be visually distinct.
 - Section switching should make the active screen obvious in the nav and header.
+- Mock/locked labels should feel like intentional preview-state badges, not raw developer diagnostics.
 - Cards should have readable spacing at common laptop widths.
 
 Expected mock/blocked behavior:
@@ -59,8 +62,8 @@ Expected mock/blocked behavior:
 - Setup Review must show demo summaries only.
 - Draft Room must show demo board, current pick, talent pool, selected talent details, pick order, and readiness only.
 - Talent clicks must update DOM text only.
-- Draft action must remain disabled.
-- Auto Draft action must remain disabled.
+- Make Pick must remain disabled.
+- Auto Draft must remain disabled.
 - Next-step controls must only switch visible static sections.
 - Locked future areas must stay visibly non-functional.
 - Blocked labels must remain visible for draft execution, roster assignment, gameplay start, persistence, SQLite writes, and GenAI.
@@ -68,6 +71,7 @@ Expected mock/blocked behavior:
 Responsive/laptop-width checks:
 
 - At roughly 1366px width, Save Selection should fit as a polished command surface.
+- At roughly 1366px width, Draft Room should keep the current pick, readiness, order, board, talent pool, and detail panel readable without feeling like a plain admin table.
 - At roughly 1120px width, major card grids should collapse cleanly.
 - At narrow widths, the nav should become usable without hiding text or overlapping content.
 - Long disabled button labels should not overflow their cards.

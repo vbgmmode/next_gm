@@ -86,7 +86,11 @@
 
   talentCards.forEach((card) => {
     card.addEventListener("click", () => {
-      talentCards.forEach((item) => item.classList.toggle("selected", item === card));
+      talentCards.forEach((item) => {
+        const isSelected = item === card;
+        item.classList.toggle("selected", isSelected);
+        item.setAttribute("aria-pressed", String(isSelected));
+      });
 
       if (talentDetail.name) {
         talentDetail.name.textContent = card.dataset.talentName;
