@@ -1371,6 +1371,15 @@ import {
         resultId: recap.recapId,
         showGrade: recap.showGrade,
         bestSegmentLabel: recap.bestSegmentLine,
+        crowdReadLabel: recap.crowdRead,
+        weakSegmentLabel: recap.weakSegmentLine,
+        championSpotlightLabel: recap.championSpotlight,
+        rivalrySpotlightLabel: recap.rivalrySpotlight,
+        momentumLabel: recap.momentumNote,
+        fanResponseLabel: recap.fanResponseNote,
+        budgetLabel: recap.budgetNote,
+        cardReadinessLabel: recap.cardReadinessLine,
+        segmentResults: recap.segmentResults,
       })),
       superstarCurrentState: completedPicks.map((pick, index) => ({
         wrestlerId: pick.candidateId || `signed-${index + 1}`,
@@ -1672,16 +1681,27 @@ import {
         weekLabel: `Week ${weekNumber}`,
         brandLabel: readGameplayString(gameplayStateModel?.selectedBrand?.brandName) || getBrandLabel(),
         showGrade,
-        crowdRead: "Loaded",
+        crowdRead: readGameplayString(showResult?.crowdReadLabel) || "Loaded",
         bestSegmentLine: readGameplayString(showResult?.bestSegmentLabel) || "Saved show result",
-        weakSegmentLine: "Saved show result",
-        championSpotlight: "Champion Spotlight: Saved show loaded",
-        rivalrySpotlight: "Rivalry Spotlight: Saved show loaded",
-        momentumNote: "Momentum: Saved",
-        fanResponseNote: "Fan Response: Saved",
-        budgetNote: "Budget: Saved",
+        weakSegmentLine: readGameplayString(showResult?.weakSegmentLabel) || "Saved show result",
+        championSpotlight:
+          readGameplayString(showResult?.championSpotlightLabel) ||
+          "Champion Spotlight: Saved show loaded",
+        rivalrySpotlight:
+          readGameplayString(showResult?.rivalrySpotlightLabel) ||
+          "Rivalry Spotlight: Saved show loaded",
+        momentumNote: readGameplayString(showResult?.momentumLabel) || "Momentum: Saved",
+        fanResponseNote: readGameplayString(showResult?.fanResponseLabel) || "Fan Response: Saved",
+        budgetNote: readGameplayString(showResult?.budgetLabel) || "Budget: Saved",
         localOnlyLine: "Loaded from local save",
-        segmentResults: Object.freeze([]),
+        cardReadinessLine:
+          readGameplayString(showResult?.cardReadinessLabel) || "Card Status: Loaded",
+        simulationBacked: true,
+        segmentResults: Object.freeze(
+          Array.isArray(showResult?.segmentResults)
+            ? showResult.segmentResults.map(createLoadedRecapSegment)
+            : []
+        ),
       });
     });
     const lastShowRecap = completedShowRecaps
@@ -1733,6 +1753,34 @@ import {
     return Object.freeze({
       nextSegmentIdNumber: restoredSegments.length + 1,
       segments: Object.freeze(restoredSegments),
+    });
+  }
+
+  function createLoadedRecapSegment(segment, index) {
+    return Object.freeze({
+      segmentNumber: Math.max(
+        1,
+        Math.floor(readGameplayNumber(segment?.segmentNumber, index + 1))
+      ),
+      segmentType: readGameplayString(segment?.segmentType) || "singles-match",
+      typeLabel: readGameplayString(segment?.typeLabel) || "Singles Match",
+      talentLine: readGameplayString(segment?.talentLine) || "Signed Talent",
+      mainEvent: Boolean(segment?.mainEvent),
+      championInvolved: Boolean(segment?.championInvolved),
+      rivalryInvolved: Boolean(segment?.rivalryInvolved),
+      qualityBand: readGameplayString(segment?.qualityBand) || "Solid",
+      resultLine: readGameplayString(segment?.resultLine) || "Solid segment.",
+      matchRatingLabel:
+        readGameplayString(segment?.matchRatingLabel) || "Match Rating: Solid",
+      crowdResponseLine:
+        readGameplayString(segment?.crowdResponseLine) || "Crowd Response: Solid",
+      momentumSignalLine:
+        readGameplayString(segment?.momentumSignalLine) || "Momentum Signal: Steady",
+      participantNames: Object.freeze(
+        Array.isArray(segment?.participantNames)
+          ? segment.participantNames.map((name) => readGameplayString(name) || "Signed Talent")
+          : []
+      ),
     });
   }
 

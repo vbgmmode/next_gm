@@ -47,6 +47,8 @@ describe("Playable New GM Mode Gameplay State Model v0.1", () => {
     assert.equal(stateModel.rivalries.length, 1);
     assert.equal(stateModel.weeklyShowCards.length, 1);
     assert.equal(stateModel.showResults.length, 1);
+    assert.equal(stateModel.showResults[0]?.crowdReadLabel, "Strong");
+    assert.equal(stateModel.showResults[0]?.segmentResults?.length, 1);
     assert.equal(stateModel.superstarCurrentState.length, 2);
     assert.equal(stateModel.rosterMomentum.length, 1);
     assert.equal(stateModel.morale.length, 1);
@@ -251,7 +253,24 @@ function createCompleteStateModel() {
         weekNumber: 1,
         resultId: "raw-week-1-result",
         showGrade: "B",
-        bestSegmentLabel: "Main Event Singles Match"
+        bestSegmentLabel: "Main Event Singles Match",
+        crowdReadLabel: "Strong",
+        weakSegmentLabel: "Promo",
+        championSpotlightLabel: "Champion Spotlight: Cody Rhodes appeared",
+        rivalrySpotlightLabel: "Rivalry Spotlight: Cody Rhodes vs Fallon Henley gained heat",
+        momentumLabel: "Momentum: Up",
+        fanResponseLabel: "Fan Response: Strong",
+        budgetLabel: "Budget: No major change in this local session",
+        cardReadinessLabel: "Card Status: Processed",
+        segmentResults: [
+          {
+            segmentNumber: 1,
+            typeLabel: "Main Event Singles Match",
+            matchRatingLabel: "Match Rating: Standout",
+            crowdResponseLine: "Crowd Response: Engaged",
+            momentumSignalLine: "Momentum Signal: Shift"
+          }
+        ]
       }
     ],
     superstarCurrentState: [

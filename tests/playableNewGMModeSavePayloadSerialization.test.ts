@@ -57,6 +57,11 @@ describe("Playable New GM Mode Save Payload Serialization v0.1", () => {
     assert.equal(parsed.currentWeek, 2);
     assert.equal(parsed.gameplayStateModel?.selectedBrand.brandName, "Raw");
     assert.equal(parsed.gameplayStateModel?.signedRoster[0]?.displayName, "Cody Rhodes");
+    assert.equal(parsed.gameplayStateModel?.showResults[0]?.cardReadinessLabel, "Card Status: Processed");
+    assert.equal(
+      parsed.gameplayStateModel?.showResults[0]?.segmentResults?.[0]?.crowdResponseLine,
+      "Crowd Response: Engaged"
+    );
     assert.deepEqual(
       parsed.capabilityFlags,
       PLAYABLE_NEW_GM_MODE_SAVE_PAYLOAD_SERIALIZATION_CAPABILITY_FLAGS
@@ -239,6 +244,31 @@ function createCompleteContract() {
         {
           weekNumber: 1,
           summaryLabel: "Raw Week 1 produced a B show grade"
+        }
+      ],
+      showResults: [
+        {
+          weekNumber: 1,
+          resultId: "raw-week-1-result",
+          showGrade: "B",
+          bestSegmentLabel: "Main Event Singles Match",
+          crowdReadLabel: "Strong",
+          weakSegmentLabel: "Promo",
+          championSpotlightLabel: "Champion Spotlight: Cody Rhodes appeared",
+          rivalrySpotlightLabel: "Rivalry Spotlight: Cody Rhodes vs Fallon Henley gained heat",
+          momentumLabel: "Momentum: Up",
+          fanResponseLabel: "Fan Response: Strong",
+          budgetLabel: "Budget: No major change in this local session",
+          cardReadinessLabel: "Card Status: Processed",
+          segmentResults: [
+            {
+              segmentNumber: 1,
+              typeLabel: "Main Event Singles Match",
+              matchRatingLabel: "Match Rating: Standout",
+              crowdResponseLine: "Crowd Response: Engaged",
+              momentumSignalLine: "Momentum Signal: Shift"
+            }
+          ]
         }
       ]
     }),

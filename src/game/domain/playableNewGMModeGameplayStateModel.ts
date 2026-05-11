@@ -81,6 +81,15 @@ export interface PlayableNewGMModeGameplayStateModelShowResult {
   readonly resultId: EntityId;
   readonly showGrade: string;
   readonly bestSegmentLabel?: string;
+  readonly crowdReadLabel?: string;
+  readonly weakSegmentLabel?: string;
+  readonly championSpotlightLabel?: string;
+  readonly rivalrySpotlightLabel?: string;
+  readonly momentumLabel?: string;
+  readonly fanResponseLabel?: string;
+  readonly budgetLabel?: string;
+  readonly cardReadinessLabel?: string;
+  readonly segmentResults?: readonly Record<string, unknown>[];
 }
 
 export interface PlayableNewGMModeGameplayStateModelSuperstarState {
