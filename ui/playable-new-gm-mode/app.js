@@ -57,7 +57,7 @@
     updateFlow(targetId);
 
     if (activeLabel) {
-      activeLabel.textContent = `Viewing ${target.dataset.screenTitle} - static demo shell`;
+      activeLabel.textContent = `${target.dataset.screenTitle} - Preview Build`;
     }
 
     if (window.location.hash !== `#${targetId}`) {

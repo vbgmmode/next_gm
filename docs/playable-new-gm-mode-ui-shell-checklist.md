@@ -131,3 +131,15 @@ Boundary checks:
 - Body/page scrolling should remain absent on desktop and laptop viewports.
 - Any necessary scrolling should be contained inside approved panels such as talent pool, pick order, draft board, roster panels, social feed, or analytics lists.
 - The UI should feel like a premium wrestling GM cockpit rather than a generic dashboard or diagnostics page.
+
+## Visual Rejection Criteria
+
+- Reject if collapsed nav labels are clipped or half-visible; collapsed nav must be clean icon-first.
+- Reject if the screen reads like a generic SaaS/admin dashboard instead of a wrestling GM game cockpit.
+- Reject if Dashboard becomes a wall of equal cards with no dominant primary action.
+- Reject if Draft Room looks visually interchangeable with Dashboard.
+- Reject if raw diagnostic/backend wording appears in normal player-facing UI.
+- Reject if Dashboard does not have one obvious primary action.
+- Reject if Draft Room does not clearly stage the on-clock brand, board preview, scouting feed, and locked draft controls.
+- Reject if the desktop/laptop page scrolls instead of keeping scrolling inside intended panels.
+- Reject if long labels, status pills, names, or metadata escape their boxes.
