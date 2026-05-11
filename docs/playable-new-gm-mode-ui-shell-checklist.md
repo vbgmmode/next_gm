@@ -8,13 +8,17 @@ Manual verification target:
 
 - Confirm the first screen is Save Selection, not Dashboard or Brand HQ.
 - Confirm Save Selection feels like the game entry screen with large campaign/save-slot panels.
-- Confirm the visible early flow is Save Selection -> New GM Setup -> Setup Review -> Initial Draft -> Post-Draft Brand HQ.
+- Confirm the visible early flow is Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard.
 - Confirm choosing static controls only switches visible mock sections.
-- Confirm New GM Setup feels like contract signing / setup, not a dashboard card.
-- Confirm Setup Review feels like a war-room launch packet.
+- Confirm Contract Signing feels like a league office / GM office launch moment.
+- Confirm Setup Basics includes difficulty, save name, and optional assistant setup without saving anything.
+- Confirm Assistant Setup is skippable and clearly optional.
+- Confirm Choose GM uses fictional archetypes, not real people.
+- Confirm Select Brand says brands are fantasy choices with equal starting baselines.
 - Confirm Initial Draft feels like the active draft broadcast surface.
-- Confirm Post-Draft Brand HQ becomes the primary post-draft surface.
-- Confirm Draft Preview is not presented as the primary surface in Post-Draft Brand HQ.
+- Confirm Draft Recap appears as the first post-draft state.
+- Confirm Brand Dashboard becomes the primary Week 1 / post-draft surface.
+- Confirm Draft Preview is not presented as the primary surface after Draft Recap.
 
 ## Visual QA
 
@@ -43,16 +47,19 @@ Manual verification target:
 
 ## Navigation QA
 
-- Confirm the nav is hidden/hover or compact-overlay style, not a chunky always-visible sidebar.
+- Confirm the primary nav is a compact top icon rail, not a side rail.
+- Confirm the default rail shows small icons and the active section label.
+- Confirm hover/focus expands into a polished top overlay with readable section names.
+- Confirm the top overlay subtly dims or blurs the app behind it.
 - Confirm collapsed/default nav labels are not clipped.
-- Confirm hover/focus reveals readable labels on desktop/laptop widths.
 - Confirm active nav state is obvious.
-- Confirm nav actions switch between Save Selection, New GM Setup, Setup Review, Initial Draft, and Brand HQ without page reload.
+- Confirm nav actions switch between Save Selection, Contract Signing, Setup Basics, Assistant Setup, Choose GM, Select Brand, Initial Draft, Draft Recap, and Brand Dashboard without page reload.
+- Confirm breadcrumbs are absent.
 
 ## Viewport And Overflow QA
 
 - Confirm the page itself does not vertically scroll at desktop/laptop sizes.
-- Confirm the app shell, header, nav, and flow board remain stable.
+- Confirm the app shell, header, and top nav remain stable.
 - Confirm each active screen fits inside the visible viewport at common laptop sizes, including roughly 1366x768 and 1280x720.
 - Confirm only contained panels scroll when needed.
 - Confirm the draft board and scouting feed use contained scrolling.
@@ -62,11 +69,12 @@ Manual verification target:
 ## Static/Mock Boundary QA
 
 - Confirm Continue Save and Empty Slot remain locked/mock-only.
+- Confirm invalid/corrupt save recovery remains a mock visual state only.
 - Confirm setup choices are hardcoded visual placeholders.
-- Confirm setup review only summarizes mock choices.
+- Confirm assistant setup does not save keys, make calls, or activate live AI.
 - Confirm Draft Room controls remain disabled.
 - Confirm clicking a talent row only updates the selected talent card in the DOM.
-- Confirm Post-Draft Brand HQ is a preview state only.
+- Confirm Draft Recap and Brand Dashboard are preview states only.
 - Confirm no save payloads are created.
 - Confirm no database writes are triggered.
 - Confirm no browser storage is used.
@@ -78,8 +86,17 @@ Manual verification target:
 
 - Reject if the game starts directly on a generic Dashboard.
 - Reject if Save Selection feels like just another dashboard card.
+- Reject if the primary navigation is a side rail or uses breadcrumbs.
+- Reject if the top rail clips labels or consumes too much vertical screen space.
+- Reject if budget/fans/deadline/health overwhelm the top shell instead of living in Dashboard command areas.
+- Reject if setup is compressed into one generic form screen instead of a multi-screen game flow.
+- Reject if brands imply different starting money, prestige, resources, or baseline difficulty.
 - Reject if Draft Room looks like another dashboard tab rather than a draft broadcast.
-- Reject if Brand HQ keeps Draft Preview as the primary post-draft surface.
+- Reject if Draft Preview remains prominent after the initial draft.
+- Reject if Draft Recap does not focus first on the player's full roster grouped by division.
+- Reject if Week 1 setup lacks a guided checklist concept.
+- Reject if championship setup silently auto-assigns titles.
+- Reject if rivalry UI implies a hard rivalry limit.
 - Reject if pre-draft, active-draft, and post-draft states are not visually distinct.
 - Reject if nav labels clip or the nav feels like an enterprise sidebar.
 - Reject if the desktop/laptop page scrolls instead of containing overflow inside panels.

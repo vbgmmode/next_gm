@@ -10,6 +10,107 @@ The first player-facing screens should be Save Selection and New GM Setup. All e
 
 Early UI must not create real save mutation, gameplay execution, week advancement, draft execution, roster assignment, match state, show state, week state, persistence payloads, SQLite writes, or GenAI calls. The UI can show the intended shape of those experiences, but it cannot start them.
 
+## 1A. Locked Playable New GM Mode Flow And Shell Decisions
+
+These decisions are binding for the Playable New GM Mode prototype and future implementation prompts unless the product owner explicitly changes them.
+
+### App Shell And Navigation
+
+- Primary navigation is a compact top icon rail, not a side rail.
+- The rail should appear as a thin always-visible top strip.
+- Collapsed/default state shows small icons plus the active section label.
+- Hover/focus state may expand to show icon plus section names only.
+- Expanded navigation should feel like a game overlay, with subtle blur or dim behind it.
+- Navigation should adapt by screen size and must never clip labels.
+- Do not use breadcrumbs for the player-facing game flow.
+- Header/status shell should stay lightweight: brand logo/name plus current week/date.
+- Budget, fans, next show/deadline, brand health, and major alerts belong mostly inside the Brand Dashboard hero or screen-specific command areas, not the top rail.
+- No full-page scrolling. Screens must be viewport-first, with scrolling only inside contained panels.
+
+### Locked Game Start Flow
+
+The player experience starts with Save Selection, not Dashboard.
+
+The early flow is:
+
+1. Save Selection.
+2. New Game / Contract Signing.
+3. Setup Basics.
+4. Optional Assistant / LLM Setup.
+5. Choose GM.
+6. Select Brand.
+7. Draft Dynamics / Initial Draft.
+8. Draft Recap.
+9. Brand Dashboard / Week 1 Setup.
+
+Save Selection must feel like a clean sports/wrestling game mode and save-slot screen. It should support preview states for Continue Save, New Game, Empty Slot, and invalid/corrupt save recovery. Save Selection must not look like the main dashboard.
+
+### New Game Setup Flow
+
+- Contract Signing should feel like a league office / GM office / brand-launch moment.
+- Setup Basics should include difficulty, save name, and optional assistant setup.
+- Optional assistant setup may mention an OpenAI API key or LLM setup as a skippable technical/privacy step, but core gameplay must work without AI.
+- No key persistence or GenAI calls are approved in static/mock UI.
+- Choose GM should use fictionalized real-world-inspired GM archetypes, not real people.
+- Select Brand is a story/fantasy choice only. All brands start with the same money, prestige, resources, and baseline difficulty.
+- Draft Dynamics begin only after the setup flow.
+
+### Dashboard And GM Alerts
+
+- The post-load home base is a cinematic Brand Dashboard.
+- Dashboard hero should blend brand identity, this week's show, the biggest alert, and key status numbers.
+- The main dashboard CTA should be Book / Continue This Week's Show.
+- The closest secondary dashboard action should be GM Alerts.
+- Dashboard density should be moderate: one cinematic hero plus a few important panels, not an analytics/admin dashboard.
+- Hero background direction is contextual:
+  - Weekly/dashboard: arena, crowd, stage, titantron, and broadcast energy.
+  - Draft: war room, draft desk, board graphics.
+  - PLE: poster-style premium event art.
+  - Setup: contract signing, GM office, brand launch.
+  - Major rivalry/title moment: dramatic promo-package treatment.
+  - Analytics/finance: cleaner command-center style.
+- GM Alerts should feel like a game objective list, not an executive briefing.
+- Alert severity should support optional, important, urgent, and blocked.
+- Alerts must answer what is happening, why it matters, and what the player can do next.
+- Technical/gameplay risks can be clear, but creative/story alerts should stay narrative and game-like.
+
+### Draft And Post-Draft Flow
+
+- Draft Dynamics should feel like a sports draft broadcast on top, with GM war room controls underneath.
+- The draft screen should keep visible: best available talent, roster needs by division, pick order, and rival brand picks.
+- Draft picks should expose clear traits, notes, and uncertainty/ranges rather than exact hidden values.
+- Player pick confirmation should be dramatic but quick: select wrestler, broadcast-style confirmation, roster fit summary, confirm pick, then immediately move to the next pick.
+- Rival/AI picks should show pick result plus brand logo only by default.
+- Draft Preview is pre-draft only.
+- Draft Recap is post-draft only.
+- After the initial draft, show Draft Recap first, then continue to Brand Dashboard / Week 1 Setup.
+- Draft Recap's first view should focus on the player's full roster, grouped by division, with pick order visible inside each card.
+- After draft completion, Draft Preview must not remain a primary surface.
+
+### Post-Draft Week 1, Championships, And Rivalries
+
+- First post-draft Brand Dashboard / Week 1 Setup should include a guided checklist: review roster, set champions/divisions, start rivalries, and book first show.
+- The Week 1 checklist is recommended, not required. It can be closed at any time.
+- Once closed, the checklist hides completely unless reopened manually from Settings / Help.
+- Championship setup after the draft starts with manual assignment.
+- Optional title recommendations may exist, but the flow must be ask for recommendations, review suggested champions, edit if needed, then confirm.
+- No silent auto-assignment of champions is allowed.
+- Championship setup should include champion plus division/title scene.
+- Rivalries can be manually created after draft and can also emerge naturally from booking over time.
+- There is no hard limit on rivalries; the UI must organize them clearly so unlimited rivalry count does not become chaos.
+
+### Visual Style Lock
+
+- Cards should use sharp sports-broadcast rectangles with subtle glass-panel treatment.
+- Avoid bubbly, circle-heavy, pill-heavy, overly rounded UI.
+- Buttons should lean premium glass/outline, with primary actions large and cinematic in hero areas and compact in dense command screens.
+- Wrestler imagery should be mixed by screen:
+  - Roster cards: portrait/headshot style.
+  - Profiles: larger hero portrait.
+  - Draft/scouting: prospect portrait cards.
+  - PLE/title/rivalry moments: poster-style cutouts.
+  - Early UI: intentional premium silhouettes/placeholders are acceptable.
+
 ## 2. Product Experience North Star
 
 Next GM should feel like a living wrestling broadcast universe. The player is not filling out forms in a generic management app. The player is running a wrestling brand inside a universe that has ratings pressure, social heat, locker room tension, rival brands, business tradeoffs, and unpredictable audience reaction.

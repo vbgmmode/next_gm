@@ -11,12 +11,14 @@
 
 `docs/ui-ux-doctrine.md` establishes the first player-facing path:
 
-1. App shell and navigation planning.
-2. Static Save Selection.
-3. Static New GM Setup.
-4. Static setup review or draft-night preview.
-5. Read-only integration only after approval.
-6. Real mutations only after explicit approval.
+1. Compact top icon rail, not a side rail.
+2. Save Selection as the first screen, not Dashboard.
+3. Multi-screen New Game setup: Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, Select Brand.
+4. Draft Dynamics / Initial Draft as the active draft broadcast surface.
+5. Draft Recap as the first post-draft surface.
+6. Brand Dashboard / Week 1 Setup as the post-draft home base.
+7. Read-only integration only after approval.
+8. Real mutations only after explicit approval.
 
 `docs/new-gm-real-draft-system-architecture.md` establishes the draft boundary:
 
@@ -28,14 +30,28 @@
 
 The safest first implementation slice is UI shell-only, static/mock-first:
 
-- Create a minimal app shell plan and screen structure for the first playable flow.
+- Create a minimal viewport-first app shell with the compact top icon rail.
 - Add static Save Selection screen affordances using clearly fake save-card data.
-- Add static New GM Setup screen affordances using clearly fake setup choices.
-- Add a static setup review or draft-night preview placeholder.
+- Add static Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, and Select Brand placeholders.
+- Add a static Draft Dynamics / Initial Draft surface using mock talent, pick order, roster needs, and confirmation preview.
+- Add a static Draft Recap surface focused on the player's grouped roster.
+- Add a static Brand Dashboard / Week 1 Setup surface with the guided checklist.
 - Do not call draft services from UI.
 - Do not create routes until separately approved.
 - Do not create save payload persistence.
 - Do not mutate gameplay state.
+
+## Locked Static Flow Direction
+
+Current static UI work must preserve this order:
+
+Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Draft Dynamics -> Draft Recap -> Brand Dashboard / Week 1 Setup.
+
+The Assistant Setup step is optional and skippable. It may preview assistant activation and privacy controls, but it must not call AI services or persist keys.
+
+Select Brand is a fantasy/story choice only. All brands begin with the same money, prestige, resources, and baseline difficulty.
+
+Draft Preview is only pre-draft/during-draft language. After the initial draft, the correct surface is Draft Recap first, then Brand Dashboard / Week 1 Setup.
 
 This slice proves player-facing structure without crossing into gameplay execution.
 

@@ -5,6 +5,7 @@
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
   const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
   const activeLabel = document.getElementById("active-screen-label");
+  const railActiveLabel = document.getElementById("rail-active-label");
   const phaseLabel = document.getElementById("phase-label");
   const talentDetail = {
     initials: document.getElementById("talent-detail-initials"),
@@ -15,7 +16,17 @@
     fit: document.getElementById("talent-detail-fit"),
   };
 
-  const flowOrder = ["save-selection", "new-gm-setup", "setup-review", "draft-room", "brand-hq"];
+  const flowOrder = [
+    "save-selection",
+    "contract-signing",
+    "setup-basics",
+    "ai-setup",
+    "choose-gm",
+    "select-brand",
+    "draft-room",
+    "draft-recap",
+    "brand-dashboard",
+  ];
 
   function getSection(targetId) {
     return sections.find((section) => section.id === targetId);
@@ -62,6 +73,10 @@
 
     if (activeLabel) {
       activeLabel.textContent = target.dataset.screenTitle;
+    }
+
+    if (railActiveLabel) {
+      railActiveLabel.textContent = target.dataset.screenTitle;
     }
 
     if (phaseLabel) {
