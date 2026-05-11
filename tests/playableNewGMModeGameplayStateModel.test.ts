@@ -48,6 +48,7 @@ describe("Playable New GM Mode Gameplay State Model v0.1", () => {
     assert.equal(stateModel.weeklyShowCards.length, 1);
     assert.equal(stateModel.showResults.length, 1);
     assert.equal(stateModel.showResults[0]?.crowdReadLabel, "Strong");
+    assert.equal(stateModel.showResults[0]?.socialBuzzLabel, "Social Buzz: IWC discourse rising");
     assert.equal(stateModel.showResults[0]?.segmentResults?.length, 1);
     assert.equal(stateModel.superstarCurrentState.length, 2);
     assert.equal(stateModel.rosterMomentum.length, 1);
@@ -260,6 +261,7 @@ function createCompleteStateModel() {
         rivalrySpotlightLabel: "Rivalry Spotlight: Cody Rhodes vs Fallon Henley gained heat",
         momentumLabel: "Momentum: Up",
         fanResponseLabel: "Fan Response: Strong",
+        socialBuzzLabel: "Social Buzz: IWC discourse rising",
         budgetLabel: "Budget: No major change in this local session",
         cardReadinessLabel: "Card Status: Processed",
         segmentResults: [

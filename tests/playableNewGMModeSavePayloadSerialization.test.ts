@@ -58,6 +58,7 @@ describe("Playable New GM Mode Save Payload Serialization v0.1", () => {
     assert.equal(parsed.gameplayStateModel?.selectedBrand.brandName, "Raw");
     assert.equal(parsed.gameplayStateModel?.signedRoster[0]?.displayName, "Cody Rhodes");
     assert.equal(parsed.gameplayStateModel?.showResults[0]?.cardReadinessLabel, "Card Status: Processed");
+    assert.equal(parsed.gameplayStateModel?.showResults[0]?.socialBuzzLabel, "Social Buzz: IWC discourse rising");
     assert.equal(
       parsed.gameplayStateModel?.showResults[0]?.segmentResults?.[0]?.crowdResponseLine,
       "Crowd Response: Engaged"
@@ -258,6 +259,7 @@ function createCompleteContract() {
           rivalrySpotlightLabel: "Rivalry Spotlight: Cody Rhodes vs Fallon Henley gained heat",
           momentumLabel: "Momentum: Up",
           fanResponseLabel: "Fan Response: Strong",
+          socialBuzzLabel: "Social Buzz: IWC discourse rising",
           budgetLabel: "Budget: No major change in this local session",
           cardReadinessLabel: "Card Status: Processed",
           segmentResults: [

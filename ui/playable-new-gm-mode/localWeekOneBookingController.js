@@ -3,8 +3,10 @@ import {
   createWeekOneHqProjection,
 } from "./localPostDraftSetupController.js";
 import {
+  createFanSocialDiscourseHandoff,
   createProductionEngineRegistry,
   createSimulationEngineContext,
+  runRegisteredSocialDiscourseEngine,
   runShowFanReactionSmokePipeline,
 } from "../../src/game/engines/index.ts";
 
@@ -487,6 +489,7 @@ function createLocalShowRecap({ projection, setupState, weeklyState }) {
         ? "Momentum: Up"
         : "Momentum: Steady",
     fanResponseNote: createFanResponseNote({ crowdRead, engineRun }),
+    socialBuzzNote: createSocialBuzzNote(engineRun),
     budgetNote: "Budget: No major change in this local session",
     localOnlyLine: "Local Session Only / Not Saved Yet",
     cardReadinessLine: createCardReadinessLine(engineRun),
@@ -786,8 +789,14 @@ function runLocalShowEngineShell({ projection, rivalries, weeklyState }) {
     )
     .filter(Boolean);
 
+  const registry = createProductionEngineRegistry();
+  const context = createSimulationEngineContext({
+    seed: `playable-${projection.brandLabel}-week-${weekNumber}-${projection.segments.length}`,
+    seedLabel: `playable-week-${weekNumber}-show`,
+    week: weekNumber,
+  });
   const pipelineResult = runShowFanReactionSmokePipeline(
-    createProductionEngineRegistry(),
+    registry,
     {
       show,
       bookedMatches,
@@ -795,11 +804,21 @@ function runLocalShowEngineShell({ projection, rivalries, weeklyState }) {
       marketState: promotion.marketState,
       backstageState: promotion.backstageState,
     },
-    createSimulationEngineContext({
-      seed: `playable-${projection.brandLabel}-week-${weekNumber}-${projection.segments.length}`,
-      seedLabel: `playable-week-${weekNumber}-show`,
-      week: weekNumber,
-    })
+    context
+  );
+  const socialDiscourseResult = runRegisteredSocialDiscourseEngine(
+    registry,
+    {
+      promotion,
+      relevantWrestlers: findRelevantWrestlers(bookedMatches),
+      relevantRivalries: domainRivalries,
+      existingNarratives: [],
+      fanReactionResult: pipelineResult.fanReactionResult,
+      fanReactionShowHandoff: createFanSocialDiscourseHandoff(
+        pipelineResult.fanReactionResult.hiddenState.showOutputShell
+      ),
+    },
+    context
   );
   const result = pipelineResult.showResult;
 
@@ -807,8 +826,10 @@ function runLocalShowEngineShell({ projection, rivalries, weeklyState }) {
     showEngineId: "show-engine-v0",
     showEngineVersion: "0.8.0",
     fanReactionBacked: true,
+    socialDiscourseBacked: true,
     showReadinessStatus: result.hiddenState.showReadinessStatus,
     fanSignalLabels: readEngineSignalLabels(pipelineResult.fanReactionResult),
+    socialSignalLabels: readEngineSignalLabels(socialDiscourseResult),
     completedMatchEngineRuns: result.hiddenState.completedMatchEngineRuns,
     failedMatchEngineRuns: result.hiddenState.failedMatchEngineRuns,
     matchResultsBySegmentId: new Map(
@@ -818,6 +839,18 @@ function runLocalShowEngineShell({ projection, rivalries, weeklyState }) {
       ])
     ),
   });
+}
+
+function findRelevantWrestlers(bookedMatches) {
+  const wrestlersById = new Map();
+
+  for (const bookedMatch of bookedMatches) {
+    for (const wrestler of bookedMatch.matchInput.participants) {
+      wrestlersById.set(wrestler.id, wrestler);
+    }
+  }
+
+  return [...wrestlersById.values()];
 }
 
 function createLocalPromotion({ projection }) {
@@ -1106,6 +1139,32 @@ function createFanResponseNote({ crowdRead, engineRun }) {
   return `Fan Response: ${crowdRead}`;
 }
 
+function createSocialBuzzNote(engineRun) {
+  const socialSignalLabels = engineRun?.socialSignalLabels || new Set();
+
+  if (socialSignalLabels.has("praise cycle building")) {
+    return "Social Buzz: Praise cycle building";
+  }
+
+  if (socialSignalLabels.has("IWC discourse rising")) {
+    return "Social Buzz: IWC discourse rising";
+  }
+
+  if (socialSignalLabels.has("pushback forming")) {
+    return "Social Buzz: Pushback forming";
+  }
+
+  if (socialSignalLabels.has("discourse is fragmented")) {
+    return "Social Buzz: Discourse is fragmented";
+  }
+
+  if (socialSignalLabels.has("rumor mill active")) {
+    return "Social Buzz: Rumor mill active";
+  }
+
+  return "Social Buzz: Early chatter";
+}
+
 function createSegmentProjection({ segment, segmentNumber, rosterOptions }) {
   const segmentType = normalizeSegmentType(segment?.segmentType);
   const segmentDefinition = findSegmentType(segmentType);
@@ -1244,6 +1303,7 @@ function normalizeShowRecap(recap) {
       "Rivalry Spotlight: Opening stories stayed on the board",
     momentumNote: readString(recap.momentumNote) || "Momentum: Steady",
     fanResponseNote: readString(recap.fanResponseNote) || "Fan Response: Solid",
+    socialBuzzNote: readString(recap.socialBuzzNote) || "Social Buzz: Early chatter",
     budgetNote:
       readString(recap.budgetNote) ||
       "Budget: No major change in this local session",
@@ -1297,6 +1357,7 @@ function freezeShowRecap(recap) {
     rivalrySpotlight: recap.rivalrySpotlight,
     momentumNote: recap.momentumNote,
     fanResponseNote: recap.fanResponseNote,
+    socialBuzzNote: recap.socialBuzzNote,
     budgetNote: recap.budgetNote,
     localOnlyLine: recap.localOnlyLine,
     cardReadinessLine: recap.cardReadinessLine,

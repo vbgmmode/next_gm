@@ -284,6 +284,7 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.equal(firstResult.recap.cardReadinessLine, "Card Status: Processed");
     assert.match(firstResult.recap.fanResponseNote, /^Fan Response: /);
     assert.notEqual(firstResult.recap.fanResponseNote, "Fan Response: Strong");
+    assert.match(firstResult.recap.socialBuzzNote, /^Social Buzz: /);
     assert.deepEqual(secondResult.recap, firstResult.recap);
     assert.equal(
       firstResult.recap.segmentResults.some((segment) =>
@@ -358,9 +359,11 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.match(html, /id="booking-run-show-footer-action" disabled>Run Show Locked<\/button>/);
     assert.match(html, /id="show-recap"/);
     assert.match(html, /id="show-recap-advance-week"/);
+    assert.match(html, /id="show-recap-social"/);
     assert.match(appSource, /runLocalWeeklyShow/);
     assert.match(appSource, /advanceLocalWeek/);
     assert.match(appSource, /showSection\("show-recap"\)/);
+    assert.match(appSource, /socialBuzzNote/);
     assert.match(appSource, /matchRatingLabel/);
     assert.match(appSource, /crowdResponseLine/);
     assert.match(appSource, /momentumSignalLine/);
@@ -369,7 +372,7 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.equal(shouldShowDock("show-recap"), true);
   });
 
-  it("uses only the scoped Show to Fan Reaction path without forbidden storage, randomness, or adjacent engine calls", () => {
+  it("uses only scoped Show, Fan Reaction, and Social Discourse shells without forbidden storage or randomness", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -394,13 +397,12 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
       "AutoDraftService",
       "fan-reaction-engine-v0",
       "social-discourse-engine-v0",
-      "fanReactionEngine.run",
-      "socialDiscourseEngine.run",
       "businessEngine",
       ["Math", "random"].join("."),
     ];
 
     assert.match(changedUiSource, /runShowFanReactionSmokePipeline/);
+    assert.match(changedUiSource, /runRegisteredSocialDiscourseEngine/);
     assert.doesNotMatch(changedUiSource, /fanReactionEngine\.run/);
     assert.doesNotMatch(changedUiSource, /socialDiscourseEngine\.run/);
 

@@ -250,6 +250,7 @@ import {
     rivalry: document.getElementById("show-recap-rivalry"),
     momentum: document.getElementById("show-recap-momentum"),
     fan: document.getElementById("show-recap-fan"),
+    social: document.getElementById("show-recap-social"),
     budget: document.getElementById("show-recap-budget"),
     local: document.getElementById("show-recap-local"),
     segments: document.getElementById("show-recap-segments"),
@@ -1253,6 +1254,7 @@ import {
       setText(showRecapTargets.rivalry, "Rivalry Spotlight: --");
       setText(showRecapTargets.momentum, "Momentum: --");
       setText(showRecapTargets.fan, "Fan Response: --");
+      setText(showRecapTargets.social, "Social Buzz: --");
       setText(showRecapTargets.budget, "Budget: --");
       setText(showRecapTargets.local, "Local Session Only / Not Saved Yet");
       showRecapTargets.segments?.replaceChildren(createTextSpan("No show has been run yet."));
@@ -1273,6 +1275,7 @@ import {
     setText(showRecapTargets.rivalry, recap.rivalrySpotlight);
     setText(showRecapTargets.momentum, recap.momentumNote);
     setText(showRecapTargets.fan, recap.fanResponseNote);
+    setText(showRecapTargets.social, recap.socialBuzzNote || "Social Buzz: Early chatter");
     setText(showRecapTargets.budget, recap.budgetNote);
     setText(showRecapTargets.local, recap.localOnlyLine);
 
@@ -1377,6 +1380,7 @@ import {
         rivalrySpotlightLabel: recap.rivalrySpotlight,
         momentumLabel: recap.momentumNote,
         fanResponseLabel: recap.fanResponseNote,
+        socialBuzzLabel: recap.socialBuzzNote,
         budgetLabel: recap.budgetNote,
         cardReadinessLabel: recap.cardReadinessLine,
         segmentResults: recap.segmentResults,
@@ -1692,6 +1696,8 @@ import {
           "Rivalry Spotlight: Saved show loaded",
         momentumNote: readGameplayString(showResult?.momentumLabel) || "Momentum: Saved",
         fanResponseNote: readGameplayString(showResult?.fanResponseLabel) || "Fan Response: Saved",
+        socialBuzzNote:
+          readGameplayString(showResult?.socialBuzzLabel) || "Social Buzz: Saved",
         budgetNote: readGameplayString(showResult?.budgetLabel) || "Budget: Saved",
         localOnlyLine: "Loaded from local save",
         cardReadinessLine:

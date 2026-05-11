@@ -31,6 +31,8 @@ describe("Playable New GM Mode save/load UI wiring", () => {
     assert.match(appSource, /matchRatingLabel/);
     assert.match(appSource, /crowdResponseLine/);
     assert.match(appSource, /momentumSignalLine/);
+    assert.match(appSource, /socialBuzzLabel/);
+    assert.match(appSource, /socialBuzzNote/);
     assert.match(appSource, /fetch\("\/api\/playable-new-gm-mode\/save"/);
     assert.match(appSource, /gameplayStateModel: createCurrentGameplayStateModel\(\)/);
     assert.match(appSource, /applyContinuedGameplayStateModel\(result\.gameplayStateModel\)/);

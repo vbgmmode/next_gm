@@ -87,6 +87,7 @@ export interface PlayableNewGMModeGameplayStateModelShowResult {
   readonly rivalrySpotlightLabel?: string;
   readonly momentumLabel?: string;
   readonly fanResponseLabel?: string;
+  readonly socialBuzzLabel?: string;
   readonly budgetLabel?: string;
   readonly cardReadinessLabel?: string;
   readonly segmentResults?: readonly Record<string, unknown>[];
