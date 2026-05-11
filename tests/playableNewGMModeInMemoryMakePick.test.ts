@@ -360,6 +360,22 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.doesNotMatch(appSource, /budgetDeducted|mutateBudget/);
   });
 
+  it("wires local first-session setup metadata without CPU drafting", () => {
+    const html = readPlayableUiFile("index.html");
+    const appSource = readPlayableUiFile("app.js");
+
+    assert.match(html, /data-difficulty="normal"/);
+    assert.match(html, /data-difficulty="easy"/);
+    assert.match(html, /data-difficulty="hard"/);
+    assert.match(html, /data-active-brand-count="2"/);
+    assert.match(html, /data-active-brand-count="3"/);
+    assert.match(html, /data-active-brand-count="4"/);
+    assert.match(html, /Other brands visible, CPU drafting not active yet/);
+    assert.match(appSource, /selectedDifficulty: "normal"/);
+    assert.match(appSource, /activeBrandCount: 4/);
+    assert.doesNotMatch(appSource, /cpuDraft|runCpu|otherBrandPick/);
+  });
+
   it("keeps dock visibility correct across draft and dashboard screens", () => {
     assert.equal(shouldShowDock("draft-room"), false);
     assert.equal(shouldShowDock("draft-recap"), false);

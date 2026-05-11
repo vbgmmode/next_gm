@@ -267,41 +267,52 @@
               <p class="kicker">Save Name</p>
               <h3>Year One: Prime Time</h3>
               <p class="compact-copy">A display-only campaign name for this prototype. No file is created.</p>
-              <div class="field-strip"><span>Difficulty</span><strong>Standard</strong></div>
+              <div class="field-strip"><span>Difficulty</span><strong id="setup-difficulty-summary">Normal</strong></div>
+              <div class="field-strip"><span>Active Brands</span><strong id="setup-active-brands-summary">4 brands</strong></div>
+              <div class="field-strip"><span>Starting Budget</span><strong id="setup-starting-budget-summary">$12,000,000</strong></div>
               <div class="field-strip"><span>Experience</span><strong>Classic GM</strong></div>
-              <div class="field-strip"><span>Assistant</span><strong>Optional</strong></div>
             </article>
 
-            <div class="setup-lanes" aria-label="Static setup basics">
-              <article class="mode-tile active">
+            <div class="setup-lanes setup-option-grid" aria-label="Local setup options">
+              <button class="mode-tile active" type="button" data-difficulty="normal" aria-pressed="true">
                 <span>01</span>
-                <strong>Difficulty</strong>
-                <p>Standard pressure with balanced starting resources.</p>
-              </article>
-              <article class="mode-tile">
+                <strong>Normal</strong>
+                <p>Balanced owner pressure and standard starting budget.</p>
+              </button>
+              <button class="mode-tile" type="button" data-difficulty="easy" aria-pressed="false">
                 <span>02</span>
-                <strong>Save Name</strong>
-                <p>Shown as a campaign plate only.</p>
-              </article>
-              <article class="mode-tile">
+                <strong>Easy</strong>
+                <p>Relaxed pressure for learning the first season loop.</p>
+              </button>
+              <button class="mode-tile" type="button" data-difficulty="hard" aria-pressed="false">
                 <span>03</span>
-                <strong>Assistant</strong>
-                <p>Optional activation screen, no calls.</p>
-              </article>
-              <article class="mode-tile">
+                <strong>Hard</strong>
+                <p>Tighter pressure preview for future owner goals.</p>
+              </button>
+              <button class="mode-tile" type="button" data-active-brand-count="2" aria-pressed="false">
                 <span>04</span>
-                <strong>Initial Draft</strong>
-                <p>War room opens after brand select.</p>
-              </article>
+                <strong>2 Brands</strong>
+                <p>Smaller universe setup for a focused rivalry race.</p>
+              </button>
+              <button class="mode-tile" type="button" data-active-brand-count="3" aria-pressed="false">
+                <span>05</span>
+                <strong>3 Brands</strong>
+                <p>Expanded universe setup with a middle lane.</p>
+              </button>
+              <button class="mode-tile active" type="button" data-active-brand-count="4" aria-pressed="true">
+                <span>06</span>
+                <strong>4 Brands</strong>
+                <p>Raw, SmackDown, NXT, and AEW visible in the universe.</p>
+              </button>
             </div>
 
             <aside class="setup-desk">
               <p class="kicker">Static Boundary</p>
               <div class="lock-stack">
+                <span>Setup choices are local session metadata</span>
+                <span>Other brands visible, CPU drafting not active yet</span>
                 <span>Save writes through the local preview host</span>
                 <span>No browser storage</span>
-                <span>No season started</span>
-                <span>No draft pick made</span>
               </div>
             </aside>
           </div>

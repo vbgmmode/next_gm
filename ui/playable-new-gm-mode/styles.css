@@ -1260,10 +1260,16 @@ dd {
   display: grid;
   align-content: start;
   gap: 8px;
+  color: inherit;
+  font: inherit;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+  text-align: left;
   border-left: 4px solid var(--border-subtle);
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
   background:
     repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 7px),
     linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent),

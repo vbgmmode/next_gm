@@ -68,6 +68,8 @@ import {
   const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
   const gmCards = Array.from(document.querySelectorAll("[data-gm-id]"));
   const brandControls = Array.from(document.querySelectorAll("[data-brand]"));
+  const difficultyControls = Array.from(document.querySelectorAll("[data-difficulty]"));
+  const activeBrandCountControls = Array.from(document.querySelectorAll("[data-active-brand-count]"));
   const activeLabel = document.getElementById("active-screen-label");
   const railActiveLabel = document.getElementById("rail-active-label");
   const brandBug = document.getElementById("brand-bug");
@@ -88,6 +90,11 @@ import {
     list: document.getElementById("draft-signed-roster-list"),
   };
   const brandNameTargets = Array.from(document.querySelectorAll(".js-brand-name"));
+  const setupBasicsTargets = {
+    difficulty: document.getElementById("setup-difficulty-summary"),
+    activeBrands: document.getElementById("setup-active-brands-summary"),
+    startingBudget: document.getElementById("setup-starting-budget-summary"),
+  };
   const intentPreviewTargets = {
     candidate: document.getElementById("intent-preview-candidate"),
     brand: document.getElementById("intent-preview-brand"),
@@ -328,6 +335,8 @@ import {
     currentScreenId: "game-landing",
     selectedGmId: "maren-vale",
     selectedBrandId: "raw",
+    selectedDifficulty: "normal",
+    activeBrandCount: 4,
     selectedCandidateId: "candidate-roman-reigns",
     selectedDraftIntentPreview: undefined,
     mockDraftRecapPreview: undefined,
@@ -443,6 +452,10 @@ import {
       phaseLabel.textContent = target.dataset.flowPhase || "Preview";
     }
 
+    if (resolvedTargetId === "setup-basics") {
+      updateSetupBasicsSurface();
+    }
+
     if (resolvedTargetId === "roster-hub") {
       updatePostDraftRosterHub();
     }
@@ -513,6 +526,54 @@ import {
       item.classList.toggle("selected", isSelected);
       item.setAttribute("aria-pressed", String(isSelected));
     });
+  }
+
+  function setDifficulty(difficulty) {
+    if (!["easy", "normal", "hard"].includes(difficulty)) {
+      return;
+    }
+
+    uiState.selectedDifficulty = difficulty;
+    updateSetupBasicsSurface();
+  }
+
+  function setActiveBrandCount(activeBrandCount) {
+    const normalizedCount = Number(activeBrandCount);
+
+    if (![2, 3, 4].includes(normalizedCount)) {
+      return;
+    }
+
+    uiState.activeBrandCount = normalizedCount;
+    updateSetupBasicsSurface();
+  }
+
+  function updateSetupBasicsSurface() {
+    const difficultyLabel =
+      uiState.selectedDifficulty === "easy"
+        ? "Easy"
+        : uiState.selectedDifficulty === "hard"
+          ? "Hard"
+          : "Normal";
+
+    difficultyControls.forEach((control) => {
+      const active = control.dataset.difficulty === uiState.selectedDifficulty;
+      control.classList.toggle("active", active);
+      control.setAttribute("aria-pressed", String(active));
+    });
+
+    activeBrandCountControls.forEach((control) => {
+      const active = Number(control.dataset.activeBrandCount) === uiState.activeBrandCount;
+      control.classList.toggle("active", active);
+      control.setAttribute("aria-pressed", String(active));
+    });
+
+    setText(setupBasicsTargets.difficulty, difficultyLabel);
+    setText(setupBasicsTargets.activeBrands, `${uiState.activeBrandCount} brands`);
+    setText(
+      setupBasicsTargets.startingBudget,
+      formatBudgetUnitsAsMoney(NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER)
+    );
   }
 
   function getSelectedGmDisplay() {
@@ -2704,6 +2765,18 @@ import {
     });
   });
 
+  difficultyControls.forEach((control) => {
+    control.addEventListener("click", () => {
+      setDifficulty(control.dataset.difficulty);
+    });
+  });
+
+  activeBrandCountControls.forEach((control) => {
+    control.addEventListener("click", () => {
+      setActiveBrandCount(control.dataset.activeBrandCount);
+    });
+  });
+
   talentRows.forEach((row) => {
     row.addEventListener("click", () => {
       setSelectedCandidate(row);
@@ -2729,6 +2802,7 @@ import {
     setSelectedCandidate(initialCandidate);
   }
   updateMakePickControl();
+  updateSetupBasicsSurface();
   showSection("game-landing");
 })();
 
