@@ -63,7 +63,10 @@ Expected local URL style:
 - Confirm Initial Draft feels like the active draft broadcast surface.
 - Confirm Initial Draft visibly communicates the read-only draft projection boundary.
 - Confirm Initial Draft candidate names match the project-backed read-only projection contract.
-- Confirm clicking a draft candidate updates the selected candidate card and a UI-only selection intent preview.
+- Confirm Initial Draft makes the selected superstar/prospect the visual focus, not the pick order board.
+- Confirm the selected superstar/prospect spotlight includes a large portrait/silhouette/card placeholder with initials only as a fallback badge.
+- Confirm clicking a draft candidate updates the selected candidate spotlight and a UI-only selection intent preview.
+- Confirm selected candidate stats are readable, use compact rating rows/meters, and do not truncate into ugly inline strings.
 - Confirm the selection intent preview shows selected candidate, selected brand, Round 1 / Pick 1 placeholder, and preview-only locked status.
 - Confirm selecting Ivan North reports preview-only unavailable status and still does not create a pick.
 - Confirm Make Pick and Auto Draft stay disabled after selecting any candidate.
@@ -80,7 +83,8 @@ Expected local URL style:
 - Confirm there is no equal-card wall on Save Selection, Setup, Draft Room, or Brand HQ.
 - Confirm Save Selection uses cinematic save-slot panels and poster/portrait-style placeholders.
 - Confirm Draft Room is visually distinct from Brand HQ.
-- Confirm Draft Room has big ON THE CLOCK staging, a broadcast board, a scouting feed, selected talent card, and lower-third/ticker treatment.
+- Confirm Draft Room has ON THE CLOCK staging, a compact board preview, a contained scouting feed, a dominant selected superstar spotlight, and lower-third/ticker treatment.
+- Confirm pick order is secondary but still readable.
 - Confirm Brand HQ uses larger game-mode tiles and one obvious next post-draft action.
 - Confirm player-facing labels use Preview Build, Draft Controls Locked, Scouting Feed, Board Preview, Commissioner Desk, Brand HQ, and Week 1 Setup style language.
 - Confirm raw backend/service wording is absent from normal player-facing UI.
@@ -165,7 +169,10 @@ Expected local URL style:
 - Confirm each active screen fits inside the visible viewport at common laptop sizes, including roughly 1366x768 and 1280x720.
 - Confirm 1366x768, 1280x800, and 1440x900 do not introduce full-page scroll.
 - Confirm only contained panels scroll when needed.
-- Confirm the draft board and scouting feed use contained scrolling.
+- Confirm the draft board and scouting feed use contained scrolling, with the candidate list scrolling internally.
+- Confirm Initial Draft works at laptop widths, especially 1366x768, 1280x800, and 1440x900.
+- Confirm selected superstar/prospect stats remain readable at laptop widths.
+- Confirm the pick order stays compact and does not crowd out superstar stats.
 - Confirm long save names, wrestler names, labels, pills, buttons, and metadata truncate or wrap safely inside their boxes.
 - Confirm no text spills outside cards, panels, buttons, pills, or board rows.
 - Confirm cards do not stretch endlessly to create a scrolling webpage feel.

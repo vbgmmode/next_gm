@@ -23,9 +23,22 @@
     initials: document.getElementById("talent-detail-initials"),
     name: document.getElementById("talent-detail-name"),
     role: document.getElementById("talent-detail-role"),
-    style: document.getElementById("talent-detail-style"),
+    availability: document.getElementById("talent-detail-availability"),
     read: document.getElementById("talent-detail-read"),
     fit: document.getElementById("talent-detail-fit"),
+    previewStatus: document.getElementById("talent-detail-preview-status"),
+    starPower: document.getElementById("talent-detail-star-power"),
+    ringWork: document.getElementById("talent-detail-ring-work"),
+    promo: document.getElementById("talent-detail-promo"),
+    durability: document.getElementById("talent-detail-durability"),
+    risk: document.getElementById("talent-detail-risk"),
+    confidence: document.getElementById("talent-detail-confidence"),
+    starMeter: document.getElementById("talent-detail-star-meter"),
+    ringMeter: document.getElementById("talent-detail-ring-meter"),
+    promoMeter: document.getElementById("talent-detail-promo-meter"),
+    durabilityMeter: document.getElementById("talent-detail-durability-meter"),
+    riskMeter: document.getElementById("talent-detail-risk-meter"),
+    confidenceMeter: document.getElementById("talent-detail-confidence-meter"),
   };
 
   const flowOrder = [
@@ -239,13 +252,27 @@
 
     if (intentPreviewTargets.note) {
       intentPreviewTargets.note.textContent =
-        "A UI-only selection intent preview is staged in memory. Make Pick remains locked, with no draft pick, roster change, or draft completion.";
+        "Preview only. No pick, roster, or recap is created.";
+    }
+  }
+
+  function setText(target, value) {
+    if (target) {
+      target.textContent = value;
+    }
+  }
+
+  function setMeter(target, value) {
+    if (target) {
+      target.style.setProperty("--rating", value || "0");
     }
   }
 
   function setSelectedCandidate(row) {
     uiState.selectedCandidateId = row.dataset.candidateId;
     uiState.selectedDraftIntentPreview = createDraftSelectionIntentPresentationPreview(row);
+    const isUnavailable = row.dataset.availability !== "Available";
+    const previewStatus = isUnavailable ? "Preview only - candidate unavailable" : "Preview only - pick locked";
 
     talentRows.forEach((item) => {
       const isSelected = item === row;
@@ -260,21 +287,25 @@
         .join("")
         .slice(0, 2);
     }
-    if (talentDetail.name) {
-      talentDetail.name.textContent = row.dataset.talentName;
-    }
-    if (talentDetail.role) {
-      talentDetail.role.textContent = row.dataset.talentRole;
-    }
-    if (talentDetail.style) {
-      talentDetail.style.textContent = row.dataset.talentStyle;
-    }
-    if (talentDetail.read) {
-      talentDetail.read.textContent = row.dataset.talentRead;
-    }
-    if (talentDetail.fit) {
-      talentDetail.fit.textContent = row.dataset.talentFit;
-    }
+    setText(talentDetail.name, row.dataset.talentName);
+    setText(talentDetail.role, row.dataset.talentRole);
+    setText(talentDetail.availability, row.dataset.availability || "Available");
+    talentDetail.availability?.classList.toggle("blocked", isUnavailable);
+    setText(talentDetail.read, row.dataset.talentRead);
+    setText(talentDetail.fit, row.dataset.talentFit);
+    setText(talentDetail.previewStatus, previewStatus);
+    setText(talentDetail.starPower, row.dataset.starPower || "--");
+    setText(talentDetail.ringWork, row.dataset.ringWork || "--");
+    setText(talentDetail.promo, row.dataset.promo || "--");
+    setText(talentDetail.durability, row.dataset.durability || "--");
+    setText(talentDetail.risk, row.dataset.risk || "Unknown");
+    setText(talentDetail.confidence, row.dataset.confidence || "Unknown");
+    setMeter(talentDetail.starMeter, row.dataset.starPower);
+    setMeter(talentDetail.ringMeter, row.dataset.ringWork);
+    setMeter(talentDetail.promoMeter, row.dataset.promo);
+    setMeter(talentDetail.durabilityMeter, row.dataset.durability);
+    setMeter(talentDetail.riskMeter, row.dataset.riskValue);
+    setMeter(talentDetail.confidenceMeter, row.dataset.confidenceValue);
 
     updateIntentPreview(uiState.selectedDraftIntentPreview);
   }
