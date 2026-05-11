@@ -119,3 +119,15 @@ Boundary checks:
 - No save persistence or SQLite writes should exist.
 - No browser storage should exist.
 - No generated text or GenAI behavior should exist.
+
+## Final Visual Polish QA
+
+- Within two seconds, Dashboard should make the current GM priority and next safe player action obvious.
+- Within two seconds, Draft Room should make the on-clock brand, read-only board state, and locked pick actions obvious.
+- Hover, focus, active, selected, and disabled states should be visible for nav items, hub cards, buttons, flow steps, and talent cards.
+- Disabled actions should read as intentionally locked game controls, not broken buttons.
+- Status pills, section labels, and metadata rows should use compact player-facing language.
+- Long labels, brand names, wrestler names, button labels, and status text should truncate cleanly inside their containers.
+- Body/page scrolling should remain absent on desktop and laptop viewports.
+- Any necessary scrolling should be contained inside approved panels such as talent pool, pick order, draft board, roster panels, social feed, or analytics lists.
+- The UI should feel like a premium wrestling GM cockpit rather than a generic dashboard or diagnostics page.
