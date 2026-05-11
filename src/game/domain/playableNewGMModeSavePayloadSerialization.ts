@@ -1,6 +1,9 @@
 import type {
   PlayableNewGMModeSavePayloadContract
 } from "./playableNewGMModeSavePayloadContract.ts";
+import type {
+  PlayableNewGMModeGameplayStateModel
+} from "./playableNewGMModeGameplayStateModel.ts";
 
 export type PlayableNewGMModeSavePayloadSerializationIssue =
   | "missing-save-payload-contract"
@@ -42,6 +45,7 @@ export interface PlayableNewGMModeSavePayloadParseResult {
   readonly gameId?: string;
   readonly selectedBrandName?: string;
   readonly currentWeek?: number;
+  readonly gameplayStateModel?: PlayableNewGMModeGameplayStateModel;
   readonly capabilityFlags: PlayableNewGMModeSavePayloadSerializationCapabilityFlags;
 }
 
@@ -141,7 +145,10 @@ export function parsePlayableNewGMModeSavePayloadSerializedSnapshot(
       : undefined,
     currentWeek: typeof gameplayStateModel?.currentWeek === "number"
       ? gameplayStateModel.currentWeek
-      : undefined
+      : undefined,
+    gameplayStateModel: gameplayStateModel as
+      | PlayableNewGMModeGameplayStateModel
+      | undefined
   });
 }
 
@@ -151,6 +158,7 @@ function createParseResult(options: {
   readonly gameId?: string;
   readonly selectedBrandName?: string;
   readonly currentWeek?: number;
+  readonly gameplayStateModel?: PlayableNewGMModeGameplayStateModel;
 }): PlayableNewGMModeSavePayloadParseResult {
   return deepFreeze({
     status: "parsed-payload-only",
@@ -161,6 +169,9 @@ function createParseResult(options: {
     ...(options.selectedBrandName ? { selectedBrandName: options.selectedBrandName } : {}),
     ...(Number.isInteger(options.currentWeek)
       ? { currentWeek: options.currentWeek }
+      : {}),
+    ...(options.gameplayStateModel
+      ? { gameplayStateModel: options.gameplayStateModel }
       : {}),
     capabilityFlags: PLAYABLE_NEW_GM_MODE_SAVE_PAYLOAD_SERIALIZATION_CAPABILITY_FLAGS
   });

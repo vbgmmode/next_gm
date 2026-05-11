@@ -4,6 +4,9 @@ import {
   parsePlayableNewGMModeSavePayloadSerializedSnapshot,
   type PlayableNewGMModeSavePayloadSerializedSnapshot
 } from "../domain/playableNewGMModeSavePayloadSerialization.ts";
+import type {
+  PlayableNewGMModeGameplayStateModel
+} from "../domain/playableNewGMModeGameplayStateModel.ts";
 import {
   createSQLiteDurableSaveIdentityPathBoundaryShell,
   type SQLiteDurableSaveIdentityPathBoundaryShell
@@ -86,6 +89,7 @@ export interface SQLiteDurableSavePayloadRepositoryReadShell {
   readonly gameId: string;
   readonly selectedBrandName: string;
   readonly currentWeek: number | "not-checked";
+  readonly gameplayStateModel?: PlayableNewGMModeGameplayStateModel;
   readonly durableStorageUsed: boolean;
   readonly repositoryReadEnabled: boolean;
   readonly repositoryWriteEnabled: false;
@@ -358,6 +362,7 @@ function readDurablePayload(options: {
       gameId: parsedPayload.gameId ?? "",
       selectedBrandName: parsedPayload.selectedBrandName ?? "",
       currentWeek: parsedPayload.currentWeek ?? "not-checked",
+      gameplayStateModel: parsedPayload.gameplayStateModel,
       durableStorageUsed: true,
       repositoryReadEnabled: true,
       gameplayStateLoaded: parseIssues.length === 0,

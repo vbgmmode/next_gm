@@ -48,16 +48,19 @@ describe("Playable New GM Mode Save Payload Serialization v0.1", () => {
       snapshot.serializedPayload
     );
 
-    assert.deepEqual(parsed, {
-      status: "parsed-payload-only",
-      structurallyReady: true,
-      issues: [],
-      payloadFormatVersion: "0.1.0",
-      gameId: "game-raw-local-001",
-      selectedBrandName: "Raw",
-      currentWeek: 2,
-      capabilityFlags: PLAYABLE_NEW_GM_MODE_SAVE_PAYLOAD_SERIALIZATION_CAPABILITY_FLAGS
-    });
+    assert.equal(parsed.status, "parsed-payload-only");
+    assert.equal(parsed.structurallyReady, true);
+    assert.deepEqual(parsed.issues, []);
+    assert.equal(parsed.payloadFormatVersion, "0.1.0");
+    assert.equal(parsed.gameId, "game-raw-local-001");
+    assert.equal(parsed.selectedBrandName, "Raw");
+    assert.equal(parsed.currentWeek, 2);
+    assert.equal(parsed.gameplayStateModel?.selectedBrand.brandName, "Raw");
+    assert.equal(parsed.gameplayStateModel?.signedRoster[0]?.displayName, "Cody Rhodes");
+    assert.deepEqual(
+      parsed.capabilityFlags,
+      PLAYABLE_NEW_GM_MODE_SAVE_PAYLOAD_SERIALIZATION_CAPABILITY_FLAGS
+    );
   });
 
   it("reports invalid serialization prerequisites without writing anything", () => {

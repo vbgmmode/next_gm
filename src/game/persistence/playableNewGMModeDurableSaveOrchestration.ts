@@ -68,6 +68,7 @@ export interface PlayableNewGMModeContinueSaveShell {
   readonly gameId: string;
   readonly selectedBrandName: string;
   readonly currentWeek: number | "not-checked";
+  readonly gameplayStateModel?: PlayableNewGMModeGameplayStateModel;
   readonly durableReadStatus: SQLiteDurableSavePayloadRepositoryReadStatus | "not-attempted";
   readonly executionStatus: PlayableNewGMModeContinueSaveStatus;
   readonly durableSaveLoaded: boolean;
@@ -197,6 +198,7 @@ export function createPlayableNewGMModeContinueSaveShell(
     gameId: readResult.gameId,
     selectedBrandName: readResult.selectedBrandName,
     currentWeek: readResult.currentWeek,
+    gameplayStateModel: readResult.gameplayStateModel,
     durableReadStatus: readResult.executionStatus,
     executionStatus: createContinueSaveStatus(readResult.executionStatus),
     durableSaveLoaded: readResult.executionStatus === "read",

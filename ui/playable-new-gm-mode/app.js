@@ -1434,6 +1434,9 @@ import {
 
       uiState.lastSaveStatusLine = statusLine;
       updateSaveStatus(statusLine);
+      if (response.ok && result.ok && result.gameplayStateModel) {
+        applyContinuedGameplayStateModel(result.gameplayStateModel);
+      }
     } catch {
       uiState.lastSaveStatusLine = "Continue unavailable";
       updateSaveStatus(uiState.lastSaveStatusLine);
@@ -1444,6 +1447,321 @@ import {
     saveStatusTargets.forEach((target) => {
       target.textContent = statusLine;
     });
+  }
+
+  function applyContinuedGameplayStateModel(gameplayStateModel) {
+    const selectedBrand = readGameplayRecord(gameplayStateModel?.selectedBrand);
+    const brandId = normalizePlayableBrandId(selectedBrand?.brandId);
+
+    if (brandId) {
+      setBrand(brandId);
+    }
+
+    uiState.miniDraftProgress =
+      createMiniDraftProgressFromGameplayStateModel(gameplayStateModel);
+    uiState.localPostDraftSetup =
+      createPostDraftSetupFromGameplayStateModel(gameplayStateModel);
+    uiState.localWeeklyLoop =
+      createWeeklyLoopStateFromGameplayStateModel(gameplayStateModel);
+    uiState.localWeekOneBooking =
+      createBookingStateFromGameplayStateModel(gameplayStateModel);
+
+    updateDraftedCandidateRows();
+    updateDraftBudgetPanel();
+    updateMakePickControl();
+    updatePostDraftRosterHub();
+    updateChampionshipSetupSurface();
+    updateRivalrySetupSurface();
+    updateWeekOneHqSurface();
+    updateWeekOneBookingSurface(uiState.lastSaveStatusLine);
+    updateShowRecapSurface(uiState.lastSaveStatusLine);
+    showSection("brand-dashboard");
+  }
+
+  function createMiniDraftProgressFromGameplayStateModel(gameplayStateModel) {
+    const selectedBrand = readGameplayRecord(gameplayStateModel?.selectedBrand);
+    const budget = readGameplayRecord(gameplayStateModel?.budget);
+    const signedRoster = Array.isArray(gameplayStateModel?.signedRoster)
+      ? gameplayStateModel.signedRoster
+      : [];
+    const brandId = normalizePlayableBrandId(selectedBrand?.brandId) || "raw";
+    const brandLabel = readGameplayString(selectedBrand?.brandName) || brandLabels[brandId].label;
+    const startingDraftBudget = readGameplayNumber(
+      budget?.startingBudget,
+      NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER
+    );
+    const fallbackSpentBudget = signedRoster.reduce(
+      (total, talent) => total + readGameplayNumber(talent?.signingCost, 0),
+      0
+    );
+    const budgetSpent = readGameplayNumber(budget?.spentBudget, fallbackSpentBudget);
+    const remainingDraftBudget = readGameplayNumber(
+      budget?.remainingBudget,
+      Math.max(0, startingDraftBudget - budgetSpent)
+    );
+    const bookingReserveBudget = readGameplayNumber(
+      budget?.bookingReserveTarget,
+      NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER
+    );
+    const completedPickSummaries = signedRoster.map((talent, index) => {
+      const pickNumber = index + 1;
+      const candidateId = readGameplayString(talent?.wrestlerId) || `loaded-${pickNumber}`;
+      const candidateName = readGameplayString(talent?.displayName) || `Signed Superstar ${pickNumber}`;
+      const signingCost = readGameplayNumber(talent?.signingCost, 0);
+      const sourceRosterPool =
+        readGameplayString(talent?.draftedFrom) ||
+        readGameplayString(talent?.sourcePool) ||
+        "Source Pool";
+
+      return Object.freeze({
+        summaryKind: "local-mini-draft-pick-summary",
+        version: "0.1",
+        localOnly: true,
+        inMemoryOnly: false,
+        persisted: true,
+        completedInMemory: true,
+        candidateId,
+        candidateName,
+        brandLabel,
+        gmName: "Loaded GM",
+        pickLabel: `Pick ${pickNumber}`,
+        pickNumber,
+        signingTier: readGameplayString(talent?.signingTier) || "Signed Talent",
+        signingCost,
+        sourceRosterPool,
+        divisionCategory: "Division TBD",
+        pickSource: "manual",
+        budgetBeforeSigning: 0,
+        budgetAfterSigning: 0,
+        bookingReserveAfterSigning: remainingDraftBudget >= bookingReserveBudget,
+        reserveWarningLine: remainingDraftBudget >= bookingReserveBudget
+          ? "Booking reserve protected"
+          : "Booking reserve dipped",
+        affordabilityStatus: "loaded-save",
+        displayLabel: `Pick ${pickNumber}: ${candidateName} (${brandLabel}, Cost ${signingCost})`,
+        displayStatusLine: "Loaded from save",
+      });
+    });
+    const signedTalentCount = completedPickSummaries.length;
+    const minimumRosterTarget =
+      NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER;
+    const minimumRosterViable = signedTalentCount >= minimumRosterTarget;
+    const bookingReserveProtected = remainingDraftBudget >= bookingReserveBudget;
+
+    return Object.freeze({
+      ...createInitialMiniDraftProgress({
+        selectedBrand: { brandId, brandLabel },
+      }),
+      inMemoryOnly: false,
+      persisted: true,
+      startingDraftBudget,
+      remainingDraftBudget,
+      budgetSpent,
+      spentDraftBudget: budgetSpent,
+      signedTalentCount,
+      minimumViableRosterCount: minimumRosterTarget,
+      minimumRosterTarget,
+      bookingReserveBudget,
+      minimumRosterViable,
+      bookingReserveProtected,
+      draftCanContinue: false,
+      localDraftFinished: true,
+      currentPickIndex: signedTalentCount,
+      selectedBrandReference: Object.freeze({
+        hasBrand: true,
+        brandId,
+        brandLabel,
+        localOnly: false,
+      }),
+      currentDraftSlot: Object.freeze({
+        roundNumber: 1,
+        pickNumber: signedTalentCount + 1,
+        roundLabel: "Round 1",
+        pickLabel: `Pick ${signedTalentCount + 1}`,
+        placeholderOnly: true,
+      }),
+      completedPickSummaries: Object.freeze(completedPickSummaries),
+      draftedCandidateIds: Object.freeze(
+        completedPickSummaries.map((summary) => summary.candidateId)
+      ),
+      miniDraftComplete: true,
+      displayLabels: Object.freeze({
+        progressLine: `Save loaded: ${signedTalentCount} signed`,
+        statusLine: "Save Loaded",
+        budgetLine: `Budget remaining: ${remainingDraftBudget}`,
+        viabilityLine: minimumRosterViable
+          ? `Minimum roster viable: ${signedTalentCount} of ${minimumRosterTarget}`
+          : `Minimum roster not viable: ${signedTalentCount} of ${minimumRosterTarget}`,
+        reserveLine: bookingReserveProtected
+          ? "Booking reserve protected"
+          : "Booking reserve dipped",
+        noteLine: "Loaded from local save.",
+      }),
+    });
+  }
+
+  function createPostDraftSetupFromGameplayStateModel(gameplayStateModel) {
+    const champions = Array.isArray(gameplayStateModel?.champions)
+      ? gameplayStateModel.champions
+      : [];
+    const rivalries = Array.isArray(gameplayStateModel?.rivalries)
+      ? gameplayStateModel.rivalries
+      : [];
+    const championState = {
+      mensMainChampionId: "",
+      mensMidcardChampionId: "",
+      womensMainChampionId: "",
+      womensMidcardChampionId: "",
+    };
+
+    champions.forEach((champion) => {
+      const slotId = readGameplayString(champion?.titleSlotId);
+      const championIds = Array.isArray(champion?.championWrestlerIds)
+        ? champion.championWrestlerIds
+        : [];
+
+      if (slotId && Object.hasOwn(championState, slotId)) {
+        championState[slotId] = readGameplayString(championIds[0]) || "";
+      }
+    });
+
+    const rivalrySlots = rivalries.slice(0, 3).map((rivalry) =>
+      Object.freeze({
+        wrestlerAId: readGameplayString(rivalry?.wrestlerAId) || "",
+        wrestlerBId: readGameplayString(rivalry?.wrestlerBId) || "",
+        rivalryType: readGameplayString(rivalry?.rivalryType) || "Grudge",
+        intensity: readGameplayString(rivalry?.intensity) || "Medium",
+      })
+    );
+
+    while (rivalrySlots.length < 3) {
+      rivalrySlots.push(Object.freeze({
+        wrestlerAId: "",
+        wrestlerBId: "",
+        rivalryType: "Grudge",
+        intensity: "Medium",
+      }));
+    }
+
+    return Object.freeze({
+      championshipSetupComplete: Object.values(championState).every(Boolean),
+      champions: Object.freeze(championState),
+      rivalrySetupComplete: rivalries.length > 0,
+      rivalries: Object.freeze(rivalrySlots),
+    });
+  }
+
+  function createWeeklyLoopStateFromGameplayStateModel(gameplayStateModel) {
+    const currentWeekNumber = Math.max(
+      1,
+      Math.floor(readGameplayNumber(gameplayStateModel?.currentWeek, 1))
+    );
+    const showResults = Array.isArray(gameplayStateModel?.showResults)
+      ? gameplayStateModel.showResults
+      : [];
+    const completedShowRecaps = showResults.map((showResult) => {
+      const weekNumber = Math.max(
+        1,
+        Math.floor(readGameplayNumber(showResult?.weekNumber, 1))
+      );
+      const showGrade = readGameplayString(showResult?.showGrade) || "C";
+
+      return Object.freeze({
+        recapId: readGameplayString(showResult?.resultId) || `loaded-week-${weekNumber}-recap`,
+        weekNumber,
+        weekLabel: `Week ${weekNumber}`,
+        brandLabel: readGameplayString(gameplayStateModel?.selectedBrand?.brandName) || getBrandLabel(),
+        showGrade,
+        crowdRead: "Loaded",
+        bestSegmentLine: readGameplayString(showResult?.bestSegmentLabel) || "Saved show result",
+        weakSegmentLine: "Saved show result",
+        championSpotlight: "Champion Spotlight: Saved show loaded",
+        rivalrySpotlight: "Rivalry Spotlight: Saved show loaded",
+        momentumNote: "Momentum: Saved",
+        fanResponseNote: "Fan Response: Saved",
+        budgetNote: "Budget: Saved",
+        localOnlyLine: "Loaded from local save",
+        segmentResults: Object.freeze([]),
+      });
+    });
+    const lastShowRecap = completedShowRecaps
+      .slice()
+      .sort((a, b) => b.weekNumber - a.weekNumber)[0];
+
+    return Object.freeze({
+      currentWeekNumber,
+      lastShowRecap,
+      completedShowRecaps: Object.freeze(completedShowRecaps),
+    });
+  }
+
+  function createBookingStateFromGameplayStateModel(gameplayStateModel) {
+    const currentWeekNumber = Math.max(
+      1,
+      Math.floor(readGameplayNumber(gameplayStateModel?.currentWeek, 1))
+    );
+    const showResults = Array.isArray(gameplayStateModel?.showResults)
+      ? gameplayStateModel.showResults
+      : [];
+    const hasCompletedCurrentWeek = showResults.some(
+      (showResult) => readGameplayNumber(showResult?.weekNumber, 0) === currentWeekNumber
+    );
+
+    if (hasCompletedCurrentWeek) {
+      return createInitialLocalWeekOneBookingState();
+    }
+
+    const weeklyShowCards = Array.isArray(gameplayStateModel?.weeklyShowCards)
+      ? gameplayStateModel.weeklyShowCards
+      : [];
+    const currentCard = weeklyShowCards.find(
+      (card) => readGameplayNumber(card?.weekNumber, 0) === currentWeekNumber
+    );
+    const segments = Array.isArray(currentCard?.segments)
+      ? currentCard.segments
+      : [];
+    const restoredSegments = segments.map((segment, index) =>
+      Object.freeze({
+        segmentId: readGameplayString(segment?.segmentId) || `loaded-segment-${index + 1}`,
+        segmentType: readGameplayString(segment?.segmentType) || "singles-match",
+        wrestlerAId: readGameplayString(segment?.wrestlerAId) || "",
+        wrestlerBId: readGameplayString(segment?.wrestlerBId) || "",
+        featuredWrestlerId: readGameplayString(segment?.featuredWrestlerId) || "",
+      })
+    );
+
+    return Object.freeze({
+      nextSegmentIdNumber: restoredSegments.length + 1,
+      segments: Object.freeze(restoredSegments),
+    });
+  }
+
+  function readGameplayRecord(value) {
+    return value && typeof value === "object" && !Array.isArray(value)
+      ? value
+      : undefined;
+  }
+
+  function readGameplayString(value) {
+    return typeof value === "string" && value.trim().length > 0
+      ? value.trim()
+      : undefined;
+  }
+
+  function readGameplayNumber(value, fallback) {
+    return typeof value === "number" && Number.isFinite(value)
+      ? value
+      : fallback;
+  }
+
+  function normalizePlayableBrandId(value) {
+    const brandId = readGameplayString(value)?.toLowerCase();
+
+    if (brandId === "smack-down") {
+      return "smackdown";
+    }
+
+    return brandId && brandLabels[brandId] ? brandId : undefined;
   }
 
   function renderBookingRosterControls(projection) {

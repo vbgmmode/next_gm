@@ -49,6 +49,9 @@ describe("Playable New GM Mode save/load preview API controller", () => {
     assert.equal(continueResult.gameId, "game-raw-local-001");
     assert.equal(continueResult.selectedBrandName, "Raw");
     assert.equal(continueResult.currentWeek, 2);
+    assert.equal(continueResult.gameplayStateModel?.selectedBrand.brandName, "Raw");
+    assert.equal(continueResult.gameplayStateModel?.currentWeek, 2);
+    assert.equal(continueResult.gameplayStateModel?.signedRoster[0]?.displayName, "Cody Rhodes");
     assert.equal(continueResult.browserStorageUsed, false);
   });
 

@@ -113,6 +113,8 @@ describe("SQLite Durable Save Payload Repository Shell v0.1", () => {
     assert.equal(readResult.gameId, "game-raw-local-001");
     assert.equal(readResult.selectedBrandName, "Raw");
     assert.equal(readResult.currentWeek, 2);
+    assert.equal(readResult.gameplayStateModel?.selectedBrand.brandName, "Raw");
+    assert.equal(readResult.gameplayStateModel?.currentWeek, 2);
     assert.equal(readResult.repositoryReadEnabled, true);
     assert.equal(readResult.repositoryWriteEnabled, false);
     assert.equal(readResult.gameplayStateLoaded, true);

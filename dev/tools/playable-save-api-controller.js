@@ -57,6 +57,7 @@ export function continuePlayableNewGMModeGame({
     gameId: result.gameId,
     selectedBrandName: result.selectedBrandName,
     currentWeek: result.currentWeek,
+    gameplayStateModel: result.gameplayStateModel,
     issues: result.issues,
     browserStorageUsed: false,
   });

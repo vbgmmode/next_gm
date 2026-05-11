@@ -21,8 +21,14 @@ describe("Playable New GM Mode save/load UI wiring", () => {
     assert.match(appSource, /function createCurrentGameplayStateModel\(\)/);
     assert.match(appSource, /async function saveCurrentGame\(\)/);
     assert.match(appSource, /async function continueLastSave\(\)/);
+    assert.match(appSource, /function applyContinuedGameplayStateModel\(gameplayStateModel\)/);
+    assert.match(appSource, /createMiniDraftProgressFromGameplayStateModel/);
+    assert.match(appSource, /createPostDraftSetupFromGameplayStateModel/);
+    assert.match(appSource, /createWeeklyLoopStateFromGameplayStateModel/);
+    assert.match(appSource, /createBookingStateFromGameplayStateModel/);
     assert.match(appSource, /fetch\("\/api\/playable-new-gm-mode\/save"/);
     assert.match(appSource, /gameplayStateModel: createCurrentGameplayStateModel\(\)/);
+    assert.match(appSource, /applyContinuedGameplayStateModel\(result\.gameplayStateModel\)/);
     assert.match(appSource, /updateSaveStatus/);
   });
 

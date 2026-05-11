@@ -91,6 +91,8 @@ describe("Playable New GM Mode Durable Save Orchestration v0.1", () => {
     assert.equal(result.gameId, "game-raw-local-001");
     assert.equal(result.selectedBrandName, "Raw");
     assert.equal(result.currentWeek, 3);
+    assert.equal(result.gameplayStateModel?.selectedBrand.brandName, "Raw");
+    assert.equal(result.gameplayStateModel?.currentWeek, 3);
     assert.equal(result.durableReadStatus, "read");
     assert.equal(result.executionStatus, "loaded");
     assert.equal(result.durableSaveLoaded, true);
