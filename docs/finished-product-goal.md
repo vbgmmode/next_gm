@@ -35,6 +35,7 @@ Based on the current repo files and focused playable tests:
 - A local weekly booking builder exists and supports signed-talent matches, promos, main events, Run Show, Show Recap, local consequence summaries, Week 2 advancement, and repeatable local weekly booking.
 - A non-persistent gameplay state model contract exists for the future save/session shape, including brand, week, budget, roster, champions, rivalries, show cards, results, superstar state, local consequences, and week history.
 - An initial save payload contract exists around the gameplay state model, but it does not write, read, list, delete, or persist saves yet.
+- A deterministic save payload serializer/parser exists for compatibility checks, but it still does not write to durable storage.
 - Current flow is mostly UI-local/page-lifetime.
 - Persistence and full gameplay loop are not finished yet.
 
