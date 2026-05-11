@@ -75,9 +75,9 @@ export interface NewGMModeRosterAssignmentHandoffSummaryShell {
     readonly totalFixtureCount: number;
     readonly eligibleDisplayReadyCount: number;
     readonly excludedIneligibleCount: number;
-    readonly expectedFixtureCount: 10;
-    readonly expectedEligibleDisplayReadyCount: 9;
-    readonly expectedExcludedIneligibleCount: 1;
+    readonly expectedFixtureCount: number;
+    readonly expectedEligibleDisplayReadyCount: number;
+    readonly expectedExcludedIneligibleCount: number;
   };
   readonly issueCount: number;
   readonly handoffIssues: readonly NewGMModeRosterAssignmentHandoffIssue[];
@@ -133,9 +133,9 @@ export interface NewGMModeRosterAssignmentHandoffSummaryShell {
   readonly genAIUsed: false;
 }
 
-const EXPECTED_FIXTURE_COUNT = 10;
-const EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT = 9;
-const EXPECTED_EXCLUDED_INELIGIBLE_COUNT = 1;
+const EXPECTED_FIXTURE_COUNT = 245;
+const EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT = 235;
+const EXPECTED_EXCLUDED_INELIGIBLE_COUNT = 10;
 
 const HANDOFF_PHASES: readonly NewGMModeRosterAssignmentHandoffPhase[] =
   Object.freeze([

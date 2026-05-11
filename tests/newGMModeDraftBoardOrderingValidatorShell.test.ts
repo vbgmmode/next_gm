@@ -47,9 +47,9 @@ describe("New GM Mode Draft Board Ordering Validator Shell v0.1", () => {
     );
     assert.equal(validator.futureDraftBoardOrderingStructurallySatisfied, true);
     assert.deepEqual(validator.orderingSummary, {
-      totalFixtureCount: 10,
-      eligibleOrderedEntryCount: 9,
-      excludedIneligibleCount: 1,
+      totalFixtureCount: 245,
+      eligibleOrderedEntryCount: 235,
+      excludedIneligibleCount: 10,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: true,
       validationIssueCount: 0,
@@ -63,34 +63,32 @@ describe("New GM Mode Draft Board Ordering Validator Shell v0.1", () => {
     const validator = createNewGMModeDraftBoardOrderingValidatorShell();
 
     assert.deepEqual(
-      validator.eligibleOrderedEntries.map((entry) => entry.wrestlerId),
+      validator.eligibleOrderedEntries
+        .map((entry) => entry.wrestlerId)
+        .slice(0, 5),
       [
-        "fixture-wrestler-001-ace-mercer",
-        "fixture-wrestler-002-bruno-vale",
-        "fixture-wrestler-003-cassian-ryde",
-        "fixture-wrestler-004-dante-cross",
-        "fixture-wrestler-005-elena-voss",
-        "fixture-wrestler-006-fiona-hale",
-        "fixture-wrestler-007-gia-stone",
-        "fixture-wrestler-008-hana-reyes",
-        "fixture-wrestler-010-jules-kade"
+        "fixture-wrestler-011-akira-tozawa",
+        "fixture-wrestler-012-austin-theory",
+        "fixture-wrestler-013-bron-breakker",
+        "fixture-wrestler-014-bronson-reed",
+        "fixture-wrestler-015-brutus-creed"
       ]
     );
     assert.deepEqual(
-      validator.eligibleOrderedEntries.map((entry) => entry.orderingKey),
+      validator.eligibleOrderedEntries
+        .map((entry) => entry.orderingKey)
+        .slice(0, 5),
       [
-        "000:fixture-wrestler-001-ace-mercer",
-        "001:fixture-wrestler-002-bruno-vale",
-        "002:fixture-wrestler-003-cassian-ryde",
-        "003:fixture-wrestler-004-dante-cross",
-        "004:fixture-wrestler-005-elena-voss",
-        "005:fixture-wrestler-006-fiona-hale",
-        "006:fixture-wrestler-007-gia-stone",
-        "007:fixture-wrestler-008-hana-reyes",
-        "009:fixture-wrestler-010-jules-kade"
+        "010:fixture-wrestler-011-akira-tozawa",
+        "011:fixture-wrestler-012-austin-theory",
+        "012:fixture-wrestler-013-bron-breakker",
+        "013:fixture-wrestler-014-bronson-reed",
+        "014:fixture-wrestler-015-brutus-creed"
       ]
     );
-    assert.deepEqual(validator.excludedIneligibleFixtures, [
+    assert.equal(validator.eligibleOrderedEntries.length, 235);
+    assert.equal(validator.excludedIneligibleFixtures.length, 10);
+    assert.deepEqual(validator.excludedIneligibleFixtures[8],
       {
         fixtureIndex: 8,
         wrestlerId: "fixture-wrestler-009-ivan-north",
@@ -99,7 +97,7 @@ describe("New GM Mode Draft Board Ordering Validator Shell v0.1", () => {
           "fixture-not-available"
         ]
       }
-    ]);
+    );
     assert.equal(
       validator.eligibleOrderedEntries.some(
         (entry) => entry.wrestlerId === "fixture-wrestler-009-ivan-north"
@@ -125,15 +123,15 @@ describe("New GM Mode Draft Board Ordering Validator Shell v0.1", () => {
   it("reports insufficient eligible fixture scenarios deterministically", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const validator = createNewGMModeDraftBoardOrderingValidatorShell({
-      fixtures: catalog.fixtures.slice(0, 7)
+      fixtures: catalog.fixtures.slice(10, 17)
     });
 
     assert.equal(validator.orderingReadinessPhase, "draft-board-inputs-not-ready");
     assert.equal(validator.futureDraftBoardOrderingStructurallySatisfied, false);
     assert.deepEqual(validator.orderingSummary, {
       totalFixtureCount: 7,
-      eligibleOrderedEntryCount: 7,
-      excludedIneligibleCount: 0,
+      eligibleOrderedEntryCount: 0,
+      excludedIneligibleCount: 7,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: false,
       validationIssueCount: 2,
@@ -157,12 +155,13 @@ describe("New GM Mode Draft Board Ordering Validator Shell v0.1", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const validator = createNewGMModeDraftBoardOrderingValidatorShell({
       fixtures: [
-        catalog.fixtures[0],
+        ...catalog.fixtures.slice(0, 10),
+        catalog.fixtures[10],
         {
-          ...catalog.fixtures[1],
-          wrestlerId: catalog.fixtures[0].wrestlerId
+          ...catalog.fixtures[11],
+          wrestlerId: catalog.fixtures[10].wrestlerId
         },
-        ...catalog.fixtures.slice(2)
+        ...catalog.fixtures.slice(12)
       ]
     });
 
@@ -170,8 +169,8 @@ describe("New GM Mode Draft Board Ordering Validator Shell v0.1", () => {
     assert.ok(
       validator.orderingIssues.some(
         (issue) =>
-          issue.fixtureIndex === 1 &&
-          issue.wrestlerId === "fixture-wrestler-001-ace-mercer" &&
+          issue.fixtureIndex === 11 &&
+          issue.wrestlerId === "fixture-wrestler-011-akira-tozawa" &&
           issue.fieldId === "wrestlerId" &&
           issue.issue === "duplicate-eligible-wrestler-id"
       )
@@ -182,20 +181,21 @@ describe("New GM Mode Draft Board Ordering Validator Shell v0.1", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const validator = createNewGMModeDraftBoardOrderingValidatorShell({
       fixtures: [
+        ...catalog.fixtures.slice(0, 10),
         {
-          ...catalog.fixtures[0],
+          ...catalog.fixtures[10],
           displayName: "",
           brandEligibility: [],
           draftEligibility: undefined
         },
-        ...catalog.fixtures.slice(1)
+        ...catalog.fixtures.slice(11)
       ]
     });
 
     assert.equal(validator.futureDraftBoardOrderingStructurallySatisfied, false);
     assert.deepEqual(
       validator.orderingIssues
-        .filter((issue) => issue.fixtureIndex === 0)
+        .filter((issue) => issue.fixtureIndex === 10)
         .map((issue) => issue.issue),
       [
         "missing-wrestler-display-identity",

@@ -71,7 +71,15 @@ Cost tiers are UI-safe labels only. They do not define exact prices, salary band
 
 The UI should prefer these labels or similarly player-safe terms over exposing exact hidden star-power math.
 
-## 5. Affordability States
+## 5. Static Roster Universe Seed v0.1
+
+Phase 3F expands the playable draft candidate universe into a static curated roster seed for Raw, SmackDown, NXT, and AEW. The intent is broad active-wrestler coverage from current public roster references so the local draft feels large enough for real roster building, future CPU draft simulation, manual signings, and reserve-safe Auto-Fill.
+
+This is not a live roster sync and should not be treated as final or current truth after v0.1. The seed is fixture data only: names, source roster pool, basic division/category metadata, draft eligibility, and placeholder finance tier mapping. It does not include images, logos, biographies, entrance music, movesets, media assets, copied descriptions, contracts, live roster scraping, or backend/network calls.
+
+Other brands do not pick talent in this phase. CPU brand drafting, brand contract rules, transfer logic, post-draft roster ownership, and Week 1 initialization remain intentionally unimplemented. Future CPU draft simulation must be a separate approved phase with its own validation tier and boundaries.
+
+## 6. Affordability States
 
 Affordability states should explain what the player can do without exposing raw formulas, hidden scores, or backend diagnostics.
 
@@ -95,7 +103,7 @@ The superstar or signing action is blocked because the required product rules ar
 
 The superstar is no longer available because they were already selected in the current draft/session. The UI should treat them as unavailable without exposing raw internal IDs or validation objects.
 
-## 6. Draft Board UI Implications
+## 7. Draft Board UI Implications
 
 The future finance-aware draft board should eventually show:
 
@@ -120,7 +128,7 @@ The future finance-aware draft board should not show:
 
 The player should understand the decision without being invited to reverse-engineer the system.
 
-## 7. Staged Implementation Path
+## 8. Staged Implementation Path
 
 Each stage requires separate approval before implementation. The listed files are likely touch points, not pre-approval to edit them.
 
@@ -137,7 +145,7 @@ Each stage requires separate approval before implementation. The listed files ar
 
 The recommended path is staged local-only expansion before any durable gameplay: prove finance projection, then in-memory spend, then finance-limited continuation, and only later decide whether to expand into a full draft, hybrid roster fill, or persistence. Stage H is explicitly out of scope until gameplay persistence is approved.
 
-## 8. Non-Negotiable Boundaries
+## 9. Non-Negotiable Boundaries
 
 - No durable gameplay finance logic without explicit approval.
 - No persistent budget deduction or saved payroll without explicit approval.

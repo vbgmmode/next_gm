@@ -61,13 +61,13 @@ describe("New GM Mode Talent Pool Readiness Aggregator Shell v0.1", () => {
       "structurally-ready-talent-pool-blocked"
     );
     assert.deepEqual(aggregator.readinessSummary, {
-      totalFixtureCount: 10,
-      eligibleFixtureCount: 9,
-      ineligibleFixtureCount: 1,
+      totalFixtureCount: 245,
+      eligibleFixtureCount: 235,
+      ineligibleFixtureCount: 10,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: true,
       structuralTalentPoolReadinessSatisfied: true,
-      validationIssueCount: 2,
+      validationIssueCount: 11,
       actualTalentPoolCreationReady: false
     });
     assert.equal(aggregator.talentPoolCreationAvailable, false);
@@ -95,21 +95,63 @@ describe("New GM Mode Talent Pool Readiness Aggregator Shell v0.1", () => {
   it("reports insufficient eligible fixture scenarios deterministically", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const aggregator = createNewGMModeTalentPoolReadinessAggregatorShell({
-      fixtures: catalog.fixtures.slice(0, 7)
+      fixtures: catalog.fixtures.slice(10, 17)
     });
 
     assert.equal(aggregator.readinessPhase, "insufficient-eligible-fixtures");
     assert.deepEqual(aggregator.readinessSummary, {
       totalFixtureCount: 7,
-      eligibleFixtureCount: 7,
-      ineligibleFixtureCount: 0,
+      eligibleFixtureCount: 0,
+      ineligibleFixtureCount: 7,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: false,
       structuralTalentPoolReadinessSatisfied: false,
-      validationIssueCount: 1,
+      validationIssueCount: 8,
       actualTalentPoolCreationReady: false
     });
     assert.deepEqual(aggregator.eligibilityIssues, [
+      {
+        fixtureIndex: 0,
+        wrestlerId: "fixture-wrestler-011-akira-tozawa",
+        fieldId: "fixtureValidation",
+        issue: "fixture-validation-failed"
+      },
+      {
+        fixtureIndex: 1,
+        wrestlerId: "fixture-wrestler-012-austin-theory",
+        fieldId: "fixtureValidation",
+        issue: "fixture-validation-failed"
+      },
+      {
+        fixtureIndex: 2,
+        wrestlerId: "fixture-wrestler-013-bron-breakker",
+        fieldId: "fixtureValidation",
+        issue: "fixture-validation-failed"
+      },
+      {
+        fixtureIndex: 3,
+        wrestlerId: "fixture-wrestler-014-bronson-reed",
+        fieldId: "fixtureValidation",
+        issue: "fixture-validation-failed"
+      },
+      {
+        fixtureIndex: 4,
+        wrestlerId: "fixture-wrestler-015-brutus-creed",
+        fieldId: "fixtureValidation",
+        issue: "fixture-validation-failed"
+      },
+      {
+        fixtureIndex: 5,
+        wrestlerId: "fixture-wrestler-016-chad-gable",
+        fieldId: "fixtureValidation",
+        issue: "fixture-validation-failed"
+      },
+      {
+        fixtureIndex: 6,
+        wrestlerId: "fixture-wrestler-017-cm-punk",
+        fieldId: "fixtureValidation",
+        issue: "fixture-validation-failed"
+      },
       {
         fixtureIndex: 7,
         fieldId: "minimumEligibleTalentCount",

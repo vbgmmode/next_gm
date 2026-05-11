@@ -43,10 +43,10 @@ describe("New GM Mode Talent Pool Fixture Eligibility Summary Shell v0.1", () =>
     assert.equal(summary.talentPoolFixtureEligibilityValidatorAvailable, true);
     assert.equal(summary.talentPoolFixtureEligibilitySummaryAvailable, true);
     assert.deepEqual(summary.eligibilitySummary, {
-      totalFixtureCount: 10,
-      eligibleCandidateCount: 9,
-      ineligibleCandidateCount: 1,
-      eligibilityIssueCount: 2,
+      totalFixtureCount: 245,
+      eligibleCandidateCount: 235,
+      ineligibleCandidateCount: 10,
+      eligibilityIssueCount: 11,
       minimumEligibleTalentCountSatisfied: true,
       actualTalentPoolCreationReady: false,
       draftBoardCreationReady: false,

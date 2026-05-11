@@ -56,9 +56,9 @@ describe("New GM Mode Draft Pick Execution Prerequisite Summary Shell v0.1", () 
       true
     );
     assert.deepEqual(summary.executionPrerequisiteSummary, {
-      totalFixtureCount: 10,
-      displayReadyEligibleCount: 9,
-      excludedIneligibleCount: 1,
+      totalFixtureCount: 245,
+      displayReadyEligibleCount: 235,
+      excludedIneligibleCount: 10,
       selectedWrestlerChosen: false,
       concreteDraftPickValidated: false,
       validatedPickAvailable: false,
@@ -73,7 +73,7 @@ describe("New GM Mode Draft Pick Execution Prerequisite Summary Shell v0.1", () 
   it("reports malformed readiness inputs instead of repairing or executing them", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary = createNewGMModeDraftPickExecutionPrerequisiteSummaryShell({
-      fixtures: catalog.fixtures.slice(0, 7)
+      fixtures: catalog.fixtures.slice(10, 17)
     });
 
     assert.equal(
@@ -86,8 +86,8 @@ describe("New GM Mode Draft Pick Execution Prerequisite Summary Shell v0.1", () 
     );
     assert.deepEqual(summary.executionPrerequisiteSummary, {
       totalFixtureCount: 7,
-      displayReadyEligibleCount: 7,
-      excludedIneligibleCount: 0,
+      displayReadyEligibleCount: 0,
+      excludedIneligibleCount: 7,
       selectedWrestlerChosen: false,
       concreteDraftPickValidated: false,
       validatedPickAvailable: false,

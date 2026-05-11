@@ -27,23 +27,23 @@ const selectedGm = Object.freeze({
   displayName: "Maren Vale",
 });
 const validCandidate = Object.freeze({
-  candidateId: "candidate-ace-mercer",
-  name: "Ace Mercer",
+  candidateId: "candidate-roman-reigns",
+  name: "Roman Reigns",
   availability: "Available",
 });
 const secondValidCandidate = Object.freeze({
-  candidateId: "candidate-bruno-vale",
-  name: "Bruno Vale",
+  candidateId: "candidate-austin-theory",
+  name: "Austin Theory",
   availability: "Available",
 });
 const thirdValidCandidate = Object.freeze({
-  candidateId: "candidate-cassian-ryde",
-  name: "Cassian Ryde",
+  candidateId: "candidate-je-von-evans",
+  name: "Je'Von Evans",
   availability: "Available",
 });
 const fourthValidCandidate = Object.freeze({
-  candidateId: "candidate-dante-cross",
-  name: "Dante Cross",
+  candidateId: "candidate-akira-tozawa",
+  name: "Akira Tozawa",
   availability: "Available",
 });
 const unavailableCandidate = Object.freeze({
@@ -143,7 +143,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       localOnly: true,
     });
     assert.deepEqual(result.miniDraftProgress.draftedCandidateIds, [
-      "candidate-ace-mercer",
+      "candidate-roman-reigns",
     ]);
     assert.equal(result.miniDraftProgress.miniDraftComplete, false);
   });
@@ -236,9 +236,9 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(thirdPick.miniDraftProgress.budgetSpent, 29);
     assert.equal(thirdPick.miniDraftProgress.signedTalentCount, 3);
     assert.deepEqual(thirdPick.miniDraftProgress.draftedCandidateIds, [
-      "candidate-ace-mercer",
-      "candidate-bruno-vale",
-      "candidate-cassian-ryde",
+      "candidate-roman-reigns",
+      "candidate-austin-theory",
+      "candidate-je-von-evans",
     ]);
     assert.equal(fourthPick.actionStatus, "in-memory-make-pick-succeeded");
     assert.equal(fourthPick.miniDraftProgress.completedPickSummaries.length, 4);
@@ -278,7 +278,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(result.projection.displayLabels.recapStatusLine, "Draft still open");
     assert.equal(
       result.projection.displayLabels.candidateLine,
-      "Round 1 / Pick 1: Ace Mercer (Raw, Franchise, Cost 18) | Round 1 / Pick 2: Bruno Vale (Raw, Upper Card, Cost 8) | Round 1 / Pick 3: Cassian Ryde (Raw, Prospect, Cost 3)"
+      "Round 1 / Pick 1: Roman Reigns (Raw, Franchise, Cost 18) | Round 1 / Pick 2: Austin Theory (Raw, Upper Card, Cost 8) | Round 1 / Pick 3: Je'Von Evans (Raw, Prospect, Cost 3)"
     );
     assert.equal(result.projection.displayLabels.budgetLine, "Budget: 91 remaining / 29 spent / reserve 20");
     assert.deepEqual(result.projection.budgetSummary, {

@@ -94,12 +94,12 @@ describe("New GM Mode Roster Mutation Boundary Contract Shell v0.1", () => {
     assert.equal(contract.championshipDivisionRequirementAvailable, true);
     assert.equal(contract.futureRosterMutationBoundaryAvailable, false);
     assert.deepEqual(contract.fixtureHandoffCounts, {
-      totalFixtureCount: 10,
-      eligibleDisplayReadyCount: 9,
-      excludedIneligibleCount: 1,
-      expectedFixtureCount: 10,
-      expectedEligibleDisplayReadyCount: 9,
-      expectedExcludedIneligibleCount: 1
+      totalFixtureCount: 245,
+      eligibleDisplayReadyCount: 235,
+      excludedIneligibleCount: 10,
+      expectedFixtureCount: 245,
+      expectedEligibleDisplayReadyCount: 235,
+      expectedExcludedIneligibleCount: 10
     });
   });
 

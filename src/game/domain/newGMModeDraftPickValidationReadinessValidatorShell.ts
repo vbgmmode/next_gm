@@ -65,9 +65,9 @@ export interface NewGMModeDraftPickValidationReadinessValidatorShell {
     readonly totalFixtureCount: number;
     readonly displayReadyEligibleCount: number;
     readonly excludedIneligibleCount: number;
-    readonly expectedFixtureCount: 10;
-    readonly expectedDisplayReadyEligibleCount: 9;
-    readonly expectedExcludedIneligibleCount: 1;
+    readonly expectedFixtureCount: number;
+    readonly expectedDisplayReadyEligibleCount: number;
+    readonly expectedExcludedIneligibleCount: number;
     readonly selectedWrestlerChosen: false;
     readonly concreteDraftPickValidated: false;
     readonly actualDraftPickExecutionReady: false;
@@ -118,9 +118,9 @@ export interface NewGMModeDraftPickValidationReadinessValidatorShell {
   readonly genAIUsed: false;
 }
 
-const EXPECTED_FIXTURE_COUNT = 10;
-const EXPECTED_DISPLAY_READY_ELIGIBLE_COUNT = 9;
-const EXPECTED_EXCLUDED_INELIGIBLE_COUNT = 1;
+const EXPECTED_FIXTURE_COUNT = 245;
+const EXPECTED_DISPLAY_READY_ELIGIBLE_COUNT = 235;
+const EXPECTED_EXCLUDED_INELIGIBLE_COUNT = 10;
 
 export function createNewGMModeDraftPickValidationReadinessValidatorShell(
   input: NewGMModeTalentPoolReadinessAggregatorInput = {}

@@ -41,8 +41,8 @@ describe("New GM Mode Static Wrestler Fixture Validation Summary Shell v0.1", ()
     assert.equal(summary.staticWrestlerFixtureValidationSummaryAvailable, true);
     assert.equal(summary.validationStatus, "structurally-valid");
     assert.deepEqual(summary.fixtureSummary, {
-      fixtureCount: 10,
-      validFixtureCount: 10,
+      fixtureCount: 245,
+      validFixtureCount: 245,
       invalidFixtureCount: 0,
       validationIssueCount: 0,
       fixtureCatalogAvailable: true,

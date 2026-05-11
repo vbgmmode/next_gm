@@ -18,13 +18,13 @@ const selectedGm = Object.freeze({
   displayName: "Maren Vale",
 });
 const aceMercer = Object.freeze({
-  candidateId: "candidate-ace-mercer",
-  name: "Ace Mercer",
+  candidateId: "candidate-roman-reigns",
+  name: "Roman Reigns",
   availability: "Available",
 });
 const cassianRyde = Object.freeze({
-  candidateId: "candidate-cassian-ryde",
-  name: "Cassian Ryde",
+  candidateId: "candidate-je-von-evans",
+  name: "Je'Von Evans",
   availability: "Available",
 });
 
@@ -34,7 +34,7 @@ describe("Playable New GM Mode finance-limited draft", () => {
       signedTalentCount: 16,
       remainingDraftBudget: 40,
       budgetSpent: 80,
-      draftedCandidateIds: ["candidate-bruno-vale"],
+      draftedCandidateIds: ["candidate-austin-theory"],
     });
     const readiness = createMakePickReadiness({
       selectedCandidate: aceMercer,

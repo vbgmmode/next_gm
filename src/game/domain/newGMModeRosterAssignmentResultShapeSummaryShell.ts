@@ -25,9 +25,9 @@ export interface NewGMModeRosterAssignmentResultShapeSummaryShell {
     readonly totalFixtureCount: number;
     readonly eligibleDisplayReadyCount: number;
     readonly excludedIneligibleCount: number;
-    readonly expectedFixtureCount: 10;
-    readonly expectedEligibleDisplayReadyCount: 9;
-    readonly expectedExcludedIneligibleCount: 1;
+    readonly expectedFixtureCount: number;
+    readonly expectedEligibleDisplayReadyCount: number;
+    readonly expectedExcludedIneligibleCount: number;
   };
   readonly resultShapeRequirementCount: number;
   readonly issueCount: number;

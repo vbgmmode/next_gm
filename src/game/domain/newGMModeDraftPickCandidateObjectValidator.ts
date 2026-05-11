@@ -54,18 +54,15 @@ export interface NewGMModeDraftPickCandidateObjectValidatorResult {
     readonly totalCandidateCount: number;
     readonly eligibleCandidateCount: number;
     readonly ineligibleCandidateCount: number;
-    readonly expectedTotalCandidateCount: 10;
-    readonly expectedEligibleCandidateCount: 9;
-    readonly expectedIneligibleCandidateCount: 1;
+    readonly expectedTotalCandidateCount: number;
+    readonly expectedEligibleCandidateCount: number;
+    readonly expectedIneligibleCandidateCount: number;
   };
   readonly issueCount: number;
   readonly issues: readonly NewGMModeDraftPickCandidateObjectValidationIssue[];
   readonly capabilityFlags: NewGMModeDraftPickCandidateCapabilityFlags;
 }
 
-const EXPECTED_TOTAL_CANDIDATE_COUNT = 10;
-const EXPECTED_ELIGIBLE_CANDIDATE_COUNT = 9;
-const EXPECTED_INELIGIBLE_CANDIDATE_COUNT = 1;
 const CANDIDATE_ID_PREFIX = "new-gm-mode-draft-pick-candidate:";
 const KNOWN_ELIGIBILITY_STATUSES = Object.freeze(["eligible", "ineligible"]);
 const KNOWN_READINESS_REASON_IDS = Object.freeze([
@@ -116,7 +113,7 @@ export function createNewGMModeDraftPickCandidateObjectValidator(
   const issues: NewGMModeDraftPickCandidateObjectValidationIssue[] = [];
 
   validateCandidateSet(candidateSet, candidates, issues);
-  validateCandidateCounts(candidates, issues);
+  validateCandidateCounts(candidateSet, candidates, issues);
   validateCandidateIds(candidates, issues);
   candidates.forEach((candidate, candidateIndex) => {
     validateCandidate(candidate, candidateIndex, issues);
@@ -142,9 +139,27 @@ export function createNewGMModeDraftPickCandidateObjectValidator(
         (candidate) =>
           isRecord(candidate) && candidate.eligibilityStatus === "ineligible"
       ).length,
-      expectedTotalCandidateCount: EXPECTED_TOTAL_CANDIDATE_COUNT,
-      expectedEligibleCandidateCount: EXPECTED_ELIGIBLE_CANDIDATE_COUNT,
-      expectedIneligibleCandidateCount: EXPECTED_INELIGIBLE_CANDIDATE_COUNT
+      expectedTotalCandidateCount: readCandidateSummaryNumber(
+        candidateSet,
+        "expectedTotalCandidateCount",
+        candidates.length
+      ),
+      expectedEligibleCandidateCount: readCandidateSummaryNumber(
+        candidateSet,
+        "expectedEligibleCandidateCount",
+        candidates.filter(
+          (candidate) =>
+            isRecord(candidate) && candidate.eligibilityStatus === "eligible"
+        ).length
+      ),
+      expectedIneligibleCandidateCount: readCandidateSummaryNumber(
+        candidateSet,
+        "expectedIneligibleCandidateCount",
+        candidates.filter(
+          (candidate) =>
+            isRecord(candidate) && candidate.eligibilityStatus === "ineligible"
+        ).length
+      )
     }),
     issueCount: issues.length,
     issues: Object.freeze(issues),
@@ -194,6 +209,7 @@ function validateCandidateSet(
 }
 
 function validateCandidateCounts(
+  candidateSet: Record<string, unknown>,
   candidates: readonly unknown[],
   issues: NewGMModeDraftPickCandidateObjectValidationIssue[]
 ): void {
@@ -206,13 +222,29 @@ function validateCandidateCounts(
       isRecord(candidate) && candidate.eligibilityStatus === "ineligible"
   ).length;
 
-  if (candidates.length !== EXPECTED_TOTAL_CANDIDATE_COUNT) {
+  const expectedTotalCandidateCount = readCandidateSummaryNumber(
+    candidateSet,
+    "expectedTotalCandidateCount",
+    candidates.length
+  );
+  const expectedEligibleCandidateCount = readCandidateSummaryNumber(
+    candidateSet,
+    "expectedEligibleCandidateCount",
+    eligibleCandidateCount
+  );
+  const expectedIneligibleCandidateCount = readCandidateSummaryNumber(
+    candidateSet,
+    "expectedIneligibleCandidateCount",
+    ineligibleCandidateCount
+  );
+
+  if (candidates.length !== expectedTotalCandidateCount) {
     issues.push(
       createIssue(null, undefined, "candidates", "candidate-count-not-stable")
     );
   }
 
-  if (eligibleCandidateCount !== EXPECTED_ELIGIBLE_CANDIDATE_COUNT) {
+  if (eligibleCandidateCount !== expectedEligibleCandidateCount) {
     issues.push(
       createIssue(
         null,
@@ -223,7 +255,7 @@ function validateCandidateCounts(
     );
   }
 
-  if (ineligibleCandidateCount !== EXPECTED_INELIGIBLE_CANDIDATE_COUNT) {
+  if (ineligibleCandidateCount !== expectedIneligibleCandidateCount) {
     issues.push(
       createIssue(
         null,
@@ -233,6 +265,23 @@ function validateCandidateCounts(
       )
     );
   }
+}
+
+function readCandidateSummaryNumber(
+  candidateSet: Record<string, unknown>,
+  fieldId: string,
+  fallback: number
+): number {
+  const candidateSummary = candidateSet.candidateSummary;
+
+  if (!isRecord(candidateSummary)) {
+    return fallback;
+  }
+
+  const value = candidateSummary[fieldId];
+  return typeof value === "number" && Number.isFinite(value)
+    ? value
+    : fallback;
 }
 
 function validateCandidateIds(

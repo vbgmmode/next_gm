@@ -55,12 +55,12 @@ describe("New GM Mode Draft Pick Validation Readiness Validator Shell v0.1", () 
       true
     );
     assert.deepEqual(validator.validationReadinessSummary, {
-      totalFixtureCount: 10,
-      displayReadyEligibleCount: 9,
-      excludedIneligibleCount: 1,
-      expectedFixtureCount: 10,
-      expectedDisplayReadyEligibleCount: 9,
-      expectedExcludedIneligibleCount: 1,
+      totalFixtureCount: 245,
+      displayReadyEligibleCount: 235,
+      excludedIneligibleCount: 10,
+      expectedFixtureCount: 245,
+      expectedDisplayReadyEligibleCount: 235,
+      expectedExcludedIneligibleCount: 10,
       selectedWrestlerChosen: false,
       concreteDraftPickValidated: false,
       actualDraftPickExecutionReady: false,
@@ -74,7 +74,7 @@ describe("New GM Mode Draft Pick Validation Readiness Validator Shell v0.1", () 
   it("reports malformed readiness inputs deterministically", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const validator = createNewGMModeDraftPickValidationReadinessValidatorShell({
-      fixtures: catalog.fixtures.slice(0, 7)
+      fixtures: catalog.fixtures.slice(10, 17)
     });
 
     assert.equal(
@@ -87,15 +87,15 @@ describe("New GM Mode Draft Pick Validation Readiness Validator Shell v0.1", () 
     );
     assert.deepEqual(validator.validationReadinessSummary, {
       totalFixtureCount: 7,
-      displayReadyEligibleCount: 7,
-      excludedIneligibleCount: 0,
-      expectedFixtureCount: 10,
-      expectedDisplayReadyEligibleCount: 9,
-      expectedExcludedIneligibleCount: 1,
+      displayReadyEligibleCount: 0,
+      excludedIneligibleCount: 7,
+      expectedFixtureCount: 245,
+      expectedDisplayReadyEligibleCount: 235,
+      expectedExcludedIneligibleCount: 10,
       selectedWrestlerChosen: false,
       concreteDraftPickValidated: false,
       actualDraftPickExecutionReady: false,
-      validationIssueCount: 8
+      validationIssueCount: 9
     });
     assert.deepEqual(
       validator.validationReadinessIssues.map((issue) => issue.issue),
@@ -105,6 +105,7 @@ describe("New GM Mode Draft Pick Validation Readiness Validator Shell v0.1", () 
         "ordering-readiness-not-structurally-satisfied",
         "draft-board-input-readiness-not-structurally-satisfied",
         "talent-pool-readiness-not-structurally-satisfied",
+        "display-ready-eligible-entries-missing",
         "fixture-count-not-stable",
         "display-ready-eligible-count-not-stable",
         "excluded-ineligible-count-not-stable"

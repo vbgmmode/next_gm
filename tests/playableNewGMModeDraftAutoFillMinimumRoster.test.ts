@@ -17,7 +17,7 @@ const selectedGm = Object.freeze({
 });
 
 describe("Playable New GM Mode Auto-Fill Minimum Roster", () => {
-  it("auto-fills deterministically by lowest cost first and stops before 16 when fixtures run out", () => {
+  it("auto-fills deterministically by lowest cost first and reaches 16 from a clean draft state", () => {
     const result = executeAutoFillMinimumRoster({
       selectedBrand,
       selectedGm,
@@ -30,30 +30,38 @@ describe("Playable New GM Mode Auto-Fill Minimum Roster", () => {
       (summary) => summary.signingCost
     );
 
-    assert.equal(result.actionStatus, "auto-fill-stopped-minimum-not-reached");
-    assert.equal(result.autoFilledCount, 9);
+    assert.equal(result.actionStatus, "auto-fill-minimum-roster-succeeded");
+    assert.equal(result.autoFilledCount, 16);
     assert.deepEqual(signedNames, [
-      "Cassian Ryde",
-      "Gia Stone",
-      "Jules Kade",
-      "Dante Cross",
-      "Hana Reyes",
-      "Bruno Vale",
-      "Fiona Hale",
-      "Elena Voss",
-      "Ace Mercer",
+      "Je'Von Evans",
+      "Maxxine Dupri",
+      "Sol Ruca",
+      "Zaria",
+      "Royce Keys",
+      "Fallon Henley",
+      "Lainey Reid",
+      "Brad Baylor",
+      "Bronco Nima",
+      "Cutler James",
+      "Dion Lennox",
+      "EK Prosper",
+      "Elio LeFleur",
+      "Hank Walker",
+      "Jackson Drake",
+      "Jasper Troy",
     ]);
-    assert.deepEqual(signedCosts, [3, 3, 3, 4, 5, 8, 8, 12, 18]);
-    assert.equal(result.miniDraftProgress.signedTalentCount, 9);
-    assert.equal(result.miniDraftProgress.minimumRosterViable, false);
-    assert.equal(result.miniDraftProgress.remainingDraftBudget, 56);
+    assert.deepEqual(signedCosts, [
+      3, 3, 3, 3, 3, 3, 3, 3,
+      3, 3, 3, 3, 3, 3, 3, 3,
+    ]);
+    assert.equal(result.miniDraftProgress.signedTalentCount, 16);
+    assert.equal(result.miniDraftProgress.minimumRosterViable, true);
+    assert.equal(result.miniDraftProgress.remainingDraftBudget, 72);
     assert.equal(result.miniDraftProgress.bookingReserveProtected, true);
-    assert.deepEqual(result.blockedReasonIds, [
-      "minimum-roster-not-reached-with-reserve-protected",
-    ]);
+    assert.deepEqual(result.blockedReasonIds, []);
     assert.equal(
       result.displayLabels.noteLine,
-      "Auto-Fill stopped rather than dipping into booking reserve or signing unavailable talent."
+      "Auto-Fill stopped at 16 and preserved the local-only draft boundary."
     );
   });
 

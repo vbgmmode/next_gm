@@ -32,12 +32,12 @@ describe("New GM Mode Static Wrestler Fixture Catalog Shell v0.1", () => {
     assert.equal(catalog.deterministicOrdering, true);
   });
 
-  it("includes a deterministic fixture list and stable catalog summary", () => {
+  it("includes a deterministic full roster fixture list and stable catalog summary", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
 
-    assert.equal(catalog.fixtures.length, 10);
+    assert.equal(catalog.fixtures.length, 245);
     assert.deepEqual(catalog.catalogSummary, {
-      fixtureCount: 10,
+      fixtureCount: 245,
       contractFieldCount: 14,
       fixtureOnly: true,
       externalWrestlerDataLoadingReady: false,
@@ -53,7 +53,7 @@ describe("New GM Mode Static Wrestler Fixture Catalog Shell v0.1", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
 
     assert.deepEqual(
-      catalog.fixtures.map((fixture) => fixture.wrestlerId),
+      catalog.fixtures.slice(0, 10).map((fixture) => fixture.wrestlerId),
       [
         "fixture-wrestler-001-ace-mercer",
         "fixture-wrestler-002-bruno-vale",
@@ -70,6 +70,35 @@ describe("New GM Mode Static Wrestler Fixture Catalog Shell v0.1", () => {
     assert.deepEqual(
       catalog.fixtures.map((fixture) => fixture.slug),
       catalog.fixtures.map((fixture) => fixture.wrestlerId)
+    );
+  });
+
+  it("includes broad eligible static roster seed coverage for each source roster pool", () => {
+    const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
+    const eligibleFixtures = catalog.fixtures.filter(
+      (fixture) => fixture.draftEligibility.eligible
+    );
+    const countsByPool = {
+      Raw: eligibleFixtures.filter((fixture) => fixture.sourceRosterPool === "Raw").length,
+      SmackDown: eligibleFixtures.filter(
+        (fixture) => fixture.sourceRosterPool === "SmackDown"
+      ).length,
+      NXT: eligibleFixtures.filter((fixture) => fixture.sourceRosterPool === "NXT").length,
+      AEW: eligibleFixtures.filter((fixture) => fixture.sourceRosterPool === "AEW").length
+    };
+
+    assert.equal(eligibleFixtures.length, 235);
+    assert.deepEqual(countsByPool, {
+      Raw: 52,
+      SmackDown: 52,
+      NXT: 44,
+      AEW: 87
+    });
+    assert.equal(
+      eligibleFixtures.some(
+        (fixture) => fixture.sourceRosterPool === "Legacy Fixture"
+      ),
+      false
     );
   });
 

@@ -40,14 +40,14 @@ describe("New GM Mode Draft Pick Candidate Object Validator v0.1", () => {
     assert.deepEqual(validation.issues, []);
   });
 
-  it("preserves 10 total / 9 eligible / 1 ineligible candidate counts", () => {
+  it("preserves full static roster candidate counts", () => {
     assert.deepEqual(validation.candidateSummary, {
-      totalCandidateCount: 10,
-      eligibleCandidateCount: 9,
-      ineligibleCandidateCount: 1,
-      expectedTotalCandidateCount: 10,
-      expectedEligibleCandidateCount: 9,
-      expectedIneligibleCandidateCount: 1
+      totalCandidateCount: 245,
+      eligibleCandidateCount: 235,
+      ineligibleCandidateCount: 10,
+      expectedTotalCandidateCount: 245,
+      expectedEligibleCandidateCount: 235,
+      expectedIneligibleCandidateCount: 10
     });
   });
 
@@ -84,7 +84,7 @@ describe("New GM Mode Draft Pick Candidate Object Validator v0.1", () => {
     });
 
     assert.deepEqual(issueIds(result), [
-      "eligible-candidate-count-not-stable",
+      "ineligible-candidate-count-not-stable",
       "eligibility-status-unknown"
     ]);
   });

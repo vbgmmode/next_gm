@@ -32,24 +32,26 @@ describe("Playable New GM Mode Draft Read-Only Integration Boundary v0.1", () =>
       "read-only-draft-display-ready-execution-blocked"
     );
     assert.deepEqual(boundary.draftRoomSnapshot.candidateCounts, {
-      total: 10,
-      eligible: 9,
-      ineligible: 1
+      total: 245,
+      eligible: 235,
+      ineligible: 10
     });
-    assert.equal(boundary.draftRoomSnapshot.candidates.length, 10);
+    assert.equal(boundary.draftRoomSnapshot.candidates.length, 245);
     assert.equal(
       boundary.initialDraftProjection.projectionSource,
       "real-draft-system-v1-read-only-boundary"
     );
-    assert.equal(boundary.initialDraftProjection.candidateBoard.length, 10);
+    assert.equal(boundary.initialDraftProjection.candidateBoard.length, 245);
     assert.deepEqual(
       boundary.initialDraftProjection.candidateBoard.map(
         (candidate) => candidate.boardRankLabel
-      ),
+      ).slice(0, 10),
       ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
     );
     assert.deepEqual(
-      boundary.draftRoomSnapshot.candidates.map((candidate) => candidate.displayName),
+      boundary.draftRoomSnapshot.candidates
+        .map((candidate) => candidate.displayName)
+        .slice(0, 10),
       [
         "Ace Mercer",
         "Bruno Vale",
@@ -97,6 +99,7 @@ describe("Playable New GM Mode Draft Read-Only Integration Boundary v0.1", () =>
     const firstCandidate = boundary.initialDraftProjection.candidateBoard[0];
 
     assert.equal(firstCandidate.displayName, "Ace Mercer");
+    assert.equal(firstCandidate.eligibilityLabel, "Unavailable");
     assert.equal(firstCandidate.primaryRoleLabel, "Main Event");
     assert.equal(firstCandidate.divisionSummaryLabel, "Mens Division");
     assert.deepEqual(firstCandidate.scoutingSignals, {

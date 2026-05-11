@@ -53,9 +53,9 @@ describe("New GM Mode Draft Board Display Readiness Summary Shell v0.1", () => {
       true
     );
     assert.deepEqual(summary.displayReadinessSummary, {
-      totalFixtureCount: 10,
-      displayReadyEligibleCount: 9,
-      excludedIneligibleCount: 1,
+      totalFixtureCount: 245,
+      displayReadyEligibleCount: 235,
+      excludedIneligibleCount: 10,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: true,
       validationIssueCount: 0,
@@ -68,11 +68,12 @@ describe("New GM Mode Draft Board Display Readiness Summary Shell v0.1", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary = createNewGMModeDraftBoardDisplayReadinessSummaryShell({
       fixtures: [
+        ...catalog.fixtures.slice(0, 10),
         {
-          ...catalog.fixtures[0],
+          ...catalog.fixtures[10],
           placeholderAttributes: undefined
         },
-        ...catalog.fixtures.slice(1)
+        ...catalog.fixtures.slice(11)
       ]
     });
 
@@ -82,9 +83,9 @@ describe("New GM Mode Draft Board Display Readiness Summary Shell v0.1", () => {
       false
     );
     assert.deepEqual(summary.displayReadinessSummary, {
-      totalFixtureCount: 10,
-      displayReadyEligibleCount: 8,
-      excludedIneligibleCount: 2,
+      totalFixtureCount: 245,
+      displayReadyEligibleCount: 234,
+      excludedIneligibleCount: 11,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: true,
       validationIssueCount: 2,
@@ -96,7 +97,7 @@ describe("New GM Mode Draft Board Display Readiness Summary Shell v0.1", () => {
   it("reports insufficient display-ready entries without creating a board or UI", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary = createNewGMModeDraftBoardDisplayReadinessSummaryShell({
-      fixtures: catalog.fixtures.slice(0, 7)
+      fixtures: catalog.fixtures.slice(10, 17)
     });
 
     assert.equal(
@@ -109,8 +110,8 @@ describe("New GM Mode Draft Board Display Readiness Summary Shell v0.1", () => {
     );
     assert.deepEqual(summary.displayReadinessSummary, {
       totalFixtureCount: 7,
-      displayReadyEligibleCount: 7,
-      excludedIneligibleCount: 0,
+      displayReadyEligibleCount: 0,
+      excludedIneligibleCount: 7,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: false,
       validationIssueCount: 2,

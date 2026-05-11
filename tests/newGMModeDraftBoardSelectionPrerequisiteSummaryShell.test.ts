@@ -52,9 +52,9 @@ describe("New GM Mode Draft Board Selection Prerequisite Summary Shell v0.1", ()
     );
     assert.equal(summary.futureSelectionPrerequisitesStructurallySatisfied, true);
     assert.deepEqual(summary.selectionPrerequisiteSummary, {
-      totalFixtureCount: 10,
-      displayReadyEligibleCount: 9,
-      excludedIneligibleCount: 1,
+      totalFixtureCount: 245,
+      displayReadyEligibleCount: 235,
+      excludedIneligibleCount: 10,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: true,
       selectedWrestlerChosen: false,
@@ -68,7 +68,7 @@ describe("New GM Mode Draft Board Selection Prerequisite Summary Shell v0.1", ()
   it("reports insufficient display-ready entries deterministically", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary = createNewGMModeDraftBoardSelectionPrerequisiteSummaryShell({
-      fixtures: catalog.fixtures.slice(0, 7)
+      fixtures: catalog.fixtures.slice(10, 17)
     });
 
     assert.equal(
@@ -78,8 +78,8 @@ describe("New GM Mode Draft Board Selection Prerequisite Summary Shell v0.1", ()
     assert.equal(summary.futureSelectionPrerequisitesStructurallySatisfied, false);
     assert.deepEqual(summary.selectionPrerequisiteSummary, {
       totalFixtureCount: 7,
-      displayReadyEligibleCount: 7,
-      excludedIneligibleCount: 0,
+      displayReadyEligibleCount: 0,
+      excludedIneligibleCount: 7,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: false,
       selectedWrestlerChosen: false,

@@ -21,18 +21,18 @@ const selectedGm = Object.freeze({
   displayName: "Maren Vale",
 });
 const aceMercer = Object.freeze({
-  candidateId: "candidate-ace-mercer",
-  name: "Ace Mercer",
+  candidateId: "candidate-roman-reigns",
+  name: "Roman Reigns",
   availability: "Available",
 });
 const brunoVale = Object.freeze({
-  candidateId: "candidate-bruno-vale",
-  name: "Bruno Vale",
+  candidateId: "candidate-austin-theory",
+  name: "Austin Theory",
   availability: "Available",
 });
 const cassianRyde = Object.freeze({
-  candidateId: "candidate-cassian-ryde",
-  name: "Cassian Ryde",
+  candidateId: "candidate-je-von-evans",
+  name: "Je'Von Evans",
   availability: "Available",
 });
 
@@ -150,8 +150,8 @@ describe("Playable New GM Mode local draft budget spend", () => {
     });
     const fourthPick = executeInMemoryMakePick({
       selectedCandidate: {
-        candidateId: "candidate-dante-cross",
-        name: "Dante Cross",
+        candidateId: "candidate-akira-tozawa",
+        name: "Akira Tozawa",
         availability: "Available",
       },
       selectedBrand,

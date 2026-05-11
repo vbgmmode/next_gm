@@ -48,9 +48,9 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Summary Shell v0.1"
     assert.equal(summary.validationReadinessAvailable, true);
     assert.equal(summary.rosterSlotRequirementAvailable, true);
     assert.equal(summary.championshipDivisionRequirementAvailable, true);
-    assert.equal(summary.totalFixtureCount, 10);
-    assert.equal(summary.eligibleDisplayReadyCount, 9);
-    assert.equal(summary.excludedIneligibleCount, 1);
+    assert.equal(summary.totalFixtureCount, 245);
+    assert.equal(summary.eligibleDisplayReadyCount, 235);
+    assert.equal(summary.excludedIneligibleCount, 10);
     assert.equal(
       summary.futureRosterAssignmentRuleInputsStructurallySatisfied,
       true
@@ -68,12 +68,12 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Summary Shell v0.1"
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary =
       createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell({
-        fixtures: catalog.fixtures.slice(0, 7)
+        fixtures: catalog.fixtures.slice(10, 17)
       });
 
     assert.equal(summary.totalFixtureCount, 7);
-    assert.equal(summary.eligibleDisplayReadyCount, 7);
-    assert.equal(summary.excludedIneligibleCount, 0);
+    assert.equal(summary.eligibleDisplayReadyCount, 0);
+    assert.equal(summary.excludedIneligibleCount, 7);
     assert.equal(
       summary.futureRosterAssignmentRuleInputsStructurallySatisfied,
       false

@@ -50,9 +50,9 @@ export interface NewGMModeDraftPickCandidateReadinessSummary {
     readonly total: number;
     readonly eligible: number;
     readonly ineligible: number;
-    readonly expectedTotal: 10;
-    readonly expectedEligible: 9;
-    readonly expectedIneligible: 1;
+    readonly expectedTotal: number;
+    readonly expectedEligible: number;
+    readonly expectedIneligible: number;
   };
   readonly validatorStatus: {
     readonly validatorId: "new-gm-mode-draft-pick-candidate-object-validator-v0.1";

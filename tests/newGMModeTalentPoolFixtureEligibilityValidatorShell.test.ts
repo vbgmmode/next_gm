@@ -44,10 +44,10 @@ describe("New GM Mode Talent Pool Fixture Eligibility Validator Shell v0.1", () 
       "new-gm-mode-static-wrestler-fixture-validation-summary-v0.1"
     );
     assert.deepEqual(validator.fixtureEligibilitySummary, {
-      totalFixtureCount: 10,
-      eligibleCandidateCount: 9,
-      ineligibleCandidateCount: 1,
-      eligibilityIssueCount: 2,
+      totalFixtureCount: 245,
+      eligibleCandidateCount: 235,
+      ineligibleCandidateCount: 10,
+      eligibilityIssueCount: 11,
       minimumEligibleTalentCount: 8,
       minimumEligibleTalentCountSatisfied: true,
       actualTalentPoolCreationReady: false
@@ -58,31 +58,29 @@ describe("New GM Mode Talent Pool Fixture Eligibility Validator Shell v0.1", () 
     const validator = createNewGMModeTalentPoolFixtureEligibilityValidatorShell();
 
     assert.deepEqual(
-      validator.eligibleFixtures.map((fixture) => fixture.wrestlerId),
+      validator.eligibleFixtures
+        .map((fixture) => fixture.wrestlerId)
+        .slice(0, 5),
       [
-        "fixture-wrestler-001-ace-mercer",
-        "fixture-wrestler-002-bruno-vale",
-        "fixture-wrestler-003-cassian-ryde",
-        "fixture-wrestler-004-dante-cross",
-        "fixture-wrestler-005-elena-voss",
-        "fixture-wrestler-006-fiona-hale",
-        "fixture-wrestler-007-gia-stone",
-        "fixture-wrestler-008-hana-reyes",
-        "fixture-wrestler-010-jules-kade"
+        "fixture-wrestler-011-akira-tozawa",
+        "fixture-wrestler-012-austin-theory",
+        "fixture-wrestler-013-bron-breakker",
+        "fixture-wrestler-014-bronson-reed",
+        "fixture-wrestler-015-brutus-creed"
       ]
     );
-    assert.deepEqual(validator.ineligibleFixtures, [
-      {
-        fixtureIndex: 8,
-        wrestlerId: "fixture-wrestler-009-ivan-north",
-        slug: "fixture-wrestler-009-ivan-north",
-        eligibilityStatus: "ineligible",
-        eligibilityReasons: [
-          "fixture-not-draft-eligible",
-          "fixture-not-available"
-        ]
-      }
-    ]);
+    assert.equal(validator.eligibleFixtures.length, 235);
+    assert.equal(validator.ineligibleFixtures.length, 10);
+    assert.deepEqual(validator.ineligibleFixtures[8], {
+      fixtureIndex: 8,
+      wrestlerId: "fixture-wrestler-009-ivan-north",
+      slug: "fixture-wrestler-009-ivan-north",
+      eligibilityStatus: "ineligible",
+      eligibilityReasons: [
+        "fixture-not-draft-eligible",
+        "fixture-not-available"
+      ]
+    });
   });
 
   it("detects missing draft eligibility in malformed injected fixture override", () => {

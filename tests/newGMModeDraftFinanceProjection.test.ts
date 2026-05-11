@@ -6,6 +6,7 @@ import {
   NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_PLACEHOLDER_TIER_COSTS,
   NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
+  createNewGMModeDraftPickCandidateObjects,
   createNewGMModeDraftFinanceProjection
 } from "../src/game/domain/index.ts";
 
@@ -62,12 +63,13 @@ describe("New GM Mode Draft Finance Projection v0.1", () => {
 
   it("projects selected candidate tier, cost, affordability, and budget preview", () => {
     const projection = createNewGMModeDraftFinanceProjection({
-      selectedCandidateId: "candidate-ace-mercer"
+      selectedCandidateId: "candidate-roman-reigns"
     });
     const candidate = projection.selectedCandidateProjection;
 
     assert.ok(candidate);
-    assert.equal(candidate.displayName, "Ace Mercer");
+    assert.equal(candidate.displayName, "Roman Reigns");
+    assert.equal(candidate.sourceRosterPool, "SmackDown");
     assert.equal(candidate.projectedSigningTier, "Franchise");
     assert.equal(candidate.projectedSigningCost, 18);
     assert.equal(candidate.remainingDraftBudgetPreview, 120);
@@ -83,7 +85,7 @@ describe("New GM Mode Draft Finance Projection v0.1", () => {
 
   it("returns a clear unaffordable status when remaining preview budget is below cost", () => {
     const projection = createNewGMModeDraftFinanceProjection({
-      selectedCandidateId: "candidate-ace-mercer",
+      selectedCandidateId: "candidate-roman-reigns",
       remainingDraftBudgetPreview: 2
     });
     const candidate = projection.selectedCandidateProjection;
@@ -95,14 +97,14 @@ describe("New GM Mode Draft Finance Projection v0.1", () => {
   });
 
   it("marks locally drafted candidates without mutating budget or input", () => {
-    const alreadyDraftedCandidateIds = ["candidate-ace-mercer"];
+    const alreadyDraftedCandidateIds = ["candidate-roman-reigns"];
     const projection = createNewGMModeDraftFinanceProjection({
-      selectedCandidateId: "candidate-ace-mercer",
+      selectedCandidateId: "candidate-roman-reigns",
       alreadyDraftedCandidateIds
     });
     const candidate = projection.selectedCandidateProjection;
 
-    assert.deepEqual(alreadyDraftedCandidateIds, ["candidate-ace-mercer"]);
+    assert.deepEqual(alreadyDraftedCandidateIds, ["candidate-roman-reigns"]);
     assert.ok(candidate);
     assert.equal(candidate.affordabilityStatus, "already-drafted-signed");
     assert.equal(candidate.remainingDraftBudgetPreview, 120);
@@ -139,7 +141,7 @@ describe("New GM Mode Draft Finance Projection v0.1", () => {
 
   it("keeps finance projection read-only and free of player-facing hidden internals", () => {
     const projection = createNewGMModeDraftFinanceProjection({
-      selectedCandidateId: "candidate-bruno-vale"
+      selectedCandidateId: "candidate-austin-theory"
     });
     const candidate = projection.selectedCandidateProjection;
     const displayText = [
@@ -170,23 +172,54 @@ describe("New GM Mode Draft Finance Projection v0.1", () => {
     }
   });
 
-  it("does not invent Roman Reigns or Grayson Waller when fixtures do not include them", () => {
-    const projection = createNewGMModeDraftFinanceProjection();
-    const roman = projection.candidateProjections.find(
-      (candidate) => candidate.displayName === "Roman Reigns"
+  it("covers every eligible candidate with a signing tier and cost", () => {
+    const candidateSet = createNewGMModeDraftPickCandidateObjects();
+    const projection = createNewGMModeDraftFinanceProjection({ candidateObjectSet: candidateSet });
+    const eligibleCandidates = candidateSet.candidates.filter(
+      (candidate) => candidate.eligibilityStatus === "eligible"
     );
-    const grayson = projection.candidateProjections.find(
-      (candidate) => candidate.displayName === "Grayson Waller"
+    const projectionByCandidateId = new Map(
+      projection.candidateProjections.map((candidate) => [
+        candidate.candidateObjectId,
+        candidate
+      ])
     );
 
-    if (roman && grayson) {
-      assert.equal(
-        roman.projectedSigningCost > grayson.projectedSigningCost,
-        true
-      );
-    } else {
-      assert.equal(roman, undefined);
-      assert.equal(grayson, undefined);
+    assert.equal(eligibleCandidates.length, 235);
+    for (const candidate of eligibleCandidates) {
+      const finance = projectionByCandidateId.get(candidate.candidateId);
+
+      assert.ok(finance, candidate.candidateId);
+      assert.ok(finance.projectedSigningTier, candidate.candidateId);
+      assert.equal(typeof finance.projectedSigningCost, "number");
+      assert.equal(finance.projectedSigningCost > 0, true);
     }
   });
+
+  it("keeps marquee talent more expensive than lower-card examples", () => {
+    const projection = createNewGMModeDraftFinanceProjection();
+    const roman = requireProjection(projection, "Roman Reigns");
+    const grayson = requireProjection(projection, "Grayson Waller");
+    const moxley = requireProjection(projection, "Jon Moxley");
+    const maxxine = requireProjection(projection, "Maxxine Dupri");
+
+    assert.equal(roman.projectedSigningTier, "Franchise");
+    assert.equal(grayson.projectedSigningTier, "Mid Card");
+    assert.equal(moxley.projectedSigningTier, "Franchise");
+    assert.equal(maxxine.projectedSigningTier, "Prospect");
+    assert.equal(roman.projectedSigningCost > grayson.projectedSigningCost, true);
+    assert.equal(moxley.projectedSigningCost > maxxine.projectedSigningCost, true);
+  });
 });
+
+function requireProjection(
+  projection: ReturnType<typeof createNewGMModeDraftFinanceProjection>,
+  displayName: string
+) {
+  const candidate = projection.candidateProjections.find(
+    (projectionCandidate) => projectionCandidate.displayName === displayName
+  );
+
+  assert.ok(candidate, displayName);
+  return candidate;
+}

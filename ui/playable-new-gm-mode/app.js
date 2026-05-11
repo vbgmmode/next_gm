@@ -13,6 +13,7 @@ import {
   executeLocalFinishDraft,
 } from "./inMemoryDraftActionController.js";
 import {
+  createNewGMModeDraftPickCandidateObjects,
   createNewGMModeDraftFinanceProjection,
   NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
@@ -34,6 +35,8 @@ import {
   const autoFillControl = document.querySelector("[data-auto-fill-minimum-roster]");
   const finishDraftControl = document.querySelector("[data-finish-local-draft]");
   const recapControl = document.querySelector("[data-local-recap-action]");
+  const talentList = document.querySelector(".talent-list");
+  renderPlayableRosterUniverse(talentList);
   const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
   const gmCards = Array.from(document.querySelectorAll("[data-gm-id]"));
   const brandControls = Array.from(document.querySelectorAll("[data-brand]"));
@@ -143,7 +146,7 @@ import {
     currentScreenId: "game-landing",
     selectedGmId: "maren-vale",
     selectedBrandId: "raw",
-    selectedCandidateId: "candidate-ace-mercer",
+    selectedCandidateId: "candidate-roman-reigns",
     selectedDraftIntentPreview: undefined,
     mockDraftRecapPreview: undefined,
     miniDraftProgress: createInitialMiniDraftProgress(),
@@ -991,3 +994,198 @@ import {
   updateMakePickControl();
   showSection("game-landing");
 })();
+
+function renderPlayableRosterUniverse(talentList) {
+  if (!talentList) {
+    return;
+  }
+
+  const candidateObjectSet = createNewGMModeDraftPickCandidateObjects();
+  const projection = createNewGMModeDraftFinanceProjection({
+    candidateObjectSet,
+  });
+  const projectionByCandidateId = new Map(
+    projection.candidateProjections.map((candidateProjection) => [
+      candidateProjection.candidateObjectId,
+      candidateProjection,
+    ])
+  );
+  const eligibleCandidates = candidateObjectSet.candidates.filter(
+    (candidate) => candidate.eligibilityStatus === "eligible"
+  );
+
+  talentList.replaceChildren(
+    ...eligibleCandidates.map((candidate, index) =>
+      createTalentRow({
+        candidate,
+        candidateProjection: projectionByCandidateId.get(candidate.candidateId),
+        draftRank: index + 1,
+      })
+    )
+  );
+}
+
+function createTalentRow({ candidate, candidateProjection, draftRank }) {
+  const row = document.createElement("button");
+  const displayName =
+    candidateProjection?.displayName ||
+    candidate.wrestlerIdentityReference.slug;
+  const sourceRosterPool = candidateProjection?.sourceRosterPool || "Roster";
+  const divisionCategory = candidateProjection?.divisionCategory || "men";
+  const projectedSigningTier =
+    candidateProjection?.projectedSigningTier || "Mid Card";
+  const projectedSigningCost =
+    candidateProjection?.projectedSigningCost ?? 5;
+  const candidateId = createUiCandidateIdFromFixtureSlug(
+    candidate.sourceFixtureReference.fixtureSlug
+  );
+  const rating = createDisplayRatings(projectedSigningTier);
+
+  row.className = draftRank === 1 ? "talent-row selected" : "talent-row";
+  row.type = "button";
+  row.setAttribute("aria-pressed", draftRank === 1 ? "true" : "false");
+  row.dataset.candidateId = candidateId;
+  row.dataset.draftRank = String(draftRank).padStart(2, "0");
+  row.dataset.availability = "Available";
+  row.dataset.talentName = displayName;
+  row.dataset.talentRole = `${projectedSigningTier} / ${formatDivisionCategory(
+    divisionCategory
+  )} / ${sourceRosterPool}`;
+  row.dataset.talentStyle = `Roster Pool: ${sourceRosterPool} | Cost ${projectedSigningCost}`;
+  row.dataset.talentRead =
+    "Static v0.1 roster seed. Finance tiers are placeholder and local-only.";
+  row.dataset.talentFit = `${formatDivisionCategory(
+    divisionCategory
+  )}, ${sourceRosterPool} source roster pool.`;
+  row.dataset.starPower = rating.starPower;
+  row.dataset.starPowerValue = rating.starPowerValue;
+  row.dataset.ringWork = rating.ringWork;
+  row.dataset.ringWorkValue = rating.ringWorkValue;
+  row.dataset.promo = rating.promo;
+  row.dataset.promoValue = rating.promoValue;
+  row.dataset.durability = rating.durability;
+  row.dataset.durabilityValue = rating.durabilityValue;
+  row.dataset.risk = rating.risk;
+  row.dataset.riskValue = rating.riskValue;
+  row.dataset.confidence = "Static Seed";
+  row.dataset.confidenceValue = "74";
+
+  const portrait = document.createElement("span");
+  portrait.className = "mini-portrait";
+  portrait.textContent = createInitials(displayName);
+
+  const name = document.createElement("strong");
+  name.textContent = displayName;
+
+  const meta = document.createElement("small");
+  meta.textContent = [
+    row.dataset.draftRank,
+    sourceRosterPool,
+    projectedSigningTier,
+    `Cost ${projectedSigningCost}`,
+  ].join(" | ");
+
+  row.append(portrait, name, meta);
+  return row;
+}
+
+function createDisplayRatings(projectedSigningTier) {
+  if (projectedSigningTier === "Franchise") {
+    return {
+      starPower: "Elite",
+      starPowerValue: "94",
+      ringWork: "Elite",
+      ringWorkValue: "90",
+      promo: "Elite",
+      promoValue: "90",
+      durability: "Durable",
+      durabilityValue: "86",
+      risk: "Low",
+      riskValue: "26",
+    };
+  }
+
+  if (projectedSigningTier === "Main Event") {
+    return {
+      starPower: "High",
+      starPowerValue: "86",
+      ringWork: "Strong",
+      ringWorkValue: "84",
+      promo: "Strong",
+      promoValue: "82",
+      durability: "Durable",
+      durabilityValue: "82",
+      risk: "Low",
+      riskValue: "32",
+    };
+  }
+
+  if (projectedSigningTier === "Upper Card") {
+    return {
+      starPower: "Strong",
+      starPowerValue: "78",
+      ringWork: "Solid",
+      ringWorkValue: "78",
+      promo: "Steady",
+      promoValue: "74",
+      durability: "Steady",
+      durabilityValue: "76",
+      risk: "Medium",
+      riskValue: "42",
+    };
+  }
+
+  if (projectedSigningTier === "Prospect") {
+    return {
+      starPower: "Developing",
+      starPowerValue: "62",
+      ringWork: "Developing",
+      ringWorkValue: "66",
+      promo: "Developing",
+      promoValue: "60",
+      durability: "Steady",
+      durabilityValue: "70",
+      risk: "Medium",
+      riskValue: "48",
+    };
+  }
+
+  return {
+    starPower: "Steady",
+    starPowerValue: "70",
+    ringWork: "Solid",
+    ringWorkValue: "72",
+    promo: "Steady",
+    promoValue: "68",
+    durability: "Steady",
+    durabilityValue: "74",
+    risk: "Medium",
+    riskValue: "40",
+  };
+}
+
+function createUiCandidateIdFromFixtureSlug(fixtureSlug) {
+  return `candidate-${fixtureSlug.replace(/^fixture-wrestler-\d+-/, "")}`;
+}
+
+function createInitials(displayName) {
+  return displayName
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part.charAt(0))
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function formatDivisionCategory(divisionCategory) {
+  if (divisionCategory === "women") {
+    return "Women's division";
+  }
+
+  if (divisionCategory === "tag") {
+    return "Tag category";
+  }
+
+  return "Men's division";
+}

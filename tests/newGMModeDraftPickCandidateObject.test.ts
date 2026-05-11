@@ -37,37 +37,57 @@ describe("New GM Mode Draft Pick Candidate Object v0.1", () => {
     assert.equal(Object.isFrozen(candidateSet.candidates), true);
   });
 
-  it("creates exactly 10 candidates and preserves the 9 eligible / 1 ineligible split", () => {
-    assert.equal(candidateSet.candidates.length, 10);
+  it("creates a full static roster universe and preserves the eligible / ineligible split", () => {
+    assert.equal(candidateSet.candidates.length, 245);
     assert.deepEqual(candidateSet.candidateSummary, {
-      totalCandidateCount: 10,
-      eligibleCandidateCount: 9,
-      ineligibleCandidateCount: 1,
-      expectedTotalCandidateCount: 10,
-      expectedEligibleCandidateCount: 9,
-      expectedIneligibleCandidateCount: 1
+      totalCandidateCount: 245,
+      eligibleCandidateCount: 235,
+      ineligibleCandidateCount: 10,
+      expectedTotalCandidateCount: 245,
+      expectedEligibleCandidateCount: 235,
+      expectedIneligibleCandidateCount: 10
     });
     assert.equal(
       candidateSet.candidates.filter(
         (candidate) => candidate.eligibilityStatus === "eligible"
       ).length,
-      9
+      235
     );
     assert.equal(
       candidateSet.candidates.filter(
         (candidate) => candidate.eligibilityStatus === "ineligible"
       ).length,
-      1
+      10
     );
   });
 
+  it("includes broad eligible coverage by source roster pool", () => {
+    const countsByPool = countEligibleCandidatesBySourceRosterPool();
+
+    assert.deepEqual(countsByPool, {
+      Raw: 52,
+      SmackDown: 52,
+      NXT: 44,
+      AEW: 87
+    });
+    assert.equal(countsByPool.Raw > 40, true);
+    assert.equal(countsByPool.SmackDown > 40, true);
+    assert.equal(countsByPool.NXT > 35, true);
+    assert.equal(countsByPool.AEW > 70, true);
+  });
+
   it("produces stable deterministic candidate IDs from source fixture identity", () => {
+    const candidateIds = candidateSet.candidates.map(
+      (candidate) => candidate.candidateId
+    );
+
     assert.deepEqual(
-      candidateSet.candidates.map((candidate) => candidate.candidateId),
+      candidateIds,
       fixtureCatalog.fixtures.map(
         (fixture) => `new-gm-mode-draft-pick-candidate:${fixture.wrestlerId}`
       )
     );
+    assert.equal(new Set(candidateIds).size, candidateIds.length);
     assert.deepEqual(
       createNewGMModeDraftPickCandidateObjects(),
       candidateSet
@@ -96,11 +116,16 @@ describe("New GM Mode Draft Pick Candidate Object v0.1", () => {
   });
 
   it("represents eligible and ineligible candidate shapes with readiness reasons and display markers", () => {
-    const eligibleCandidate = candidateSet.candidates[0];
+    const eligibleCandidate = candidateSet.candidates.find(
+      (candidate) => candidate.eligibilityStatus === "eligible"
+    );
     const ineligibleCandidate = candidateSet.candidates.find(
-      (candidate) => candidate.eligibilityStatus === "ineligible"
+      (candidate) =>
+        candidate.eligibilityStatus === "ineligible" &&
+        candidate.readinessReasonIds.includes("source-fixture-not-available")
     );
 
+    assert.ok(eligibleCandidate);
     assert.ok(ineligibleCandidate);
     assert.equal(eligibleCandidate.eligibilityStatus, "eligible");
     assert.deepEqual(eligibleCandidate.readinessReasonIds, [
@@ -206,3 +231,25 @@ describe("New GM Mode Draft Pick Candidate Object v0.1", () => {
     assert.deepEqual(secondMetadata, firstMetadata);
   });
 });
+
+function countEligibleCandidatesBySourceRosterPool(): Record<string, number> {
+  const counts: Record<string, number> = {
+    Raw: 0,
+    SmackDown: 0,
+    NXT: 0,
+    AEW: 0
+  };
+
+  for (const candidate of candidateSet.candidates) {
+    if (candidate.eligibilityStatus !== "eligible") {
+      continue;
+    }
+
+    const fixture =
+      fixtureCatalog.fixtures[candidate.sourceFixtureReference.fixtureIndex];
+    counts[fixture.sourceRosterPool] =
+      (counts[fixture.sourceRosterPool] ?? 0) + 1;
+  }
+
+  return counts;
+}

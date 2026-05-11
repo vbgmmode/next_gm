@@ -48,12 +48,12 @@ describe("New GM Mode Draft Board Eligibility Input Summary Shell v0.1", () => {
     );
     assert.equal(summary.futureDraftBoardInputsStructurallySatisfied, true);
     assert.deepEqual(summary.draftBoardInputSummary, {
-      totalFixtureCount: 10,
-      eligibleFixtureCount: 9,
-      ineligibleFixtureCount: 1,
+      totalFixtureCount: 245,
+      eligibleFixtureCount: 235,
+      ineligibleFixtureCount: 10,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: true,
-      validationIssueCount: 2,
+      validationIssueCount: 11,
       actualDraftBoardCreationReady: false,
       draftPickValidationReady: false,
       draftExecutionReady: false
@@ -65,18 +65,18 @@ describe("New GM Mode Draft Board Eligibility Input Summary Shell v0.1", () => {
   it("reports insufficient eligible fixture scenarios deterministically", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary = createNewGMModeDraftBoardEligibilityInputSummaryShell({
-      fixtures: catalog.fixtures.slice(0, 7)
+      fixtures: catalog.fixtures.slice(10, 17)
     });
 
     assert.equal(summary.topLevelReadinessPhase, "insufficient-eligible-fixtures");
     assert.equal(summary.futureDraftBoardInputsStructurallySatisfied, false);
     assert.deepEqual(summary.draftBoardInputSummary, {
       totalFixtureCount: 7,
-      eligibleFixtureCount: 7,
-      ineligibleFixtureCount: 0,
+      eligibleFixtureCount: 0,
+      ineligibleFixtureCount: 7,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: false,
-      validationIssueCount: 1,
+      validationIssueCount: 8,
       actualDraftBoardCreationReady: false,
       draftPickValidationReady: false,
       draftExecutionReady: false
@@ -87,18 +87,19 @@ describe("New GM Mode Draft Board Eligibility Input Summary Shell v0.1", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary = createNewGMModeDraftBoardEligibilityInputSummaryShell({
       fixtures: [
+        ...catalog.fixtures.slice(0, 10),
         {
-          ...catalog.fixtures[0],
+          ...catalog.fixtures[10],
           brandEligibility: []
         },
-        ...catalog.fixtures.slice(1)
+        ...catalog.fixtures.slice(11)
       ]
     });
 
     assert.equal(summary.topLevelReadinessPhase, "invalid-fixture-eligibility");
     assert.equal(summary.futureDraftBoardInputsStructurallySatisfied, false);
-    assert.equal(summary.draftBoardInputSummary.totalFixtureCount, 10);
-    assert.equal(summary.draftBoardInputSummary.eligibleFixtureCount, 8);
+    assert.equal(summary.draftBoardInputSummary.totalFixtureCount, 245);
+    assert.equal(summary.draftBoardInputSummary.eligibleFixtureCount, 234);
   });
 
   it("exposes all new shells from the domain index", () => {

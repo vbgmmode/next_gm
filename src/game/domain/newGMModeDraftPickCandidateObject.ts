@@ -76,9 +76,9 @@ export interface NewGMModeDraftPickCandidateObjectSet {
     readonly totalCandidateCount: number;
     readonly eligibleCandidateCount: number;
     readonly ineligibleCandidateCount: number;
-    readonly expectedTotalCandidateCount: 10;
-    readonly expectedEligibleCandidateCount: 9;
-    readonly expectedIneligibleCandidateCount: 1;
+    readonly expectedTotalCandidateCount: number;
+    readonly expectedEligibleCandidateCount: number;
+    readonly expectedIneligibleCandidateCount: number;
   };
   readonly capabilityFlags: NewGMModeDraftPickCandidateCapabilityFlags;
 }
@@ -101,10 +101,6 @@ export const NEW_GM_MODE_DRAFT_PICK_CANDIDATE_CAPABILITY_FLAGS: NewGMModeDraftPi
     canCreateGeneratedText: false,
     canUseGenAI: false
   });
-
-const EXPECTED_TOTAL_CANDIDATE_COUNT = 10;
-const EXPECTED_ELIGIBLE_CANDIDATE_COUNT = 9;
-const EXPECTED_INELIGIBLE_CANDIDATE_COUNT = 1;
 
 export function createNewGMModeDraftPickCandidateObjects(): NewGMModeDraftPickCandidateObjectSet {
   const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
@@ -136,9 +132,9 @@ export function createNewGMModeDraftPickCandidateObjects(): NewGMModeDraftPickCa
       totalCandidateCount: candidates.length,
       eligibleCandidateCount,
       ineligibleCandidateCount,
-      expectedTotalCandidateCount: EXPECTED_TOTAL_CANDIDATE_COUNT,
-      expectedEligibleCandidateCount: EXPECTED_ELIGIBLE_CANDIDATE_COUNT,
-      expectedIneligibleCandidateCount: EXPECTED_INELIGIBLE_CANDIDATE_COUNT
+      expectedTotalCandidateCount: candidates.length,
+      expectedEligibleCandidateCount: eligibleCandidateCount,
+      expectedIneligibleCandidateCount: ineligibleCandidateCount
     }),
     capabilityFlags: NEW_GM_MODE_DRAFT_PICK_CANDIDATE_CAPABILITY_FLAGS
   });

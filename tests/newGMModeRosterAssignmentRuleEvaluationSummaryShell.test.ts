@@ -56,12 +56,12 @@ describe("New GM Mode Roster Assignment Rule Evaluation Summary Shell v0.1", () 
       true
     );
     assert.deepEqual(summary.fixtureHandoffCounts, {
-      totalFixtureCount: 10,
-      eligibleDisplayReadyCount: 9,
-      excludedIneligibleCount: 1,
-      expectedFixtureCount: 10,
-      expectedEligibleDisplayReadyCount: 9,
-      expectedExcludedIneligibleCount: 1
+      totalFixtureCount: 245,
+      eligibleDisplayReadyCount: 235,
+      excludedIneligibleCount: 10,
+      expectedFixtureCount: 245,
+      expectedEligibleDisplayReadyCount: 235,
+      expectedExcludedIneligibleCount: 10
     });
     assert.equal(summary.evaluationRuleCount, 15);
     assert.equal(summary.issueCount, 0);
@@ -74,16 +74,16 @@ describe("New GM Mode Roster Assignment Rule Evaluation Summary Shell v0.1", () 
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary =
       createNewGMModeRosterAssignmentRuleEvaluationSummaryShell({
-        fixtures: catalog.fixtures.slice(0, 7)
+        fixtures: catalog.fixtures.slice(10, 17)
       });
 
     assert.deepEqual(summary.fixtureHandoffCounts, {
       totalFixtureCount: 7,
-      eligibleDisplayReadyCount: 7,
-      excludedIneligibleCount: 0,
-      expectedFixtureCount: 10,
-      expectedEligibleDisplayReadyCount: 9,
-      expectedExcludedIneligibleCount: 1
+      eligibleDisplayReadyCount: 0,
+      excludedIneligibleCount: 7,
+      expectedFixtureCount: 245,
+      expectedEligibleDisplayReadyCount: 235,
+      expectedExcludedIneligibleCount: 10
     });
     assert.equal(
       summary.futureRosterAssignmentRuleEvaluationStructurallyReady,

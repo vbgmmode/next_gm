@@ -26,6 +26,8 @@ export interface NewGMModeDraftFinanceProjectionCandidate {
   readonly sourceWrestlerId: string;
   readonly fixtureSlug: string;
   readonly displayName: string;
+  readonly sourceRosterPool: string;
+  readonly divisionCategory: string;
   readonly projectedSigningTier: NewGMModeDraftFinanceProjectionTier;
   readonly projectedSigningCost: number;
   readonly startingDraftBudget: 120;
@@ -248,9 +250,11 @@ function createCandidateProjection(input: {
   const fixture =
     fixtureCatalog.fixtures[input.candidate.sourceFixtureReference.fixtureIndex];
   const tier =
+    fixture?.financeProjectionTier ??
     PLACEHOLDER_TIER_BY_WRESTLER_ID[
       input.candidate.wrestlerIdentityReference.wrestlerId
-    ] ?? "Mid Card";
+    ] ??
+    "Mid Card";
   const projectedSigningCost =
     NEW_GM_MODE_DRAFT_FINANCE_PLACEHOLDER_TIER_COSTS[tier];
   const alreadyDrafted = input.alreadyDraftedCandidateIds.some(
@@ -272,6 +276,8 @@ function createCandidateProjection(input: {
     sourceWrestlerId: input.candidate.wrestlerIdentityReference.wrestlerId,
     fixtureSlug: input.candidate.sourceFixtureReference.fixtureSlug,
     displayName: fixture?.displayName ?? input.candidate.wrestlerIdentityReference.slug,
+    sourceRosterPool: fixture?.sourceRosterPool ?? "Legacy Fixture",
+    divisionCategory: fixture?.divisionCategory ?? "men",
     projectedSigningTier: tier,
     projectedSigningCost,
     startingDraftBudget: NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,

@@ -50,9 +50,9 @@ describe("New GM Mode Draft Board Ordering Summary Shell v0.1", () => {
     );
     assert.equal(summary.futureDraftBoardOrderingStructurallySatisfied, true);
     assert.deepEqual(summary.orderingSummary, {
-      totalFixtureCount: 10,
-      eligibleOrderedCount: 9,
-      excludedIneligibleCount: 1,
+      totalFixtureCount: 245,
+      eligibleOrderedCount: 235,
+      excludedIneligibleCount: 10,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: true,
       validationIssueCount: 0,
@@ -63,15 +63,15 @@ describe("New GM Mode Draft Board Ordering Summary Shell v0.1", () => {
   it("reports insufficient eligible fixture scenarios without creating a draft board", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary = createNewGMModeDraftBoardOrderingSummaryShell({
-      fixtures: catalog.fixtures.slice(0, 7)
+      fixtures: catalog.fixtures.slice(10, 17)
     });
 
     assert.equal(summary.topLevelOrderingReadinessPhase, "draft-board-inputs-not-ready");
     assert.equal(summary.futureDraftBoardOrderingStructurallySatisfied, false);
     assert.deepEqual(summary.orderingSummary, {
       totalFixtureCount: 7,
-      eligibleOrderedCount: 7,
-      excludedIneligibleCount: 0,
+      eligibleOrderedCount: 0,
+      excludedIneligibleCount: 7,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: false,
       validationIssueCount: 2,
@@ -85,19 +85,20 @@ describe("New GM Mode Draft Board Ordering Summary Shell v0.1", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const summary = createNewGMModeDraftBoardOrderingSummaryShell({
       fixtures: [
+        ...catalog.fixtures.slice(0, 10),
         {
-          ...catalog.fixtures[0],
+          ...catalog.fixtures[10],
           displayName: "",
           brandEligibility: []
         },
-        ...catalog.fixtures.slice(1)
+        ...catalog.fixtures.slice(11)
       ]
     });
 
     assert.equal(summary.topLevelOrderingReadinessPhase, "draft-board-inputs-not-ready");
     assert.equal(summary.futureDraftBoardOrderingStructurallySatisfied, false);
-    assert.equal(summary.orderingSummary.totalFixtureCount, 10);
-    assert.equal(summary.orderingSummary.eligibleOrderedCount, 8);
+    assert.equal(summary.orderingSummary.totalFixtureCount, 245);
+    assert.equal(summary.orderingSummary.eligibleOrderedCount, 234);
     assert.equal(summary.orderingSummary.validationIssueCount, 3);
   });
 

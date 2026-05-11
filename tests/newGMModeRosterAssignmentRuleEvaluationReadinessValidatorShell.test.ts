@@ -61,12 +61,12 @@ describe("New GM Mode Roster Assignment Rule Evaluation Readiness Validator Shel
       actualRosterMutationReady: false
     });
     assert.deepEqual(validator.fixtureHandoffCounts, {
-      totalFixtureCount: 10,
-      eligibleDisplayReadyCount: 9,
-      excludedIneligibleCount: 1,
-      expectedFixtureCount: 10,
-      expectedEligibleDisplayReadyCount: 9,
-      expectedExcludedIneligibleCount: 1
+      totalFixtureCount: 245,
+      eligibleDisplayReadyCount: 235,
+      excludedIneligibleCount: 10,
+      expectedFixtureCount: 245,
+      expectedEligibleDisplayReadyCount: 235,
+      expectedExcludedIneligibleCount: 10
     });
     assert.equal(validator.evaluationRuleCount, 15);
     assert.equal(validator.issueCount, 0);
@@ -115,7 +115,7 @@ describe("New GM Mode Roster Assignment Rule Evaluation Readiness Validator Shel
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const validator =
       createNewGMModeRosterAssignmentRuleEvaluationReadinessValidatorShell({
-        fixtures: catalog.fixtures.slice(0, 7)
+        fixtures: catalog.fixtures.slice(10, 17)
       });
 
     assert.equal(
@@ -128,11 +128,11 @@ describe("New GM Mode Roster Assignment Rule Evaluation Readiness Validator Shel
     );
     assert.deepEqual(validator.fixtureHandoffCounts, {
       totalFixtureCount: 7,
-      eligibleDisplayReadyCount: 7,
-      excludedIneligibleCount: 0,
-      expectedFixtureCount: 10,
-      expectedEligibleDisplayReadyCount: 9,
-      expectedExcludedIneligibleCount: 1
+      eligibleDisplayReadyCount: 0,
+      excludedIneligibleCount: 7,
+      expectedFixtureCount: 245,
+      expectedEligibleDisplayReadyCount: 235,
+      expectedExcludedIneligibleCount: 10
     });
     assert.deepEqual(
       validator.readinessIssues.map((issue) => issue.issue),

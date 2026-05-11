@@ -51,9 +51,9 @@ describe("New GM Mode Draft Board Display Readiness Validator Shell v0.1", () =>
       true
     );
     assert.deepEqual(validator.displayReadinessSummary, {
-      totalFixtureCount: 10,
-      displayReadyEligibleEntryCount: 9,
-      excludedIneligibleCount: 1,
+      totalFixtureCount: 245,
+      displayReadyEligibleEntryCount: 235,
+      excludedIneligibleCount: 10,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: true,
       validationIssueCount: 0,
@@ -68,17 +68,15 @@ describe("New GM Mode Draft Board Display Readiness Validator Shell v0.1", () =>
     const validator = createNewGMModeDraftBoardDisplayReadinessValidatorShell();
 
     assert.deepEqual(
-      validator.displayReadyEntries.map((entry) => entry.wrestlerId),
+      validator.displayReadyEntries
+        .map((entry) => entry.wrestlerId)
+        .slice(0, 5),
       [
-        "fixture-wrestler-001-ace-mercer",
-        "fixture-wrestler-002-bruno-vale",
-        "fixture-wrestler-003-cassian-ryde",
-        "fixture-wrestler-004-dante-cross",
-        "fixture-wrestler-005-elena-voss",
-        "fixture-wrestler-006-fiona-hale",
-        "fixture-wrestler-007-gia-stone",
-        "fixture-wrestler-008-hana-reyes",
-        "fixture-wrestler-010-jules-kade"
+        "fixture-wrestler-011-akira-tozawa",
+        "fixture-wrestler-012-austin-theory",
+        "fixture-wrestler-013-bron-breakker",
+        "fixture-wrestler-014-bronson-reed",
+        "fixture-wrestler-015-brutus-creed"
       ]
     );
     assert.equal(
@@ -87,7 +85,9 @@ describe("New GM Mode Draft Board Display Readiness Validator Shell v0.1", () =>
       ),
       false
     );
-    assert.deepEqual(validator.excludedIneligibleFixtures, [
+    assert.equal(validator.displayReadyEntries.length, 235);
+    assert.equal(validator.excludedIneligibleFixtures.length, 10);
+    assert.deepEqual(validator.excludedIneligibleFixtures[8],
       {
         fixtureIndex: 8,
         wrestlerId: "fixture-wrestler-009-ivan-north",
@@ -96,7 +96,7 @@ describe("New GM Mode Draft Board Display Readiness Validator Shell v0.1", () =>
           "fixture-not-available"
         ]
       }
-    ]);
+    );
   });
 
   it("reports deterministic display field readiness", () => {
@@ -125,11 +125,12 @@ describe("New GM Mode Draft Board Display Readiness Validator Shell v0.1", () =>
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const validator = createNewGMModeDraftBoardDisplayReadinessValidatorShell({
       fixtures: [
+        ...catalog.fixtures.slice(0, 10),
         {
-          ...catalog.fixtures[0],
+          ...catalog.fixtures[10],
           placeholderAttributes: undefined
         },
-        ...catalog.fixtures.slice(1)
+        ...catalog.fixtures.slice(11)
       ]
     });
 
@@ -140,20 +141,20 @@ describe("New GM Mode Draft Board Display Readiness Validator Shell v0.1", () =>
     );
     assert.deepEqual(validator.displayReadinessIssues, [
       {
-        fixtureIndex: 0,
-        wrestlerId: "fixture-wrestler-001-ace-mercer",
+        fixtureIndex: 10,
+        wrestlerId: "fixture-wrestler-011-akira-tozawa",
         fieldId: "placeholderAttributes",
         issue: "missing-placeholder-attributes-visibility"
       },
       {
-        fixtureIndex: 10,
+        fixtureIndex: 245,
         fieldId: "draftBoardOrderingSummary",
         issue: "draft-board-ordering-summary-not-structurally-satisfied"
       }
     ]);
     assert.equal(
       validator.displayReadinessSummary.displayReadyEligibleEntryCount,
-      8
+      234
     );
   });
 
@@ -161,12 +162,13 @@ describe("New GM Mode Draft Board Display Readiness Validator Shell v0.1", () =>
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const validator = createNewGMModeDraftBoardDisplayReadinessValidatorShell({
       fixtures: [
-        catalog.fixtures[0],
+        ...catalog.fixtures.slice(0, 10),
+        catalog.fixtures[10],
         {
-          ...catalog.fixtures[1],
-          wrestlerId: catalog.fixtures[0].wrestlerId
+          ...catalog.fixtures[11],
+          wrestlerId: catalog.fixtures[10].wrestlerId
         },
-        ...catalog.fixtures.slice(2)
+        ...catalog.fixtures.slice(12)
       ]
     });
 
@@ -174,8 +176,8 @@ describe("New GM Mode Draft Board Display Readiness Validator Shell v0.1", () =>
     assert.ok(
       validator.displayReadinessIssues.some(
         (issue) =>
-          issue.fixtureIndex === 1 &&
-          issue.wrestlerId === "fixture-wrestler-001-ace-mercer" &&
+          issue.fixtureIndex === 11 &&
+          issue.wrestlerId === "fixture-wrestler-011-akira-tozawa" &&
           issue.fieldId === "wrestlerId" &&
           issue.issue === "duplicate-display-wrestler-id"
       )
@@ -185,14 +187,14 @@ describe("New GM Mode Draft Board Display Readiness Validator Shell v0.1", () =>
   it("reports insufficient display-ready entries deterministically", () => {
     const catalog = createNewGMModeStaticWrestlerFixtureCatalogShell();
     const validator = createNewGMModeDraftBoardDisplayReadinessValidatorShell({
-      fixtures: catalog.fixtures.slice(0, 7)
+      fixtures: catalog.fixtures.slice(10, 17)
     });
 
     assert.equal(validator.displayReadinessPhase, "insufficient-display-ready-entries");
     assert.deepEqual(validator.displayReadinessSummary, {
       totalFixtureCount: 7,
-      displayReadyEligibleEntryCount: 7,
-      excludedIneligibleCount: 0,
+      displayReadyEligibleEntryCount: 0,
+      excludedIneligibleCount: 7,
       minimumEligibleRequirement: 8,
       minimumEligibleRequirementSatisfied: false,
       validationIssueCount: 2,
