@@ -623,7 +623,7 @@
             <article class="on-clock">
               <p class="kicker">On the clock</p>
               <h2 id="draft-room-title" class="js-brand-name">Raw</h2>
-              <span class="pick-badge">Pick 1</span>
+              <span class="pick-badge" id="mini-draft-pick-badge">Pick 1 of 3</span>
               <div class="need-board">
                 <span>Men's division: main-event anchor needed</span>
                 <span>Women's division: top contender needed</span>
@@ -779,8 +779,8 @@
                 <span id="intent-preview-brand">Raw local preview</span>
                 <span id="intent-preview-pick">Round 1 / Pick 1 placeholder</span>
                 <span id="intent-preview-status">Ready for in-memory Make Pick</span>
-                <span>Roster assignment blocked</span>
-                <span>Draft completion blocked</span>
+                <span>Full roster locked</span>
+                <span>Week 1 locked</span>
               </div>
               <p class="quiet-note" id="intent-preview-note">Make Pick creates a local-only in-memory draft result and does not save or start Week 1.</p>
             </article>
@@ -819,7 +819,7 @@
               <dl class="meta-grid mock-recap-meta" aria-label="Draft recap preview context">
                 <div><dt>GM</dt><dd id="draft-recap-gm">Maren Vale</dd></div>
                 <div><dt>Brand</dt><dd id="draft-recap-brand">Raw mock preview</dd></div>
-                <div><dt>Candidate</dt><dd id="draft-recap-candidate">Ace Mercer carried forward as preview context</dd></div>
+                <div><dt>Local Picks</dt><dd id="draft-recap-candidate">Ace Mercer carried forward as preview context</dd></div>
                 <div><dt>Pick Slot</dt><dd id="draft-recap-pick">Mock continuation only</dd></div>
                 <div><dt>Draft Result</dt><dd id="draft-recap-result-status">No real draft result</dd></div>
                 <div><dt>Roster Status</dt><dd id="draft-recap-roster-status">No roster assignment</dd></div>
@@ -886,10 +886,10 @@
                 <strong>Preview Shell</strong>
                 <em>No card or week started</em>
               </article>
-              <article class="command-monitor healthy">
-                <span>Brand Health</span>
-                <strong>Setup Preview</strong>
-                <em>Mock roster context only</em>
+              <article class="command-monitor healthy" id="dashboard-mini-draft-state">
+                <span>Mini Draft</span>
+                <strong>Local Preview Locked</strong>
+                <em>Complete three manual picks first</em>
               </article>
               <article class="command-monitor urgent">
                 <span>GM Alerts</span>

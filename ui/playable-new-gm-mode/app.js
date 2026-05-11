@@ -1,10 +1,10 @@
 import {
-  DEFAULT_LOCAL_DRAFT_SLOT,
   createCandidateDisplayFromDataset,
   createDraftSelectionIntentPreview,
 } from "./draftSelectionIntentAdapter.js";
 import { createMockDraftRecapPreviewState } from "./draftRecapPreviewState.js";
 import {
+  createInitialMiniDraftProgress,
   createMakePickReadiness,
   executeInMemoryMakePick,
 } from "./inMemoryDraftActionController.js";
@@ -28,6 +28,7 @@ import {
   const railActiveLabel = document.getElementById("rail-active-label");
   const brandBug = document.getElementById("brand-bug");
   const phaseLabel = document.getElementById("phase-label");
+  const miniDraftPickBadge = document.getElementById("mini-draft-pick-badge");
   const brandNameTargets = Array.from(document.querySelectorAll(".js-brand-name"));
   const intentPreviewTargets = {
     candidate: document.getElementById("intent-preview-candidate"),
@@ -50,6 +51,7 @@ import {
     roster: document.getElementById("draft-recap-roster"),
     note: document.getElementById("draft-recap-note"),
     dashboard: document.getElementById("dashboard-preview-note"),
+    dashboardMiniDraftState: document.getElementById("dashboard-mini-draft-state"),
   };
   const talentDetail = {
     initials: document.getElementById("talent-detail-initials"),
@@ -112,7 +114,7 @@ import {
     selectedCandidateId: "candidate-ace-mercer",
     selectedDraftIntentPreview: undefined,
     mockDraftRecapPreview: undefined,
-    completedInMemoryDraftResult: undefined,
+    miniDraftProgress: createInitialMiniDraftProgress(),
   };
   let dockCollapseTimer;
 
@@ -274,9 +276,20 @@ import {
   function getSelectedCandidateDisplay() {
     const selectedRow = talentRows.find((row) => row.dataset.candidateId === uiState.selectedCandidateId);
 
-    return selectedRow
-      ? createCandidateDisplayFromDataset(selectedRow.dataset)
-      : undefined;
+    if (!selectedRow) {
+      return undefined;
+    }
+
+    const candidate = createCandidateDisplayFromDataset(selectedRow.dataset);
+
+    if (uiState.miniDraftProgress.draftedCandidateIds.includes(candidate.candidateId)) {
+      return {
+        ...candidate,
+        availability: "Drafted",
+      };
+    }
+
+    return candidate;
   }
 
   function getSelectedBrandDisplay() {
@@ -288,9 +301,9 @@ import {
 
   function createDraftSelectionIntentPresentationPreview(row) {
     return createDraftSelectionIntentPreview({
-      selectedCandidate: createCandidateDisplayFromDataset(row.dataset),
+      selectedCandidate: getCandidateDisplayFromRow(row),
       selectedBrand: getSelectedBrandDisplay(),
-      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
+      draftSlot: uiState.miniDraftProgress.currentDraftSlot,
     });
   }
 
@@ -357,6 +370,53 @@ import {
     setText(draftRecapTargets.roster, projection.displayLabels.rosterLine);
     setText(draftRecapTargets.note, projection.displayLabels.noteLine);
     setText(draftRecapTargets.dashboard, projection.displayLabels.dashboardLine);
+    updateDashboardMiniDraftState(projection);
+  }
+
+  function updateDashboardMiniDraftState(projection) {
+    const stateCard = draftRecapTargets.dashboardMiniDraftState;
+
+    if (!stateCard) {
+      return;
+    }
+
+    setText(stateCard.querySelector("span"), "Mini Draft");
+    setText(
+      stateCard.querySelector("strong"),
+      projection.miniDraftComplete ? "Local Preview Complete" : "Local Preview In Progress"
+    );
+    setText(
+      stateCard.querySelector("em"),
+      projection.miniDraftComplete
+        ? "Full draft, roster setup, Week 1, and booking remain locked"
+        : "Finish three manual local picks before reviewing the recap"
+    );
+  }
+
+  function updateMiniDraftPickBadge() {
+    if (miniDraftPickBadge) {
+      miniDraftPickBadge.textContent = uiState.miniDraftProgress.miniDraftComplete
+        ? "Mini Draft Complete"
+        : uiState.miniDraftProgress.displayLabels.progressLine;
+    }
+  }
+
+  function updateDraftedCandidateRows() {
+    talentRows.forEach((row) => {
+      const drafted = uiState.miniDraftProgress.draftedCandidateIds.includes(row.dataset.candidateId);
+      row.classList.toggle("drafted", drafted);
+      row.classList.toggle("unavailable", drafted || row.dataset.availability === "Unavailable");
+      row.disabled = drafted;
+      if (drafted) {
+        row.setAttribute("aria-disabled", "true");
+      } else {
+        row.removeAttribute("aria-disabled");
+      }
+      const meta = row.querySelector("small");
+      if (meta && drafted) {
+        meta.textContent = `${row.dataset.draftRank} | Drafted | Local pick`;
+      }
+    });
   }
 
   function updateMakePickControl() {
@@ -367,14 +427,15 @@ import {
     const readiness = createMakePickReadiness({
       selectedCandidate: getSelectedCandidateDisplay(),
       selectedBrand: getSelectedBrandDisplay(),
-      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
-      completedInMemoryDraftResult: uiState.completedInMemoryDraftResult,
+      draftSlot: uiState.miniDraftProgress.currentDraftSlot,
+      miniDraftProgress: uiState.miniDraftProgress,
     });
 
     makePickControl.disabled = !readiness.canMakePick;
     makePickControl.textContent = readiness.displayLabels.buttonLabel;
     makePickControl.setAttribute("aria-disabled", String(!readiness.canMakePick));
     makePickControl.classList.toggle("enabled", readiness.canMakePick);
+    updateMiniDraftPickBadge();
   }
 
   function setText(target, value) {
@@ -390,10 +451,14 @@ import {
   }
 
   function setSelectedCandidate(row) {
+    if (row.disabled) {
+      return;
+    }
+
     uiState.selectedCandidateId = row.dataset.candidateId;
     uiState.selectedDraftIntentPreview = createDraftSelectionIntentPresentationPreview(row);
     const preview = uiState.selectedDraftIntentPreview;
-    const isUnavailable = row.dataset.availability !== "Available";
+    const isUnavailable = getCandidateDisplayFromRow(row).availability !== "Available";
 
     talentRows.forEach((item) => {
       const isSelected = item === row;
@@ -430,6 +495,57 @@ import {
 
     updateIntentPreview(uiState.selectedDraftIntentPreview);
     updateMakePickControl();
+  }
+
+  function clearSelectedCandidateAfterPick(result) {
+    uiState.selectedCandidateId = undefined;
+    uiState.selectedDraftIntentPreview = createDraftSelectionIntentPreview({
+      selectedBrand: getSelectedBrandDisplay(),
+      draftSlot: result.miniDraftProgress.currentDraftSlot,
+    });
+
+    talentRows.forEach((item) => {
+      item.classList.remove("selected");
+      item.setAttribute("aria-pressed", "false");
+    });
+
+    setText(talentDetail.initials, "--");
+    setText(talentDetail.name, "Select next prospect");
+    setText(talentDetail.role, "Mini draft in progress");
+    setText(talentDetail.availability, result.miniDraftProgress.displayLabels.progressLine);
+    talentDetail.availability?.classList.remove("blocked");
+    setText(talentDetail.read, result.miniDraftProgress.miniDraftComplete
+      ? "Mini Draft Complete. Review the local recap."
+      : "Choose another available candidate to continue the local mini draft.");
+    setText(talentDetail.fit, "Local-only draft preview. Reload resets progress.");
+    setText(talentDetail.previewStatus, result.miniDraftProgress.displayLabels.statusLine);
+    setText(talentDetail.starPower, "--");
+    setText(talentDetail.ringWork, "--");
+    setText(talentDetail.promo, "--");
+    setText(talentDetail.durability, "--");
+    setText(talentDetail.risk, "--");
+    setText(talentDetail.confidence, "--");
+    setMeter(talentDetail.starMeter, "0");
+    setMeter(talentDetail.ringMeter, "0");
+    setMeter(talentDetail.promoMeter, "0");
+    setMeter(talentDetail.durabilityMeter, "0");
+    setMeter(talentDetail.riskMeter, "0");
+    setMeter(talentDetail.confidenceMeter, "0");
+
+    updateIntentPreview(uiState.selectedDraftIntentPreview);
+  }
+
+  function getCandidateDisplayFromRow(row) {
+    const candidate = createCandidateDisplayFromDataset(row.dataset);
+
+    if (uiState.miniDraftProgress.draftedCandidateIds.includes(candidate.candidateId)) {
+      return {
+        ...candidate,
+        availability: "Drafted",
+      };
+    }
+
+    return candidate;
   }
 
   navItems.forEach((item) => {
@@ -492,11 +608,14 @@ import {
       selectedCandidate: getSelectedCandidateDisplay(),
       selectedBrand: getSelectedBrandDisplay(),
       selectedGm: getSelectedGmDisplay(),
-      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
-      completedInMemoryDraftResult: uiState.completedInMemoryDraftResult,
+      draftSlot: uiState.miniDraftProgress.currentDraftSlot,
+      miniDraftProgress: uiState.miniDraftProgress,
     });
 
-    uiState.completedInMemoryDraftResult = result;
+    if (result.miniDraftProgress) {
+      uiState.miniDraftProgress = result.miniDraftProgress;
+      updateDraftedCandidateRows();
+    }
 
     if (result.projection) {
       updateInMemoryDraftRecapProjection(result.projection);
@@ -504,9 +623,16 @@ import {
       intentPreviewTargets.note.textContent = result.displayLabels.noteLine;
     }
 
+    if (result.actionStatus === "in-memory-make-pick-succeeded") {
+      clearSelectedCandidateAfterPick(result);
+    }
+
     updateMakePickControl();
 
-    if (result.actionStatus === "in-memory-make-pick-succeeded") {
+    if (
+      result.actionStatus === "in-memory-make-pick-succeeded" &&
+      result.miniDraftProgress.miniDraftComplete
+    ) {
       showSection("draft-recap");
     }
   });

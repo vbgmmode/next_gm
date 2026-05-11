@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 
 import {
+  createInitialMiniDraftProgress,
   createMakePickReadiness,
   executeInMemoryMakePick,
 } from "../ui/playable-new-gm-mode/inMemoryDraftActionController.js";
@@ -26,6 +27,16 @@ const selectedGm = Object.freeze({
 const validCandidate = Object.freeze({
   candidateId: "candidate-ace-mercer",
   name: "Ace Mercer",
+  availability: "Available",
+});
+const secondValidCandidate = Object.freeze({
+  candidateId: "candidate-bruno-vale",
+  name: "Bruno Vale",
+  availability: "Available",
+});
+const thirdValidCandidate = Object.freeze({
+  candidateId: "candidate-cassian-ryde",
+  name: "Cassian Ryde",
   availability: "Available",
 });
 const unavailableCandidate = Object.freeze({
@@ -74,6 +85,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       selectedCandidate: validCandidate,
       selectedBrand,
       draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
+      miniDraftProgress: createInitialMiniDraftProgress(),
     });
 
     assert.equal(readiness.canMakePick, true);
@@ -81,7 +93,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(readiness.displayLabels.buttonLabel, "Make Pick");
   });
 
-  it("calls the existing one-shot in-memory draft flow boundary for Make Pick", () => {
+  it("calls the existing one-shot in-memory draft flow boundary for each manual pick", () => {
     let flowCallCount = 0;
     const services = {
       createCandidateObjectSet: createNewGMModeDraftPickCandidateObjects,
@@ -95,7 +107,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       selectedCandidate: validCandidate,
       selectedBrand,
       selectedGm,
-      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
+      miniDraftProgress: createInitialMiniDraftProgress(),
     }, services);
 
     assert.equal(flowCallCount, 1);
@@ -107,6 +119,18 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(result.flowResult.capabilityFlags.canStartGameplay, false);
     assert.equal(result.flowResult.capabilityFlags.canInitializeWeekOne, false);
     assert.equal(result.flowResult.capabilityFlags.canPersistGameplayPayload, false);
+    assert.equal(result.miniDraftProgress.currentPickIndex, 1);
+    assert.equal(result.miniDraftProgress.currentDraftSlot.pickNumber, 2);
+    assert.deepEqual(result.miniDraftProgress.selectedBrandReference, {
+      hasBrand: true,
+      brandId: "raw",
+      brandLabel: "Raw",
+      localOnly: true,
+    });
+    assert.deepEqual(result.miniDraftProgress.draftedCandidateIds, [
+      "candidate-ace-mercer",
+    ]);
+    assert.equal(result.miniDraftProgress.miniDraftComplete, false);
   });
 
   it("does not call the in-memory flow for blocked candidates", () => {
@@ -123,7 +147,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       selectedCandidate: unavailableCandidate,
       selectedBrand,
       selectedGm,
-      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
+      miniDraftProgress: createInitialMiniDraftProgress(),
     }, services);
 
     assert.equal(flowCallCount, 0);
@@ -131,25 +155,108 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(result.capabilityFlags.canAutoDraft, false);
   });
 
-  it("produces local in-memory result state that can project Draft Recap safely", () => {
-    const result = executeInMemoryMakePick({
+  it("blocks selecting a candidate already drafted during the local page lifetime", () => {
+    const firstPick = executeInMemoryMakePick({
       selectedCandidate: validCandidate,
       selectedBrand,
       selectedGm,
-      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
+      miniDraftProgress: createInitialMiniDraftProgress(),
+    });
+    const repeatPick = executeInMemoryMakePick({
+      selectedCandidate: validCandidate,
+      selectedBrand,
+      selectedGm,
+      miniDraftProgress: firstPick.miniDraftProgress,
+    });
+
+    assert.equal(repeatPick.actionStatus, "blocked-candidate-already-drafted");
+    assert.deepEqual(repeatPick.blockedReasonIds, ["candidate-already-drafted"]);
+    assert.equal(repeatPick.capabilityFlags.canAutoDraft, false);
+  });
+
+  it("completes exactly three manual local picks and then locks Make Pick", () => {
+    let flowCallCount = 0;
+    const services = {
+      createCandidateObjectSet: createNewGMModeDraftPickCandidateObjects,
+      createSelectionIntentObject: createNewGMModeDraftSelectionIntentObject,
+      runInMemoryDraftFlow(input: Parameters<typeof createNewGMModeInMemoryDraftFlow>[0]) {
+        flowCallCount += 1;
+        return createNewGMModeInMemoryDraftFlow(input);
+      },
+    };
+
+    const firstPick = executeInMemoryMakePick({
+      selectedCandidate: validCandidate,
+      selectedBrand,
+      selectedGm,
+      miniDraftProgress: createInitialMiniDraftProgress(),
+    }, services);
+    const secondPick = executeInMemoryMakePick({
+      selectedCandidate: secondValidCandidate,
+      selectedBrand,
+      selectedGm,
+      miniDraftProgress: firstPick.miniDraftProgress,
+    }, services);
+    const thirdPick = executeInMemoryMakePick({
+      selectedCandidate: thirdValidCandidate,
+      selectedBrand,
+      selectedGm,
+      miniDraftProgress: secondPick.miniDraftProgress,
+    }, services);
+    const fourthPick = executeInMemoryMakePick({
+      selectedCandidate: unavailableCandidate,
+      selectedBrand,
+      selectedGm,
+      miniDraftProgress: thirdPick.miniDraftProgress,
+    });
+
+    assert.equal(flowCallCount, 3);
+    assert.equal(thirdPick.actionStatus, "in-memory-make-pick-succeeded");
+    assert.equal(thirdPick.miniDraftProgress.completedPickSummaries.length, 3);
+    assert.equal(thirdPick.miniDraftProgress.currentPickIndex, 3);
+    assert.equal(thirdPick.miniDraftProgress.miniDraftComplete, true);
+    assert.deepEqual(thirdPick.miniDraftProgress.draftedCandidateIds, [
+      "candidate-ace-mercer",
+      "candidate-bruno-vale",
+      "candidate-cassian-ryde",
+    ]);
+    assert.equal(fourthPick.actionStatus, "blocked-mini-draft-complete");
+    assert.equal(fourthPick.capabilityFlags.canCompleteFullDraft, false);
+  });
+
+  it("produces local mini draft recap state that stays player-facing and unsaved", () => {
+    const firstPick = executeInMemoryMakePick({
+      selectedCandidate: validCandidate,
+      selectedBrand,
+      selectedGm,
+      miniDraftProgress: createInitialMiniDraftProgress(),
+    });
+    const secondPick = executeInMemoryMakePick({
+      selectedCandidate: secondValidCandidate,
+      selectedBrand,
+      selectedGm,
+      miniDraftProgress: firstPick.miniDraftProgress,
+    });
+    const result = executeInMemoryMakePick({
+      selectedCandidate: thirdValidCandidate,
+      selectedBrand,
+      selectedGm,
+      miniDraftProgress: secondPick.miniDraftProgress,
     });
 
     assert.equal(result.localOnly, true);
     assert.equal(result.inMemoryOnly, true);
     assert.equal(result.persisted, false);
-    assert.equal(result.projection.projectionKind, "real-in-memory-draft-result-projection");
+    assert.equal(result.projection.projectionKind, "local-mini-draft-recap-projection");
     assert.equal(result.projection.completedInMemory, true);
-    assert.equal(result.projection.displayLabels.recapStatusLine, "Real In-Memory Draft Result - not saved");
-    assert.equal(result.projection.displayLabels.candidateLine, "Ace Mercer drafted in memory");
-    assert.equal(result.projection.displayLabels.pickLine, "Round 1 / Pick 1");
+    assert.equal(result.projection.miniDraftComplete, true);
+    assert.equal(result.projection.pickCount, 3);
+    assert.equal(result.projection.displayLabels.recapStatusLine, "Mini Draft Complete - local only");
+    assert.equal(result.projection.displayLabels.candidateLine, "Round 1 / Pick 1: Ace Mercer | Round 1 / Pick 2: Bruno Vale | Round 1 / Pick 3: Cassian Ryde");
+    assert.equal(result.projection.displayLabels.pickLine, "Mini draft complete: 3 of 3");
     assert.equal(
       result.projection.displayLabels.noteLine,
-      "Local-only result. No save, persistence, Week 1 initialization, booking, or gameplay start occurred."
+      "Local-only mini draft result. No save, persistence, full roster, Week 1 initialization, booking, or gameplay start occurred."
     );
   });
 
@@ -159,8 +266,8 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
 
     assert.match(html, /Mock Draft Recap - no draft executed/);
     assert.match(html, /QA Preview: Mock Draft Recap/);
-    assert.match(controllerSource, /Real In-Memory Draft Result - not saved/);
-    assert.match(controllerSource, /real-in-memory-draft-result-projection/);
+    assert.match(controllerSource, /Mini Draft Complete - local only/);
+    assert.match(controllerSource, /local-mini-draft-recap-projection/);
   });
 
   it("keeps dock visibility correct across draft and dashboard screens", () => {
@@ -174,7 +281,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       selectedCandidate: validCandidate,
       selectedBrand,
       selectedGm,
-      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
+      miniDraftProgress: createInitialMiniDraftProgress(),
     });
     const labelText = Object.values(result.projection.displayLabels).join("\n");
     const forbiddenSnippets = [

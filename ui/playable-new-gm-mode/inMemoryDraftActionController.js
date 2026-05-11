@@ -10,11 +10,14 @@ export const IN_MEMORY_MAKE_PICK_STATUS = Object.freeze({
   BLOCKED_UNAVAILABLE_CANDIDATE: "blocked-unavailable-candidate",
   BLOCKED_MISSING_BRAND: "blocked-missing-brand",
   BLOCKED_MISSING_DRAFT_SLOT: "blocked-missing-draft-slot",
-  BLOCKED_ALREADY_COMPLETED: "blocked-already-completed",
+  BLOCKED_ALREADY_DRAFTED: "blocked-candidate-already-drafted",
+  BLOCKED_MINI_DRAFT_COMPLETE: "blocked-mini-draft-complete",
   BLOCKED_DOMAIN_CANDIDATE_MISSING: "blocked-domain-candidate-missing",
   SUCCEEDED: "in-memory-make-pick-succeeded",
   DOMAIN_BLOCKED: "in-memory-make-pick-domain-blocked",
 });
+
+export const MINI_DRAFT_MAX_PICKS = 3;
 
 const DEFAULT_SERVICES = Object.freeze({
   createCandidateObjectSet: createNewGMModeDraftPickCandidateObjects,
@@ -26,16 +29,20 @@ export function createMakePickReadiness({
   selectedCandidate,
   selectedBrand,
   draftSlot,
-  completedInMemoryDraftResult,
+  miniDraftProgress,
 } = {}) {
+  const progress = normalizeMiniDraftProgress(miniDraftProgress);
   const blockedReasonIds = [];
+  const selectedCandidateId = readString(selectedCandidate?.candidateId);
 
-  if (completedInMemoryDraftResult?.actionStatus === IN_MEMORY_MAKE_PICK_STATUS.SUCCEEDED) {
-    blockedReasonIds.push("in-memory-draft-pick-already-completed");
+  if (progress.miniDraftComplete) {
+    blockedReasonIds.push("mini-draft-complete");
   }
 
-  if (!readString(selectedCandidate?.candidateId)) {
+  if (!selectedCandidateId) {
     blockedReasonIds.push("candidate-selection-missing");
+  } else if (progress.draftedCandidateIds.includes(selectedCandidateId)) {
+    blockedReasonIds.push("candidate-already-drafted");
   } else if (selectedCandidate?.availability !== "Available") {
     blockedReasonIds.push("candidate-unavailable");
   }
@@ -66,8 +73,39 @@ export function createMakePickReadiness({
   });
 }
 
+export function createInitialMiniDraftProgress({
+  maxPicks = MINI_DRAFT_MAX_PICKS,
+  selectedBrand,
+} = {}) {
+  return Object.freeze({
+    progressKind: "playable-new-gm-mode-local-mini-draft-progress",
+    version: "0.1",
+    localOnly: true,
+    inMemoryOnly: true,
+    persisted: false,
+    currentPickIndex: 0,
+    maxPicks,
+    selectedBrandReference: createSelectedBrandReference(selectedBrand),
+    currentDraftSlot: createDraftSlotForIndex(0),
+    completedPickSummaries: Object.freeze([]),
+    draftedCandidateIds: Object.freeze([]),
+    miniDraftComplete: false,
+    displayLabels: Object.freeze({
+      progressLine: `Pick 1 of ${maxPicks}`,
+      statusLine: "Mini draft ready",
+      noteLine: "Local preview only. Reload resets draft progress.",
+    }),
+  });
+}
+
 export function executeInMemoryMakePick(input = {}, services = DEFAULT_SERVICES) {
-  const readiness = createMakePickReadiness(input);
+  const miniDraftProgress = normalizeMiniDraftProgress(input.miniDraftProgress);
+  const draftSlot = miniDraftProgress.currentDraftSlot;
+  const readiness = createMakePickReadiness({
+    ...input,
+    draftSlot,
+    miniDraftProgress,
+  });
 
   if (!readiness.canMakePick) {
     return createBlockedActionResult(readiness);
@@ -101,21 +139,34 @@ export function executeInMemoryMakePick(input = {}, services = DEFAULT_SERVICES)
     sourceFixtureId: domainCandidate.sourceFixtureReference.fixtureId,
     sourceWrestlerId: domainCandidate.wrestlerIdentityReference.wrestlerId,
     selectingBrandId: input.selectedBrand.brandId,
-    draftRound: input.draftSlot.roundNumber,
-    draftPickNumber: input.draftSlot.pickNumber,
+    draftRound: draftSlot.roundNumber,
+    draftPickNumber: draftSlot.pickNumber,
   });
   const flowResult = services.runInMemoryDraftFlow({
     selectionIntentObject,
     candidateObjectSetOverride: candidateObjectSet,
   });
-  const projection = createDraftRecapProjection({
+  const currentPickSummary = createPickSummary({
     flowResult,
     selectedCandidate: input.selectedCandidate,
     selectedBrand: input.selectedBrand,
     selectedGm: input.selectedGm,
-    draftSlot: input.draftSlot,
+    draftSlot,
+    pickNumber: miniDraftProgress.completedPickSummaries.length + 1,
   });
-  const succeeded = projection.completedInMemory;
+  const succeeded = currentPickSummary.completedInMemory;
+  const nextMiniDraftProgress = succeeded
+    ? appendPickSummaryToProgress({
+        progress: miniDraftProgress,
+        pickSummary: currentPickSummary,
+        selectedBrand: input.selectedBrand,
+      })
+    : miniDraftProgress;
+  const projection = createDraftRecapProjection({
+    miniDraftProgress: nextMiniDraftProgress,
+    selectedBrand: input.selectedBrand,
+    selectedGm: input.selectedGm,
+  });
 
   return Object.freeze({
     actionStatus: succeeded
@@ -126,9 +177,12 @@ export function executeInMemoryMakePick(input = {}, services = DEFAULT_SERVICES)
     persisted: false,
     selectionIntentObject,
     flowResult,
+    currentPickSummary,
+    miniDraftProgress: nextMiniDraftProgress,
     projection,
     capabilityFlags: Object.freeze({
       canAutoDraft: false,
+      canCompleteFullDraft: false,
       canPersistGameplayPayload: false,
       canWriteDatabase: false,
       canInitializeWeekOne: false,
@@ -140,62 +194,65 @@ export function executeInMemoryMakePick(input = {}, services = DEFAULT_SERVICES)
 }
 
 function createDraftRecapProjection({
-  flowResult,
-  selectedCandidate,
   selectedBrand,
   selectedGm,
-  draftSlot,
+  miniDraftProgress,
 }) {
-  const completedInMemory =
-    flowResult?.draftCompletionSummary?.draftCompletionPhase ===
-    "draft-complete-in-memory-roster-created-gameplay-start-blocked";
-  const candidateName = readString(selectedCandidate?.name) || "Drafted candidate";
   const brandLabel = readString(selectedBrand?.brandLabel) || "Selected brand";
   const gmName = readString(selectedGm?.displayName) || "GM preview missing";
-  const pickLabel = createPickLabel(draftSlot);
-  const membershipCount = readNumber(
-    flowResult?.draftCompletionSummary?.rosterMembershipCount,
-    0
-  );
+  const progress = normalizeMiniDraftProgress(miniDraftProgress);
+  const pickCount = progress.completedPickSummaries.length;
+  const pickList = createPickListLabel(progress.completedPickSummaries);
+  const completedInMemory = pickCount > 0;
+  const miniDraftComplete = progress.miniDraftComplete;
 
   return Object.freeze({
-    projectionKind: "real-in-memory-draft-result-projection",
+    projectionKind: "local-mini-draft-recap-projection",
     version: "0.1",
     localOnly: true,
     inMemoryOnly: true,
     persisted: false,
     completedInMemory,
+    miniDraftComplete,
+    pickCount,
     selectedBrandLabel: brandLabel,
     selectedGmLabel: gmName,
-    draftedCandidateLabel: candidateName,
-    pickSlotLabel: pickLabel,
-    rosterMembershipCount: membershipCount,
+    draftedCandidateLabel: pickList,
+    pickSlotLabel: miniDraftComplete
+      ? `3 of ${progress.maxPicks} local picks`
+      : `${pickCount} of ${progress.maxPicks} local picks`,
+    rosterMembershipCount: pickCount,
     displayLabels: Object.freeze({
-      recapStatusLine: completedInMemory
-        ? "Real In-Memory Draft Result - not saved"
-        : "In-Memory Draft Blocked - not saved",
+      recapStatusLine: miniDraftComplete
+        ? "Mini Draft Complete - local only"
+        : "Local In-Memory Draft Preview - not saved",
       pathLine: "Real in-memory draft path",
-      titleLine: `${brandLabel} in-memory draft recap`,
+      titleLine: `${brandLabel} mini draft recap`,
       rosterLine: completedInMemory
-        ? `${brandLabel} local roster preview created`
-        : `${brandLabel} local roster preview blocked`,
+        ? `${pickCount} local pick${pickCount === 1 ? "" : "s"} recorded`
+        : `${brandLabel} local draft preview empty`,
       copyLine: completedInMemory
-        ? "This recap is backed by the approved Real Draft System v1 in-memory flow. It is still local-only and resets on reload."
-        : "The Real Draft System v1 flow returned a blocked in-memory result. No saved roster exists.",
+        ? "This recap is backed by approved Real Draft System v1 in-memory Make Pick results. It is not saved, not a full roster, and resets on reload."
+        : "No local in-memory picks have been made yet. The mock QA recap remains available for shell checks.",
       gmLine: gmName,
       brandLine: `${brandLabel} local in-memory result`,
-      candidateLine: `${candidateName} drafted in memory`,
-      pickLine: pickLabel,
-      draftResultStatusLine: createDraftResultStatusLine(flowResult),
-      rosterStatusLine: createRosterStatusLine(flowResult),
+      candidateLine: pickList,
+      pickLine: miniDraftComplete
+        ? `Mini draft complete: ${pickCount} of ${progress.maxPicks}`
+        : `Mini draft in progress: ${pickCount} of ${progress.maxPicks}`,
+      draftResultStatusLine: miniDraftComplete
+        ? "Draft preview complete"
+        : "Draft preview still local",
+      rosterStatusLine: "No full roster created",
       noteLine:
-        "Local-only result. No save, persistence, Week 1 initialization, booking, or gameplay start occurred.",
-      dashboardLine: completedInMemory
-        ? "Local in-memory draft result available. Week 1 gameplay and saving remain locked."
-        : "Week 1 Setup preview - draft result blocked and gameplay remains locked.",
+        "Local-only mini draft result. No save, persistence, full roster, Week 1 initialization, booking, or gameplay start occurred.",
+      dashboardLine: miniDraftComplete
+        ? "Mini Draft Complete locally. Full draft, roster setup, Week 1 gameplay, booking, and saving remain locked."
+        : "Local mini draft in progress. Week 1 gameplay and saving remain locked.",
     }),
     blockedCapabilityLabels: Object.freeze([
       "Auto Draft remains locked",
+      "No full roster draft",
       "No save payload",
       "No SQLite write",
       "No Week 1 initialization",
@@ -217,6 +274,7 @@ function createBlockedActionResult(readiness) {
     displayLabels: readiness.displayLabels,
     capabilityFlags: Object.freeze({
       canAutoDraft: false,
+      canCompleteFullDraft: false,
       canPersistGameplayPayload: false,
       canWriteDatabase: false,
       canInitializeWeekOne: false,
@@ -228,8 +286,12 @@ function createBlockedActionResult(readiness) {
 }
 
 function createReadinessStatus(blockedReasonIds) {
-  if (blockedReasonIds.includes("in-memory-draft-pick-already-completed")) {
-    return IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_COMPLETED;
+  if (blockedReasonIds.includes("mini-draft-complete")) {
+    return IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_MINI_DRAFT_COMPLETE;
+  }
+
+  if (blockedReasonIds.includes("candidate-already-drafted")) {
+    return IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_DRAFTED;
   }
 
   if (blockedReasonIds.includes("candidate-selection-missing")) {
@@ -252,8 +314,12 @@ function createReadinessStatus(blockedReasonIds) {
 }
 
 function createBlockedButtonLabel(actionStatus) {
-  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_COMPLETED) {
-    return "Pick Complete";
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_MINI_DRAFT_COMPLETE) {
+    return "Mini Draft Complete";
+  }
+
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_DRAFTED) {
+    return "Already Drafted";
   }
 
   return "Make Pick Locked";
@@ -272,8 +338,12 @@ function createReadinessStatusLine(actionStatus) {
     return "Make Pick blocked - brand missing";
   }
 
-  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_COMPLETED) {
-    return "In-memory pick already completed";
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_DRAFTED) {
+    return "Make Pick blocked - candidate already drafted";
+  }
+
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_MINI_DRAFT_COMPLETE) {
+    return "Mini draft complete";
   }
 
   return "Make Pick blocked - selection incomplete";
@@ -288,8 +358,12 @@ function createReadinessNoteLine(actionStatus) {
     return "Unavailable candidates cannot be picked.";
   }
 
-  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_COMPLETED) {
-    return "Reload resets this local-only draft result.";
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_DRAFTED) {
+    return "Choose another available candidate for the next local pick.";
+  }
+
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_MINI_DRAFT_COMPLETE) {
+    return "Reload resets this local-only mini draft.";
   }
 
   return "Select an available candidate and brand before making a pick.";
@@ -324,30 +398,152 @@ function createPickLabel(draftSlot) {
   return `${roundLabel} / ${pickLabel}`;
 }
 
-function createDraftResultStatusLine(flowResult) {
-  if (
-    flowResult?.draftPickObject?.draftPickStatus ===
-      "draft-pick-created-execution-ready" &&
-    flowResult?.executionResultObject?.executionStatus ===
-      "draft-pick-executed-roster-assignment-ready"
-  ) {
-    return "Pick executed in local memory";
-  }
+function createDraftSlotForIndex(index) {
+  const pickNumber = index + 1;
 
-  return "Pick blocked in local memory";
+  return Object.freeze({
+    roundNumber: 1,
+    pickNumber,
+    roundLabel: "Round 1",
+    pickLabel: `Pick ${pickNumber}`,
+    placeholderOnly: true,
+  });
 }
 
-function createRosterStatusLine(flowResult) {
-  if (
-    flowResult?.rosterAssignmentResultObject?.assignmentStatus ===
-      "roster-assignment-created-roster-state-ready" &&
-    flowResult?.rosterStateObject?.rosterStateStatus ===
-      "roster-state-created-draft-complete-gameplay-start-blocked"
-  ) {
-    return "Roster preview created in local memory";
+function normalizeMiniDraftProgress(progress) {
+  if (!progress || typeof progress !== "object") {
+    return createInitialMiniDraftProgress();
   }
 
-  return "Roster preview blocked";
+  const maxPicks = readPositiveNumber(progress.maxPicks, MINI_DRAFT_MAX_PICKS);
+  const completedPickSummaries = Array.isArray(progress.completedPickSummaries)
+    ? progress.completedPickSummaries.slice(0, maxPicks)
+    : [];
+  const draftedCandidateIds = Array.isArray(progress.draftedCandidateIds)
+    ? progress.draftedCandidateIds.filter((candidateId) => readString(candidateId))
+    : completedPickSummaries
+        .map((summary) => readString(summary?.candidateId))
+        .filter(Boolean);
+  const currentPickIndex = Math.min(
+    maxPicks,
+    readPositiveOrZeroNumber(progress.currentPickIndex, completedPickSummaries.length)
+  );
+  const miniDraftComplete =
+    Boolean(progress.miniDraftComplete) ||
+    completedPickSummaries.length >= maxPicks ||
+    currentPickIndex >= maxPicks;
+  const currentDraftSlot = miniDraftComplete
+    ? createDraftSlotForIndex(maxPicks - 1)
+    : createDraftSlotForIndex(currentPickIndex);
+
+  return Object.freeze({
+    progressKind: "playable-new-gm-mode-local-mini-draft-progress",
+    version: "0.1",
+    localOnly: true,
+    inMemoryOnly: true,
+    persisted: false,
+    currentPickIndex,
+    maxPicks,
+    selectedBrandReference: createSelectedBrandReference(
+      progress.selectedBrandReference || progress.selectedBrand
+    ),
+    currentDraftSlot,
+    completedPickSummaries: Object.freeze(completedPickSummaries),
+    draftedCandidateIds: Object.freeze(draftedCandidateIds),
+    miniDraftComplete,
+    displayLabels: Object.freeze({
+      progressLine: miniDraftComplete
+        ? `Mini draft complete: ${completedPickSummaries.length} of ${maxPicks}`
+        : `Pick ${currentPickIndex + 1} of ${maxPicks}`,
+      statusLine: miniDraftComplete ? "Mini draft complete" : "Mini draft in progress",
+      noteLine: "Local preview only. Reload resets draft progress.",
+    }),
+  });
+}
+
+function appendPickSummaryToProgress({ progress, pickSummary, selectedBrand }) {
+  const normalizedProgress = normalizeMiniDraftProgress(progress);
+  const completedPickSummaries = [
+    ...normalizedProgress.completedPickSummaries,
+    pickSummary,
+  ].slice(0, normalizedProgress.maxPicks);
+  const draftedCandidateIds = [
+    ...normalizedProgress.draftedCandidateIds,
+    pickSummary.candidateId,
+  ].filter(Boolean);
+  const currentPickIndex = Math.min(
+    completedPickSummaries.length,
+    normalizedProgress.maxPicks
+  );
+  const miniDraftComplete = currentPickIndex >= normalizedProgress.maxPicks;
+
+  return normalizeMiniDraftProgress({
+    ...normalizedProgress,
+    currentPickIndex,
+    selectedBrandReference: createSelectedBrandReference(selectedBrand),
+    currentDraftSlot: miniDraftComplete
+      ? normalizedProgress.currentDraftSlot
+      : createDraftSlotForIndex(currentPickIndex),
+    completedPickSummaries,
+    draftedCandidateIds,
+    miniDraftComplete,
+  });
+}
+
+function createSelectedBrandReference(selectedBrand) {
+  const brandId = readString(selectedBrand?.brandId);
+  const brandLabel = readString(selectedBrand?.brandLabel);
+
+  return Object.freeze({
+    hasBrand: Boolean(brandId),
+    brandId: brandId || "brand-not-selected",
+    brandLabel: brandLabel || "Brand not selected",
+    localOnly: true,
+  });
+}
+
+function createPickSummary({
+  flowResult,
+  selectedCandidate,
+  selectedBrand,
+  selectedGm,
+  draftSlot,
+  pickNumber,
+}) {
+  const completedInMemory =
+    flowResult?.draftCompletionSummary?.draftCompletionPhase ===
+    "draft-complete-in-memory-roster-created-gameplay-start-blocked";
+  const candidateName = readString(selectedCandidate?.name) || "Drafted candidate";
+  const brandLabel = readString(selectedBrand?.brandLabel) || "Selected brand";
+  const gmName = readString(selectedGm?.displayName) || "GM preview missing";
+  const pickLabel = createPickLabel(draftSlot);
+
+  return Object.freeze({
+    summaryKind: "local-mini-draft-pick-summary",
+    version: "0.1",
+    localOnly: true,
+    inMemoryOnly: true,
+    persisted: false,
+    completedInMemory,
+    candidateId: readString(selectedCandidate?.candidateId),
+    candidateName,
+    brandLabel,
+    gmName,
+    pickLabel,
+    pickNumber,
+    displayLabel: `${pickLabel}: ${candidateName}`,
+    displayStatusLine: completedInMemory
+      ? "Pick recorded locally"
+      : "Pick blocked locally",
+  });
+}
+
+function createPickListLabel(pickSummaries) {
+  if (!pickSummaries.length) {
+    return "No local picks recorded";
+  }
+
+  return pickSummaries.map((summary) => summary.displayLabel).join(" | ");
 }
 
 function isValidDraftSlot(draftSlot) {
@@ -359,8 +555,16 @@ function isValidDraftSlot(draftSlot) {
   );
 }
 
-function readNumber(value, fallback) {
-  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+function readPositiveNumber(value, fallback) {
+  return typeof value === "number" && Number.isFinite(value) && value > 0
+    ? value
+    : fallback;
+}
+
+function readPositiveOrZeroNumber(value, fallback) {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0
+    ? value
+    : fallback;
 }
 
 function readString(value) {

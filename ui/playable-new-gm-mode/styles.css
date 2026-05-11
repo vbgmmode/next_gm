@@ -1834,6 +1834,12 @@ dd {
   color: var(--text-muted);
 }
 
+.talent-row.drafted {
+  border-left-color: var(--success);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .mini-portrait {
   grid-row: 1 / span 2;
   width: 34px;
