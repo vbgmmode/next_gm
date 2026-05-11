@@ -216,6 +216,8 @@ import {
     championTile: document.getElementById("week-one-hq-champion-tile"),
     rivalryTile: document.getElementById("week-one-hq-rivalry-tile"),
     calendarTile: document.getElementById("week-one-hq-calendar-tile"),
+    titleDefenseTile: document.getElementById("week-one-hq-title-defense-tile"),
+    rivalryPayoffTile: document.getElementById("week-one-hq-rivalry-payoff-tile"),
     historyTile: document.getElementById("week-one-hq-history-tile"),
   };
   const bookingTargets = {
@@ -1150,6 +1152,8 @@ import {
       projection.displayLabels.bookingLine
     );
     setText(weekOneHqTargets.calendarTile, projection.displayLabels.calendarLine);
+    setText(weekOneHqTargets.titleDefenseTile, projection.displayLabels.titleDefenseLine);
+    setText(weekOneHqTargets.rivalryPayoffTile, projection.displayLabels.rivalryPayoffLine);
     setText(weekOneHqTargets.historyTile, projection.displayLabels.showHistoryLine);
     setText(
       weekOneHqTargets.bookingState,

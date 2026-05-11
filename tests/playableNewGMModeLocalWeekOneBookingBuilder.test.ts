@@ -389,11 +389,15 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.match(html, /id="show-recap-advance-week"/);
     assert.match(html, /id="show-recap-social"/);
     assert.match(html, /id="week-one-hq-calendar-tile"/);
+    assert.match(html, /id="week-one-hq-title-defense-tile"/);
+    assert.match(html, /id="week-one-hq-rivalry-payoff-tile"/);
     assert.match(html, /id="week-one-hq-history-tile"/);
     assert.match(appSource, /runLocalWeeklyShow/);
     assert.match(appSource, /advanceLocalWeek/);
     assert.match(appSource, /showSection\("show-recap"\)/);
     assert.match(appSource, /calendarTile/);
+    assert.match(appSource, /titleDefenseTile/);
+    assert.match(appSource, /rivalryPayoffTile/);
     assert.match(appSource, /historyTile/);
     assert.match(appSource, /socialBuzzNote/);
     assert.match(appSource, /matchRatingLabel/);
