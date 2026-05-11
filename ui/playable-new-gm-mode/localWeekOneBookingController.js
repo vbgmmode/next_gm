@@ -2,6 +2,10 @@ import {
   createLocalSetupRosterOptions,
   createWeekOneHqProjection,
 } from "./localPostDraftSetupController.js";
+import {
+  createSimulationEngineContext,
+  showEngine,
+} from "../../src/game/engines/index.ts";
 
 export const LOCAL_WEEK_ONE_SEGMENT_TYPES = Object.freeze([
   Object.freeze({
@@ -432,8 +436,19 @@ function createLocalShowRecap({ projection, setupState, weeklyState }) {
   const rivalries = Array.isArray(currentSetupState.rivalries)
     ? currentSetupState.rivalries.filter((rivalry) => rivalry?.wrestlerAId && rivalry?.wrestlerBId)
     : [];
+  const engineRun = runLocalShowEngineShell({
+    projection,
+    rivalries,
+    weeklyState,
+  });
   const segmentResults = projection.segments.map((segment) =>
-    createSegmentResult({ segment, championIds, rivalries, rosterOptions: projection.rosterOptions })
+    createSegmentResult({
+      segment,
+      championIds,
+      rivalries,
+      rosterOptions: projection.rosterOptions,
+      engineRun,
+    })
   );
   const bestSegment = findBestSegment(segmentResults);
   const weakSegment = findWeakSegment(segmentResults, bestSegment);
@@ -473,6 +488,8 @@ function createLocalShowRecap({ projection, setupState, weeklyState }) {
     fanResponseNote: `Fan Response: ${crowdRead}`,
     budgetNote: "Budget: No major change in this local session",
     localOnlyLine: "Local Session Only / Not Saved Yet",
+    cardReadinessLine: createCardReadinessLine(engineRun),
+    simulationBacked: engineRun !== undefined,
     segmentResults,
   });
 }
@@ -482,6 +499,7 @@ function createSegmentResult({
   championIds,
   rivalries,
   rosterOptions,
+  engineRun,
 }) {
   const wrestlerIds = getSegmentWrestlerIds(segment);
   const championInvolved = wrestlerIds.some((candidateId) =>
@@ -492,9 +510,11 @@ function createSegmentResult({
     wrestlerIds.includes(rivalry.wrestlerBId)
   );
   const spotlightBonus = (championInvolved ? 1 : 0) + (rivalryInvolved ? 1 : 0);
+  const engineMatchResult = engineRun?.matchResultsBySegmentId.get(segment.segmentId);
   const qualityBand = createSegmentQualityBand({
     segment,
     spotlightBonus,
+    engineMatchResult,
   });
 
   return Object.freeze({
@@ -506,14 +526,27 @@ function createSegmentResult({
     championInvolved,
     rivalryInvolved,
     qualityBand,
-    resultLine: createSegmentResultLine({ segment, qualityBand }),
+    resultLine: createSegmentResultLine({ segment, qualityBand, engineMatchResult }),
     participantNames: Object.freeze(
       wrestlerIds.map((candidateId) => findRosterName(rosterOptions, candidateId))
     ),
   });
 }
 
-function createSegmentQualityBand({ segment, spotlightBonus }) {
+function createSegmentQualityBand({ segment, spotlightBonus, engineMatchResult }) {
+  const signalLabels = readEngineSignalLabels(engineMatchResult);
+
+  if (signalLabels.has("overdelivered")) {
+    return "Standout";
+  }
+
+  if (
+    signalLabels.has("crowd was engaged") ||
+    signalLabels.has("momentum shift")
+  ) {
+    return segment.mainEvent || spotlightBonus > 0 ? "Standout" : "Strong";
+  }
+
   if (segment.mainEvent && spotlightBonus > 0) {
     return "Standout";
   }
@@ -529,14 +562,19 @@ function createSegmentQualityBand({ segment, spotlightBonus }) {
   return "Solid";
 }
 
-function createSegmentResultLine({ segment, qualityBand }) {
+function createSegmentResultLine({ segment, qualityBand, engineMatchResult }) {
   if (segment.segmentType === "promo") {
     return `${qualityBand} promo segment.`;
   }
 
+  const signalLabels = readEngineSignalLabels(engineMatchResult);
+  const crowdLine = signalLabels.has("flat reaction")
+    ? "crowd needs a stronger hook"
+    : "crowd stayed with it";
+
   return segment.mainEvent
-    ? `${qualityBand} main event match.`
-    : `${qualityBand} singles match.`;
+    ? `${qualityBand} main event match; ${crowdLine}.`
+    : `${qualityBand} singles match; ${crowdLine}.`;
 }
 
 function createShowGrade(segmentResults) {
@@ -666,6 +704,328 @@ function getSegmentWrestlerIds(segment) {
   }
 
   return [segment.wrestlerAId, segment.wrestlerBId].filter(Boolean);
+}
+
+function runLocalShowEngineShell({ projection, rivalries, weeklyState }) {
+  const weekNumber = normalizeWeeklyLoopState(weeklyState).currentWeekNumber;
+  const promotion = createLocalPromotion({ projection });
+  const show = createLocalShow({ projection, weekNumber, promotion });
+  const wrestlers = createLocalWrestlers({
+    projection,
+    promotionId: promotion.id,
+  });
+  const fanSegments = createLocalFanSegments({ promotion });
+  const domainRivalries = createLocalDomainRivalries({
+    rivalries,
+    projection,
+    promotionId: promotion.id,
+  });
+  const bookedMatches = projection.segments
+    .filter((segment) => segment.segmentType !== "promo")
+    .map((segment) =>
+      createLocalBookedMatch({
+        segment,
+        show,
+        promotion,
+        wrestlers,
+        fanSegments,
+        rivalry: findLocalDomainRivalry(domainRivalries, segment),
+      })
+    )
+    .filter(Boolean);
+
+  const result = showEngine.run(
+    {
+      show,
+      bookedMatches,
+      promotion,
+      marketState: promotion.marketState,
+      backstageState: promotion.backstageState,
+    },
+    createSimulationEngineContext({
+      seed: `playable-${projection.brandLabel}-week-${weekNumber}-${projection.segments.length}`,
+      seedLabel: `playable-week-${weekNumber}-show`,
+      week: weekNumber,
+    })
+  );
+
+  return Object.freeze({
+    showEngineId: showEngine.metadata.id,
+    showEngineVersion: showEngine.metadata.version,
+    showReadinessStatus: result.hiddenState.showReadinessStatus,
+    completedMatchEngineRuns: result.hiddenState.completedMatchEngineRuns,
+    failedMatchEngineRuns: result.hiddenState.failedMatchEngineRuns,
+    matchResultsBySegmentId: new Map(
+      result.matchResults.map((matchResult) => [
+        readSegmentIdFromMatchId(matchResult.matchId),
+        matchResult,
+      ])
+    ),
+  });
+}
+
+function createLocalPromotion({ projection }) {
+  return Object.freeze({
+    id: slugify(`promotion-${projection.brandLabel}`),
+    name: projection.brandLabel,
+    marketState: Object.freeze({
+      id: slugify(`market-${projection.brandLabel}`),
+      name: `${projection.brandLabel} Home Market`,
+      totalAudience: 1000000,
+      marketShare: 50,
+      growth: 50,
+      competitionIntensity: 50,
+      mediaAttention: 55,
+      ticketDemand: 55,
+    }),
+    financialState: Object.freeze({
+      cashOnHand: projection.remainingDraftBudget,
+      weeklyRevenue: 0,
+      weeklyExpenses: 0,
+      payrollCost: 0,
+      productionCost: 0,
+      marketingSpend: 0,
+      profitabilityTrend: 50,
+      budgetPressure: 45,
+    }),
+    backstageState: Object.freeze({
+      morale: 55,
+      cohesion: 55,
+      politics: 45,
+      leakRisk: 25,
+      injuryConcern: 30,
+      creativeConfidence: 55,
+    }),
+    rosterIds: projection.rosterOptions.map((option) => option.candidateId),
+    fanTrust: 55,
+    brandIdentity: Object.freeze(["local-preview", "player-brand"]),
+    momentum: 55,
+  });
+}
+
+function createLocalShow({ projection, weekNumber, promotion }) {
+  return Object.freeze({
+    id: slugify(`${promotion.id}-week-${weekNumber}-show`),
+    promotionId: promotion.id,
+    name: `${projection.brandLabel} Week ${weekNumber}`,
+    week: weekNumber,
+    marketId: promotion.marketState.id,
+    venueName: `${projection.brandLabel} Arena`,
+    segmentIds: projection.segments.map((segment) => segment.segmentId),
+    segments: projection.segments.map((segment) =>
+      Object.freeze({
+        id: segment.segmentId,
+        type: segment.segmentType === "promo" ? "promo" : "match",
+        matchId:
+          segment.segmentType === "promo"
+            ? undefined
+            : createMatchId(segment.segmentId),
+        involvedWrestlerIds: getSegmentWrestlerIds(segment),
+        rivalryId: undefined,
+        plannedMinutes: segment.mainEvent ? 15 : 8,
+      })
+    ),
+    budgetAllocated: 0,
+  });
+}
+
+function createLocalWrestlers({ projection, promotionId }) {
+  const wrestlersById = new Map();
+
+  for (const option of projection.rosterOptions) {
+    const rating = ratingForSigningTier(option.signingTier);
+    wrestlersById.set(
+      option.candidateId,
+      Object.freeze({
+        id: option.candidateId,
+        name: option.displayName,
+        age: 30,
+        alignment: "tweener",
+        promotionId,
+        popularity: rating.popularity,
+        credibility: rating.credibility,
+        inRingSkill: rating.inRingSkill,
+        promoSkill: rating.promoSkill,
+        stamina: rating.stamina,
+        health: 88,
+        morale: 62,
+        momentum: rating.momentum,
+        contractCostPerWeek: option.signingCost,
+        traits: Object.freeze([option.divisionCategory, option.signingTier]),
+      })
+    );
+  }
+
+  return wrestlersById;
+}
+
+function ratingForSigningTier(signingTier) {
+  const normalizedTier = readString(signingTier)?.toLowerCase() || "";
+
+  if (normalizedTier.includes("elite") || normalizedTier.includes("main event")) {
+    return {
+      popularity: 76,
+      credibility: 78,
+      inRingSkill: 74,
+      promoSkill: 72,
+      stamina: 78,
+      momentum: 72,
+    };
+  }
+
+  if (normalizedTier.includes("featured") || normalizedTier.includes("upper")) {
+    return {
+      popularity: 68,
+      credibility: 70,
+      inRingSkill: 68,
+      promoSkill: 66,
+      stamina: 72,
+      momentum: 66,
+    };
+  }
+
+  return {
+    popularity: 60,
+    credibility: 60,
+    inRingSkill: 62,
+    promoSkill: 60,
+    stamina: 68,
+    momentum: 58,
+  };
+}
+
+function createLocalFanSegments({ promotion }) {
+  return Object.freeze([
+    Object.freeze({
+      id: `${promotion.id}-core-fans`,
+      kind: "hardcore",
+      name: `${promotion.name} Core Fans`,
+      marketShare: 55,
+      companyTrust: promotion.fanTrust,
+      noveltyPreference: 55,
+      workratePreference: 60,
+      storyPreference: 62,
+      metaAwareness: 55,
+      toleranceForForcedPushes: 50,
+      fatigueSensitivity: 45,
+    }),
+  ]);
+}
+
+function createLocalDomainRivalries({ rivalries, projection, promotionId }) {
+  return rivalries.map((rivalry, index) =>
+    Object.freeze({
+      id: `local-rivalry-${index + 1}`,
+      promotionId,
+      participantIds: [rivalry.wrestlerAId, rivalry.wrestlerBId],
+      title: `${findRosterName(projection.rosterOptions, rivalry.wrestlerAId)} vs ${findRosterName(projection.rosterOptions, rivalry.wrestlerBId)}`,
+      heat: rivalry.intensity === "High" ? 72 : rivalry.intensity === "Low" ? 48 : 60,
+      clarity: 62,
+      freshness: 68,
+      polarization: 45,
+      beats: [],
+    })
+  );
+}
+
+function createLocalBookedMatch({
+  segment,
+  show,
+  promotion,
+  wrestlers,
+  fanSegments,
+  rivalry,
+}) {
+  const participantIds = getSegmentWrestlerIds(segment);
+  const participants = participantIds
+    .map((wrestlerId) => wrestlers.get(wrestlerId))
+    .filter(Boolean);
+
+  if (participants.length < 2) {
+    return undefined;
+  }
+
+  const match = Object.freeze({
+    id: createMatchId(segment.segmentId),
+    showId: show.id,
+    participantIds: Object.freeze(
+      participants.map((wrestler, index) =>
+        Object.freeze({
+          wrestlerId: wrestler.id,
+          sideId: `side-${index + 1}`,
+        })
+      )
+    ),
+    rivalryId: rivalry?.id,
+    stipulation: segment.mainEvent ? "Main Event Singles" : "Singles",
+    plannedWinnerId: undefined,
+    actualWinnerId: undefined,
+    finishType: undefined,
+    plannedMinutes: segment.mainEvent ? 15 : 10,
+    stakes: segment.mainEvent ? "major" : rivalry ? "high" : "medium",
+  });
+
+  return Object.freeze({
+    id: `booked-${match.id}`,
+    orderIndex: segment.segmentNumber,
+    matchInput: Object.freeze({
+      match,
+      show,
+      promotion,
+      participants: Object.freeze(participants),
+      fanSegments,
+      rivalry,
+      finishIntent: Object.freeze({
+        type: "clean",
+        protection: "protected",
+        controversy: "low",
+      }),
+    }),
+  });
+}
+
+function findLocalDomainRivalry(rivalries, segment) {
+  const wrestlerIds = getSegmentWrestlerIds(segment);
+
+  return rivalries.find((rivalry) =>
+    rivalry.participantIds.every((wrestlerId) => wrestlerIds.includes(wrestlerId))
+  );
+}
+
+function createMatchId(segmentId) {
+  return `${segmentId}-match`;
+}
+
+function readSegmentIdFromMatchId(matchId) {
+  return readString(matchId)?.replace(/-match$/, "") || "";
+}
+
+function readEngineSignalLabels(engineMatchResult) {
+  if (!engineMatchResult) {
+    return new Set();
+  }
+
+  return new Set(
+    engineMatchResult.signals.flatMap((group) =>
+      group.signals.map((signal) => signal.label)
+    )
+  );
+}
+
+function createCardReadinessLine(engineRun) {
+  if (!engineRun) {
+    return "Card Status: Local recap prepared";
+  }
+
+  if (engineRun.showReadinessStatus === "ready") {
+    return "Card Status: Processed";
+  }
+
+  if (engineRun.failedMatchEngineRuns > 0) {
+    return "Card Status: Needs attention";
+  }
+
+  return "Card Status: Partially processed";
 }
 
 function createSegmentProjection({ segment, segmentNumber, rosterOptions }) {
@@ -811,6 +1171,9 @@ function normalizeShowRecap(recap) {
       "Budget: No major change in this local session",
     localOnlyLine:
       readString(recap.localOnlyLine) || "Local Session Only / Not Saved Yet",
+    cardReadinessLine:
+      readString(recap.cardReadinessLine) || "Card Status: Local recap prepared",
+    simulationBacked: Boolean(recap.simulationBacked),
     segmentResults: Array.isArray(recap.segmentResults)
       ? recap.segmentResults.map(normalizeSegmentResult)
       : [],
@@ -852,6 +1215,8 @@ function freezeShowRecap(recap) {
     fanResponseNote: recap.fanResponseNote,
     budgetNote: recap.budgetNote,
     localOnlyLine: recap.localOnlyLine,
+    cardReadinessLine: recap.cardReadinessLine,
+    simulationBacked: Boolean(recap.simulationBacked),
     segmentResults: Object.freeze(
       recap.segmentResults.map((segment) => Object.freeze({ ...segment }))
     ),
@@ -887,6 +1252,15 @@ function findRosterName(rosterOptions, candidateId) {
   return (
     rosterOptions.find((option) => option.candidateId === value)?.displayName ||
     "Missing Wrestler"
+  );
+}
+
+function slugify(value) {
+  return (
+    readString(value)
+      ?.toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "local"
   );
 }
 

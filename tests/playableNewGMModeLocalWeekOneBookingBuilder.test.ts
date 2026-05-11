@@ -258,6 +258,39 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.equal(result.weeklyState.lastShowRecap?.recapId, "local-week-1-recap");
   });
 
+  it("backs local show recap with the Show Engine shell deterministically", () => {
+    const { miniDraftProgress, setupState, rosterIds } = createCompletedWeekOneSetup();
+    const bookingState = createReadyShowCard({
+      miniDraftProgress,
+      setupState,
+      rosterIds,
+    });
+    const firstResult = runLocalWeeklyShow({
+      selectedBrand,
+      miniDraftProgress,
+      setupState,
+      bookingState,
+      weeklyState: createInitialLocalWeeklyLoopState(),
+    });
+    const secondResult = runLocalWeeklyShow({
+      selectedBrand,
+      miniDraftProgress,
+      setupState,
+      bookingState,
+      weeklyState: createInitialLocalWeeklyLoopState(),
+    });
+
+    assert.equal(firstResult.recap.simulationBacked, true);
+    assert.equal(firstResult.recap.cardReadinessLine, "Card Status: Processed");
+    assert.deepEqual(secondResult.recap, firstResult.recap);
+    assert.equal(
+      firstResult.recap.segmentResults.some((segment) =>
+        segment.resultLine.includes("crowd")
+      ),
+      true
+    );
+  });
+
   it("advances to Week 2 HQ and reuses the local booking loop for the next week", () => {
     const { miniDraftProgress, setupState, rosterIds } = createCompletedWeekOneSetup();
     const weekOneRun = runLocalWeeklyShow({
@@ -313,7 +346,7 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.equal(shouldShowDock("show-recap"), true);
   });
 
-  it("does not add forbidden browser storage, randomness, or engine calls", () => {
+  it("uses only the scoped Show Engine path without forbidden storage, randomness, or adjacent engine calls", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -336,12 +369,15 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
       "canUseGenAI: true",
       "createAutoDraft",
       "AutoDraftService",
-      "match-engine-v0",
-      "show-engine-v0",
       "fan-reaction-engine-v0",
       "social-discourse-engine-v0",
+      "fanReactionEngine.run",
+      "socialDiscourseEngine.run",
+      "businessEngine",
       ["Math", "random"].join("."),
     ];
+
+    assert.match(changedUiSource, /showEngine\.run/);
 
     for (const snippet of forbiddenSnippets) {
       assert.equal(changedUiSource.includes(snippet), false, snippet);
