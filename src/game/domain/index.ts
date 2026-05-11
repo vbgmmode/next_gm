@@ -202,6 +202,11 @@ export { createNewGMModeDraftPickCandidateObjects } from "./newGMModeDraftPickCa
 export type * from "./newGMModeDraftPickCandidateObject.ts";
 export { createPlayableNewGMModeDraftReadOnlyIntegrationBoundary } from "./playableNewGMModeDraftReadOnlyIntegrationBoundary.ts";
 export type * from "./playableNewGMModeDraftReadOnlyIntegrationBoundary.ts";
+export {
+  createPlayableNewGMModeGameplayStateModel,
+  PLAYABLE_NEW_GM_MODE_GAMEPLAY_STATE_MODEL_CAPABILITY_FLAGS
+} from "./playableNewGMModeGameplayStateModel.ts";
+export type * from "./playableNewGMModeGameplayStateModel.ts";
 export { createNewGMModeDraftPickCandidateObjectValidator } from "./newGMModeDraftPickCandidateObjectValidator.ts";
 export type * from "./newGMModeDraftPickCandidateObjectValidator.ts";
 export { createNewGMModeDraftPickCandidateReadinessSummary } from "./newGMModeDraftPickCandidateReadinessSummary.ts";
