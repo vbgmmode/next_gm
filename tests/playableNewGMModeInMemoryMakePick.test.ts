@@ -12,6 +12,7 @@ import { DEFAULT_LOCAL_DRAFT_SLOT } from "../ui/playable-new-gm-mode/draftSelect
 import { shouldShowDock } from "../ui/playable-new-gm-mode/screenShellState.js";
 import {
   createNewGMModeDraftPickCandidateObjects,
+  createNewGMModeDraftFinanceProjection,
   createNewGMModeDraftSelectionIntentObject,
   createNewGMModeInMemoryDraftFlow,
 } from "../src/game/domain/index.ts";
@@ -260,6 +261,35 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     );
   });
 
+  it("keeps finance projection read-only while Make Pick records local picks", () => {
+    const beforePickFinanceProjection = createNewGMModeDraftFinanceProjection({
+      selectedCandidateId: validCandidate.candidateId,
+    });
+    const pickResult = executeInMemoryMakePick({
+      selectedCandidate: validCandidate,
+      selectedBrand,
+      selectedGm,
+      miniDraftProgress: createInitialMiniDraftProgress(),
+    });
+    const afterPickFinanceProjection = createNewGMModeDraftFinanceProjection({
+      selectedCandidateId: secondValidCandidate.candidateId,
+    });
+
+    assert.equal(pickResult.actionStatus, "in-memory-make-pick-succeeded");
+    assert.equal(
+      beforePickFinanceProjection.remainingDraftBudgetPreview,
+      100
+    );
+    assert.equal(
+      afterPickFinanceProjection.remainingDraftBudgetPreview,
+      100
+    );
+    assert.equal(beforePickFinanceProjection.capabilityFlags.canDeductBudget, false);
+    assert.equal(afterPickFinanceProjection.capabilityFlags.canMutateBudget, false);
+    assert.equal(collectKeys(pickResult).includes("budgetDeducted"), false);
+    assert.equal(collectKeys(pickResult).includes("remainingDraftBudget"), false);
+  });
+
   it("distinguishes real in-memory recap projection from mock QA preview", () => {
     const html = readPlayableUiFile("index.html");
     const controllerSource = readPlayableUiFile("inMemoryDraftActionController.js");
@@ -268,6 +298,20 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.match(html, /QA Preview: Mock Draft Recap/);
     assert.match(controllerSource, /Mini Draft Complete - local only/);
     assert.match(controllerSource, /local-mini-draft-recap-projection/);
+  });
+
+  it("wires read-only finance projection labels into the draft preview UI", () => {
+    const html = readPlayableUiFile("index.html");
+    const appSource = readPlayableUiFile("app.js");
+
+    assert.match(html, /Starting Budget: 100/);
+    assert.match(html, /Remaining Budget Preview: 100/);
+    assert.match(html, /Projected Cost Tier: Franchise/);
+    assert.match(html, /Projected Signing Cost: 18/);
+    assert.match(html, /Budget Preview After Signing: 82/);
+    assert.match(html, /Finance preview only\. Budget spend is not active yet\./);
+    assert.match(appSource, /createNewGMModeDraftFinanceProjection/);
+    assert.doesNotMatch(appSource, /budgetDeducted|deductBudget|mutateBudget/);
   });
 
   it("keeps dock visibility correct across draft and dashboard screens", () => {
@@ -353,4 +397,19 @@ function readPlayableUiFile(fileName: string): string {
     join("ui", "playable-new-gm-mode", fileName),
     "utf8"
   );
+}
+
+function collectKeys(source: unknown): string[] {
+  if (Array.isArray(source)) {
+    return source.flatMap((item) => collectKeys(item));
+  }
+
+  if (!source || typeof source !== "object") {
+    return [];
+  }
+
+  return Object.entries(source).flatMap(([key, value]) => [
+    key,
+    ...collectKeys(value),
+  ]);
 }

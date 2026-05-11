@@ -1744,7 +1744,7 @@ dd {
 .pick-confirmation .confirmation-steps {
   grid-column: 2;
   grid-row: 1 / span 2;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   align-content: start;
   overflow: hidden;
 }
@@ -2672,7 +2672,7 @@ dd {
   }
 
   .pick-confirmation .confirmation-steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .portrait-frame {
@@ -2816,5 +2816,9 @@ dd {
   .spotlight-stage,
   .spotlight-stat-grid {
     grid-template-columns: 1fr;
+  }
+
+  .pick-confirmation .confirmation-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

@@ -184,6 +184,13 @@ export { createNewGMModeDraftCompletionSummary } from "./newGMModeDraftCompletio
 export type * from "./newGMModeDraftCompletionSummary.ts";
 export { createNewGMModeInMemoryDraftFlow } from "./newGMModeInMemoryDraftFlow.ts";
 export type * from "./newGMModeInMemoryDraftFlow.ts";
+export {
+  createNewGMModeDraftFinanceProjection,
+  NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
+  NEW_GM_MODE_DRAFT_FINANCE_PLACEHOLDER_TIER_COSTS,
+  NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER
+} from "./newGMModeDraftFinanceProjection.ts";
+export type * from "./newGMModeDraftFinanceProjection.ts";
 export { createNewGMModeDraftPickValidationReadinessValidatorShell } from "./newGMModeDraftPickValidationReadinessValidatorShell.ts";
 export type * from "./newGMModeDraftPickValidationReadinessValidatorShell.ts";
 export { createNewGMModeDraftPickExecutionPrerequisiteContractShell } from "./newGMModeDraftPickExecutionPrerequisiteContractShell.ts";

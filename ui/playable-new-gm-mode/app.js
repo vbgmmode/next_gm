@@ -8,6 +8,7 @@ import {
   createMakePickReadiness,
   executeInMemoryMakePick,
 } from "./inMemoryDraftActionController.js";
+import { createNewGMModeDraftFinanceProjection } from "../../src/game/domain/index.ts";
 import {
   resolveActiveDockSection,
   shouldShowDock,
@@ -36,6 +37,14 @@ import {
     pick: document.getElementById("intent-preview-pick"),
     status: document.getElementById("intent-preview-status"),
     note: document.getElementById("intent-preview-note"),
+  };
+  const financePreviewTargets = {
+    startingBudget: document.getElementById("finance-preview-starting-budget"),
+    remainingBudget: document.getElementById("finance-preview-remaining-budget"),
+    tier: document.getElementById("finance-preview-tier"),
+    cost: document.getElementById("finance-preview-cost"),
+    afterSigning: document.getElementById("finance-preview-after-signing"),
+    affordability: document.getElementById("finance-preview-affordability"),
   };
   const draftRecapTargets = {
     badge: document.getElementById("draft-recap-badge"),
@@ -74,6 +83,7 @@ import {
     riskMeter: document.getElementById("talent-detail-risk-meter"),
     confidenceMeter: document.getElementById("talent-detail-confidence-meter"),
   };
+  const draftFinanceProjection = createNewGMModeDraftFinanceProjection();
 
   const flowOrder = [
     "save-selection",
@@ -329,6 +339,45 @@ import {
     }
   }
 
+  function updateFinancePreviewForCandidate(candidate) {
+    const projection = createNewGMModeDraftFinanceProjection({
+      selectedCandidateId: candidate?.candidateId,
+      remainingDraftBudgetPreview:
+        draftFinanceProjection.placeholderTuning.startingDraftBudget,
+      alreadyDraftedCandidateIds: uiState.miniDraftProgress.draftedCandidateIds,
+    });
+    const candidateProjection = projection.selectedCandidateProjection;
+
+    setText(
+      financePreviewTargets.startingBudget,
+      projection.displayLabels.startingBudgetLine
+    );
+    setText(
+      financePreviewTargets.remainingBudget,
+      projection.displayLabels.remainingBudgetLine
+    );
+    setText(
+      financePreviewTargets.tier,
+      candidateProjection?.displayLabels.tierLine ||
+        "Projected Cost Tier: Locked pending rules"
+    );
+    setText(
+      financePreviewTargets.cost,
+      candidateProjection?.displayLabels.costLine ||
+        "Projected Signing Cost: Locked pending rules"
+    );
+    setText(
+      financePreviewTargets.afterSigning,
+      candidateProjection?.displayLabels.afterSigningLine ||
+        "Budget Preview After Signing: Locked pending rules"
+    );
+    setText(
+      financePreviewTargets.affordability,
+      candidateProjection?.displayLabels.affordabilityLine ||
+        "Locked pending finance rules"
+    );
+  }
+
   function createMockDraftRecapPreviewFromUiState() {
     return createMockDraftRecapPreviewState({
       selectedGm: getSelectedGmDisplay(),
@@ -494,6 +543,7 @@ import {
     setMeter(talentDetail.confidenceMeter, row.dataset.confidenceValue);
 
     updateIntentPreview(uiState.selectedDraftIntentPreview);
+    updateFinancePreviewForCandidate(getCandidateDisplayFromRow(row));
     updateMakePickControl();
   }
 
@@ -533,6 +583,7 @@ import {
     setMeter(talentDetail.confidenceMeter, "0");
 
     updateIntentPreview(uiState.selectedDraftIntentPreview);
+    updateFinancePreviewForCandidate();
   }
 
   function getCandidateDisplayFromRow(row) {
