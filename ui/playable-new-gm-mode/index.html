@@ -848,18 +848,21 @@
               </div>
             </aside>
 
-            <section class="locked-setup-panel recap-setup-panel" aria-label="Locked post-draft setup">
-              <article class="locked-setup-card">
+            <section class="locked-setup-panel recap-setup-panel" aria-label="Post-draft setup steps">
+              <article class="locked-setup-card" id="post-draft-championship-card">
                 <strong>Championship Setup</strong>
-                <span>Setup Locked</span>
+                <span id="post-draft-championship-status">Setup Locked</span>
+                <button class="ghost-button setup-card-action" id="post-draft-championship-action" type="button" data-go-to="championship-setup" disabled>Assign Champions</button>
               </article>
-              <article class="locked-setup-card">
+              <article class="locked-setup-card" id="post-draft-rivalry-card">
                 <strong>Rivalry Setup</strong>
-                <span>Setup Locked</span>
+                <span id="post-draft-rivalry-status">Locked</span>
+                <button class="ghost-button setup-card-action" id="post-draft-rivalry-action" type="button" data-go-to="rivalry-setup" disabled>Create Rivalries</button>
               </article>
-              <article class="locked-setup-card">
-                <strong>Week 1 Booking</strong>
-                <span>Week 1 Locked</span>
+              <article class="locked-setup-card" id="post-draft-week-one-card">
+                <strong>Week 1 HQ</strong>
+                <span id="post-draft-week-one-status">Locked</span>
+                <button class="ghost-button setup-card-action" id="post-draft-week-one-action" type="button" data-go-to="brand-dashboard" disabled>Open Week 1 HQ</button>
               </article>
               <article class="locked-setup-card">
                 <strong>Save/Persistence</strong>
@@ -870,7 +873,7 @@
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="draft-room">Back to Draft</button>
-            <button class="hero-cta small" type="button" data-go-to="brand-dashboard">Continue to Brand Dashboard Preview</button>
+            <button class="hero-cta small" type="button" data-go-to="championship-setup">Assign Champions</button>
           </div>
         </section>
 
@@ -922,18 +925,18 @@
               </div>
             </aside>
 
-            <section class="locked-setup-panel" aria-label="Locked post-draft setup">
+            <section class="locked-setup-panel" aria-label="Post-draft setup steps">
               <article class="locked-setup-card">
                 <strong>Championship Setup</strong>
-                <span>Setup Locked</span>
+                <span>Available after draft</span>
               </article>
               <article class="locked-setup-card">
                 <strong>Rivalry Setup</strong>
-                <span>Setup Locked</span>
+                <span>Locked</span>
               </article>
               <article class="locked-setup-card">
-                <strong>Week 1 Booking</strong>
-                <span>Week 1 Locked</span>
+                <strong>Week 1 HQ</strong>
+                <span>Locked</span>
               </article>
               <article class="locked-setup-card">
                 <strong>Save/Persistence</strong>
@@ -944,89 +947,208 @@
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="draft-recap">Back to Draft Recap</button>
-            <button class="hero-cta small" type="button" data-go-to="brand-dashboard">Continue to Brand Dashboard Preview</button>
+            <button class="hero-cta small" type="button" data-go-to="championship-setup">Assign Champions</button>
+          </div>
+        </section>
+
+        <section
+          id="championship-setup"
+          class="screen setup-flow-screen"
+          data-screen-title="Assign Champions"
+          data-flow-phase="Championship Setup"
+          aria-labelledby="championship-setup-title"
+          hidden
+        >
+          <div class="screen-header">
+            <div>
+              <p class="kicker">Post-Draft Setup</p>
+              <h2 id="championship-setup-title">Assign Champions</h2>
+            </div>
+            <span class="header-badge" id="championship-setup-status">Finish Draft first</span>
+          </div>
+
+          <div class="setup-flow-layout">
+            <section class="setup-form-panel">
+              <div class="panel-title">
+                <p class="kicker">Required Titles</p>
+                <h3>Champion Select</h3>
+              </div>
+              <p class="setup-message" id="championship-setup-message">Finish the draft before assigning champions.</p>
+              <div class="setup-select-grid">
+                <label class="setup-field" for="champion-world-select">
+                  <span>World Champion</span>
+                  <select id="champion-world-select"></select>
+                </label>
+                <label class="setup-field" for="champion-womens-select">
+                  <span>Women's Champion</span>
+                  <select id="champion-womens-select"></select>
+                </label>
+                <label class="setup-field" for="champion-midcard-select">
+                  <span>Midcard Champion</span>
+                  <select id="champion-midcard-select"></select>
+                </label>
+              </div>
+              <article class="locked-setup-card setup-coming-later">
+                <strong>Tag Team Champions</strong>
+                <span>Coming Later</span>
+              </article>
+            </section>
+
+            <aside class="setup-summary-panel">
+              <div class="panel-title">
+                <p class="kicker">Setup Desk</p>
+                <h3>Championship Status</h3>
+              </div>
+              <div class="setup-summary-list" id="championship-summary-list"></div>
+              <p class="quiet-note">Each required singles title needs a different signed wrestler.</p>
+            </aside>
+          </div>
+
+          <div class="screen-actions">
+            <button class="ghost-button" type="button" data-go-to="draft-recap">Back to Draft Recap</button>
+            <button class="hero-cta small" type="button" id="complete-championship-setup" data-complete-championship-setup disabled>Complete Championship Setup</button>
+            <button class="hero-cta small" type="button" id="championship-continue-rivalries" data-go-to="rivalry-setup" disabled>Create Rivalries</button>
+          </div>
+        </section>
+
+        <section
+          id="rivalry-setup"
+          class="screen setup-flow-screen"
+          data-screen-title="Create Rivalries"
+          data-flow-phase="Rivalry Setup"
+          aria-labelledby="rivalry-setup-title"
+          hidden
+        >
+          <div class="screen-header">
+            <div>
+              <p class="kicker">Post-Draft Setup</p>
+              <h2 id="rivalry-setup-title">Create Rivalries</h2>
+            </div>
+            <span class="header-badge" id="rivalry-setup-status">Championship setup required</span>
+          </div>
+
+          <div class="setup-flow-layout rivalry-flow-layout">
+            <section class="setup-form-panel rivalry-board-panel">
+              <div class="panel-title">
+                <p class="kicker">Starter Rivalries</p>
+                <h3>Rivalry Board</h3>
+              </div>
+              <p class="setup-message" id="rivalry-setup-message">Complete championship setup before creating rivalries.</p>
+              <div class="rivalry-slot-list" aria-label="Starter rivalry slots">
+                <article class="rivalry-slot" data-rivalry-slot="0">
+                  <strong>Rivalry 1</strong>
+                  <label><span>Wrestler A</span><select class="rivalry-wrestler-a"></select></label>
+                  <label><span>Wrestler B</span><select class="rivalry-wrestler-b"></select></label>
+                  <label><span>Type</span><select class="rivalry-type"></select></label>
+                  <label><span>Intensity</span><select class="rivalry-intensity"></select></label>
+                </article>
+                <article class="rivalry-slot" data-rivalry-slot="1">
+                  <strong>Rivalry 2</strong>
+                  <label><span>Wrestler A</span><select class="rivalry-wrestler-a"></select></label>
+                  <label><span>Wrestler B</span><select class="rivalry-wrestler-b"></select></label>
+                  <label><span>Type</span><select class="rivalry-type"></select></label>
+                  <label><span>Intensity</span><select class="rivalry-intensity"></select></label>
+                </article>
+                <article class="rivalry-slot" data-rivalry-slot="2">
+                  <strong>Rivalry 3</strong>
+                  <label><span>Wrestler A</span><select class="rivalry-wrestler-a"></select></label>
+                  <label><span>Wrestler B</span><select class="rivalry-wrestler-b"></select></label>
+                  <label><span>Type</span><select class="rivalry-type"></select></label>
+                  <label><span>Intensity</span><select class="rivalry-intensity"></select></label>
+                </article>
+              </div>
+            </section>
+
+            <aside class="setup-summary-panel">
+              <div class="panel-title">
+                <p class="kicker">Setup Desk</p>
+                <h3>Rivalry Status</h3>
+              </div>
+              <div class="setup-summary-list" id="rivalry-summary-list"></div>
+              <p class="quiet-note">Create at least one valid rivalry to unlock Week 1 HQ.</p>
+            </aside>
+          </div>
+
+          <div class="screen-actions">
+            <button class="ghost-button" type="button" data-go-to="championship-setup">Back to Champions</button>
+            <button class="hero-cta small" type="button" id="complete-rivalry-setup" data-complete-rivalry-setup disabled>Complete Rivalry Setup</button>
+            <button class="hero-cta small" type="button" id="rivalry-continue-week-one" data-go-to="brand-dashboard" disabled>Open Week 1 HQ</button>
           </div>
         </section>
 
         <section
           id="brand-dashboard"
           class="screen hq-screen"
-          data-screen-title="Brand Dashboard"
-          data-flow-phase="Week 1 Setup"
+          data-screen-title="Week 1 HQ"
+          data-flow-phase="Week 1 HQ"
           aria-labelledby="brand-dashboard-title"
           hidden
         >
           <div class="brand-dashboard-hero monitor-hero">
             <div class="hero-copy">
-              <p class="kicker">Week 1 Setup Preview</p>
-              <h2 id="brand-dashboard-title"><span class="js-brand-name">Raw</span> launch night</h2>
-              <p id="dashboard-preview-note">Week 1 Setup preview - draft and roster creation still locked</p>
+              <p class="kicker">Week 1 HQ</p>
+              <h2 id="brand-dashboard-title"><span class="js-brand-name">Raw</span> Week 1 HQ</h2>
+              <p id="dashboard-preview-note">Finish draft setup to unlock Week 1 HQ.</p>
             </div>
             <div class="hero-command-stack monitor-stack" aria-label="Week one command monitors">
               <article class="command-monitor">
-                <span>This Week's Show</span>
-                <strong>Preview Shell</strong>
-                <em>No card or week started</em>
+                <span>Roster</span>
+                <strong id="week-one-hq-roster-count">0 Signed</strong>
+                <em id="week-one-hq-budget">Remaining 120</em>
               </article>
               <article class="command-monitor healthy" id="dashboard-mini-draft-state">
-                <span>Initial Draft</span>
-                <strong>Local Preview Locked</strong>
-                <em>Sign at least 16 before finishing</em>
+                <span>Draft Setup</span>
+                <strong id="week-one-hq-setup-status">Setup Locked</strong>
+                <em id="week-one-hq-local">Local Session Only</em>
               </article>
               <article class="command-monitor urgent">
-                <span>GM Alerts</span>
-                <strong>3 Setup Reminders</strong>
-                <em>Draft, roster, gameplay locked</em>
+                <span>Booking</span>
+                <strong>Coming Next</strong>
+                <em>No show created</em>
               </article>
             </div>
             <div class="hero-actions">
-              <button class="hero-cta" type="button" disabled>Book / Continue This Week's Show</button>
-              <button class="ghost-button" type="button" disabled>GM Alerts</button>
+              <button class="hero-cta" id="week-one-hq-booking-action" type="button" disabled>Book Week 1 Show - Coming Next</button>
+              <button class="ghost-button" type="button" data-go-to="draft-recap">Back to Draft Recap</button>
             </div>
           </div>
 
           <div class="dashboard-layout">
             <section class="gm-alerts" aria-labelledby="gm-alerts-title">
               <div class="panel-title">
-                <p class="kicker">Objective List</p>
-                <h3 id="gm-alerts-title">GM Alerts</h3>
+                <p class="kicker">Champions</p>
+                <h3 id="gm-alerts-title">Title Holders</h3>
               </div>
-              <div class="alert-list">
-                <article class="alert-leak urgent"><span class="severity urgent">Urgent</span><strong>Phase 3 required for real draft.</strong><em>Mock recap did not create a roster.</em></article>
-                <article class="alert-leak important"><span class="severity important">Important</span><strong>Review signed roster.</strong><em>Post-draft command remains local until saving unlocks.</em></article>
-                <article class="alert-leak optional"><span class="severity optional">Optional</span><strong>Preview setup checklist.</strong><em>Champion and rivalry setup remain locked.</em></article>
-                <article class="alert-leak blocked"><span class="severity blocked">Blocked</span><strong>Run show is coming later.</strong><em>Week advancement is not part of this build.</em></article>
+              <div class="alert-list" id="week-one-hq-champions">
+                <article class="alert-leak blocked"><span class="severity blocked">Locked</span><strong>Champions not selected</strong><em>Assign champions first.</em></article>
               </div>
             </section>
 
             <section class="week-checklist" aria-labelledby="week-checklist-title">
               <div class="panel-title">
-                <p class="kicker">Week 1 Setup</p>
-                <h3 id="week-checklist-title">Recommended Checklist</h3>
+                <p class="kicker">Rivalries</p>
+                <h3 id="week-checklist-title">Opening Stories</h3>
               </div>
-              <div class="checklist-list">
-                <span>Review roster</span>
-                <span>Set champions and divisions</span>
-                <span>Start rivalries</span>
-                <span>Book first show</span>
+              <div class="checklist-list" id="week-one-hq-rivalries">
+                <span>Rivalries locked</span>
               </div>
-              <p class="quiet-note">Can be closed later and reopened from Settings / Help.</p>
+              <p class="quiet-note">Booking Builder is locked for the next slice.</p>
             </section>
 
             <section class="hq-tile-grid compact-hq" aria-label="Post-draft game hubs">
               <article class="hq-tile feature">
                 <span class="portrait-frame roster-frame" aria-hidden="true">RS</span>
                 <div>
-                  <p class="kicker">Roster Hub</p>
-                  <h3>Signed roster review</h3>
-                  <p>Review the local post-draft roster before future setup unlocks.</p>
+                  <p class="kicker">Local Session Only</p>
+                  <h3 id="week-one-hq-status-card">Week 1 HQ Locked</h3>
+                  <p>Not Saved Yet. Refreshing the page resets this local game flow.</p>
                 </div>
               </article>
-              <article class="hq-tile"><strong>Championships</strong><span>Manual assignment first. Recommendations are ask-only.</span></article>
-              <article class="hq-tile"><strong>Rivalries</strong><span>No hard cap. Organized by heat, brand, and status.</span></article>
-              <article class="hq-tile"><strong>Calendar</strong><span>Road to PLE and Week 1 deadlines.</span></article>
-              <article class="hq-tile"><strong>IWC Pulse</strong><span>Social surface unlocks after shows begin.</span></article>
-              <article class="hq-tile"><strong>Analytics</strong><span>Cleaner command-center style reports.</span></article>
+              <article class="hq-tile"><strong>Signed Roster</strong><span id="week-one-hq-roster-tile">0 superstars signed</span></article>
+              <article class="hq-tile"><strong>Remaining Budget</strong><span id="week-one-hq-budget-tile">120 remaining</span></article>
+              <article class="hq-tile"><strong>Championship Setup</strong><span id="week-one-hq-champion-tile">Locked</span></article>
+              <article class="hq-tile"><strong>Rivalry Setup</strong><span id="week-one-hq-rivalry-tile">Locked</span></article>
+              <article class="hq-tile"><strong>Booking</strong><span>Booking Coming Next</span></article>
             </section>
           </div>
         </section>

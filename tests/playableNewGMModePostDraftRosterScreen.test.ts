@@ -177,7 +177,7 @@ describe("Playable New GM Mode post-draft roster screen", () => {
     assert.match(html, /post-draft-roster-list/);
     assert.match(html, /Championship Setup/);
     assert.match(html, /Rivalry Setup/);
-    assert.match(html, /Week 1 Booking/);
+    assert.match(html, /Week 1 HQ/);
     assert.match(html, /Save\/Persistence/);
     assert.match(appSource, /createPostDraftRosterHubProjection/);
     assert.match(appSource, /updateDraftRecapCommandSurface/);

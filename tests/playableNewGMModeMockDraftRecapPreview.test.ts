@@ -85,26 +85,28 @@ describe("Playable New GM Mode draft recap preview", () => {
     );
   });
 
-  it("wires the preview CTA to Draft Recap and keeps Brand Dashboard reachable from recap", () => {
+  it("wires the preview CTA to Draft Recap and keeps Week 1 HQ reachable from setup", () => {
     const html = readPlayableUiFile("index.html");
     const appSource = readPlayableUiFile("app.js");
 
     assert.match(appSource, /previewControls = Array\.from\(document\.querySelectorAll\("\[data-preview-go-to\]"\)\)/);
     assert.match(appSource, /createMockDraftRecapPreviewFromUiState/);
     assert.match(appSource, /showSection\(control\.dataset\.previewGoTo\);/);
-    assert.match(
-      html,
-      /<button class="hero-cta small" type="button" data-go-to="brand-dashboard">Continue to Brand Dashboard Preview<\/button>/
-    );
+    assert.match(html, /data-go-to="championship-setup"/);
+    assert.match(html, /data-go-to="rivalry-setup"/);
+    assert.match(html, /data-go-to="brand-dashboard"/);
   });
 
-  it("labels Draft Recap and Brand Dashboard with player-facing locked setup copy", () => {
+  it("labels Draft Recap and Week 1 HQ with player-facing setup copy", () => {
     const html = readPlayableUiFile("index.html");
 
     assert.match(html, /Post-Draft Command/);
     assert.match(html, /Finish Draft to open the recap/);
     assert.match(html, /Local Draft Only\. Not Saved Yet\. Week 1 Locked\./);
-    assert.match(html, /Week 1 Setup preview/);
+    assert.match(html, /Assign Champions/);
+    assert.match(html, /Create Rivalries/);
+    assert.match(html, /Week 1 HQ/);
+    assert.match(html, /Booking Coming Next/);
   });
 
   it("keeps the dock hidden until Brand Dashboard", () => {

@@ -14,6 +14,18 @@ import {
   executeLocalFinishDraft,
 } from "./inMemoryDraftActionController.js";
 import {
+  LOCAL_RIVALRY_INTENSITIES,
+  LOCAL_RIVALRY_TYPES,
+  completeLocalChampionshipSetup,
+  completeLocalRivalrySetup,
+  createChampionshipSetupProjection,
+  createInitialLocalPostDraftSetupState,
+  createRivalrySetupProjection,
+  createWeekOneHqProjection,
+  updateLocalChampionshipSelection,
+  updateLocalRivalrySlot,
+} from "./localPostDraftSetupController.js";
+import {
   createNewGMModeDraftPickCandidateObjects,
   createNewGMModeDraftFinanceProjection,
   NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
@@ -124,6 +136,59 @@ import {
     localOnly: document.getElementById("roster-summary-local-only"),
     weekOneLocked: document.getElementById("roster-summary-week-one"),
   };
+  const postDraftSetupTargets = {
+    championshipCard: document.getElementById("post-draft-championship-card"),
+    championshipStatus: document.getElementById("post-draft-championship-status"),
+    championshipAction: document.getElementById("post-draft-championship-action"),
+    rivalryCard: document.getElementById("post-draft-rivalry-card"),
+    rivalryStatus: document.getElementById("post-draft-rivalry-status"),
+    rivalryAction: document.getElementById("post-draft-rivalry-action"),
+    weekOneCard: document.getElementById("post-draft-week-one-card"),
+    weekOneStatus: document.getElementById("post-draft-week-one-status"),
+    weekOneAction: document.getElementById("post-draft-week-one-action"),
+  };
+  const championshipSetupTargets = {
+    status: document.getElementById("championship-setup-status"),
+    message: document.getElementById("championship-setup-message"),
+    summaryList: document.getElementById("championship-summary-list"),
+    complete: document.getElementById("complete-championship-setup"),
+    continue: document.getElementById("championship-continue-rivalries"),
+    selects: {
+      worldChampionId: document.getElementById("champion-world-select"),
+      womensChampionId: document.getElementById("champion-womens-select"),
+      midcardChampionId: document.getElementById("champion-midcard-select"),
+    },
+  };
+  const rivalrySetupTargets = {
+    status: document.getElementById("rivalry-setup-status"),
+    message: document.getElementById("rivalry-setup-message"),
+    summaryList: document.getElementById("rivalry-summary-list"),
+    complete: document.getElementById("complete-rivalry-setup"),
+    continue: document.getElementById("rivalry-continue-week-one"),
+    slots: Array.from(document.querySelectorAll("[data-rivalry-slot]")).map((slot) => ({
+      slot,
+      wrestlerA: slot.querySelector(".rivalry-wrestler-a"),
+      wrestlerB: slot.querySelector(".rivalry-wrestler-b"),
+      type: slot.querySelector(".rivalry-type"),
+      intensity: slot.querySelector(".rivalry-intensity"),
+    })),
+  };
+  const weekOneHqTargets = {
+    title: document.getElementById("brand-dashboard-title"),
+    note: document.getElementById("dashboard-preview-note"),
+    rosterCount: document.getElementById("week-one-hq-roster-count"),
+    budget: document.getElementById("week-one-hq-budget"),
+    setupStatus: document.getElementById("week-one-hq-setup-status"),
+    local: document.getElementById("week-one-hq-local"),
+    bookingAction: document.getElementById("week-one-hq-booking-action"),
+    champions: document.getElementById("week-one-hq-champions"),
+    rivalries: document.getElementById("week-one-hq-rivalries"),
+    statusCard: document.getElementById("week-one-hq-status-card"),
+    rosterTile: document.getElementById("week-one-hq-roster-tile"),
+    budgetTile: document.getElementById("week-one-hq-budget-tile"),
+    championTile: document.getElementById("week-one-hq-champion-tile"),
+    rivalryTile: document.getElementById("week-one-hq-rivalry-tile"),
+  };
   const talentDetail = {
     panel: document.querySelector(".selected-profile"),
     initials: document.getElementById("talent-detail-initials"),
@@ -155,6 +220,8 @@ import {
     "select-brand",
     "draft-room",
     "draft-recap",
+    "championship-setup",
+    "rivalry-setup",
     "brand-dashboard",
   ];
 
@@ -170,6 +237,8 @@ import {
     "draft-room": "booking",
     "draft-recap": "roster",
     "roster-hub": "roster",
+    "championship-setup": "roster",
+    "rivalry-setup": "roster",
     "brand-dashboard": "dashboard",
   };
 
@@ -187,6 +256,7 @@ import {
     selectedDraftIntentPreview: undefined,
     mockDraftRecapPreview: undefined,
     miniDraftProgress: createInitialMiniDraftProgress(),
+    localPostDraftSetup: createInitialLocalPostDraftSetupState(),
   };
   let dockCollapseTimer;
 
@@ -300,6 +370,18 @@ import {
 
     if (resolvedTargetId === "draft-recap") {
       updateDraftRecapCommandSurface();
+    }
+
+    if (resolvedTargetId === "championship-setup") {
+      updateChampionshipSetupSurface();
+    }
+
+    if (resolvedTargetId === "rivalry-setup") {
+      updateRivalrySetupSurface();
+    }
+
+    if (resolvedTargetId === "brand-dashboard") {
+      updateWeekOneHqSurface();
     }
   }
 
@@ -673,6 +755,7 @@ import {
     });
 
     renderPostDraftRosterProjection(projection, rosterHubTargets);
+    updatePostDraftSetupCards();
   }
 
   function updateDraftRecapCommandSurface() {
@@ -682,6 +765,7 @@ import {
     });
 
     renderPostDraftRosterProjection(projection, draftRecapCommandTargets);
+    updatePostDraftSetupCards();
   }
 
   function renderPostDraftRosterProjection(projection, targets) {
@@ -714,6 +798,356 @@ import {
             ))
       );
     }
+  }
+
+  function updatePostDraftSetupCards() {
+    const championshipProjection = createChampionshipSetupProjection({
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+    const rivalryProjection = createRivalrySetupProjection({
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+    const weekOneProjection = createWeekOneHqProjection({
+      selectedBrand: getSelectedBrandDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+    const championshipAvailable = championshipProjection.localDraftFinished;
+    const rivalryAvailable = championshipProjection.complete;
+    const weekOneAvailable = weekOneProjection.unlocked;
+
+    setSetupCardState({
+      card: postDraftSetupTargets.championshipCard,
+      status: postDraftSetupTargets.championshipStatus,
+      action: postDraftSetupTargets.championshipAction,
+      active: championshipAvailable,
+      complete: championshipProjection.complete,
+      statusText: championshipProjection.complete
+        ? "Setup Complete"
+        : championshipAvailable
+          ? "Setup Available"
+          : "Locked",
+      actionText: championshipProjection.complete
+        ? "Review Champions"
+        : "Assign Champions",
+    });
+    setSetupCardState({
+      card: postDraftSetupTargets.rivalryCard,
+      status: postDraftSetupTargets.rivalryStatus,
+      action: postDraftSetupTargets.rivalryAction,
+      active: rivalryAvailable,
+      complete: rivalryProjection.complete,
+      statusText: rivalryProjection.complete
+        ? "Setup Complete"
+        : rivalryAvailable
+          ? "Setup Available"
+          : "Locked",
+      actionText: rivalryProjection.complete ? "Review Rivalries" : "Create Rivalries",
+    });
+    setSetupCardState({
+      card: postDraftSetupTargets.weekOneCard,
+      status: postDraftSetupTargets.weekOneStatus,
+      action: postDraftSetupTargets.weekOneAction,
+      active: weekOneAvailable,
+      complete: weekOneProjection.unlocked,
+      statusText: weekOneProjection.unlocked ? "Available" : "Locked",
+      actionText: "Open Week 1 HQ",
+    });
+  }
+
+  function setSetupCardState({
+    card,
+    status,
+    action,
+    active,
+    complete,
+    statusText,
+    actionText,
+  }) {
+    card?.classList.toggle("setup-available", active && !complete);
+    card?.classList.toggle("setup-complete", complete);
+    card?.classList.toggle("setup-locked", !active);
+    setText(status, statusText);
+
+    if (action) {
+      action.disabled = !active;
+      action.textContent = actionText;
+      action.classList.toggle("enabled", active);
+      action.setAttribute("aria-disabled", String(!active));
+    }
+  }
+
+  function updateChampionshipSetupSurface() {
+    const projection = createChampionshipSetupProjection({
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+
+    setText(championshipSetupTargets.status, projection.displayLabels.statusLine);
+    setText(championshipSetupTargets.message, projection.displayLabels.statusLine);
+
+    Object.entries(championshipSetupTargets.selects).forEach(([slotId, select]) => {
+      renderRosterSelectOptions({
+        select,
+        rosterOptions: projection.rosterOptions,
+        selectedId: projection.champions[slotId],
+        placeholder: "Select signed wrestler",
+      });
+      if (select) {
+        select.disabled = projection.locked;
+      }
+    });
+
+    if (championshipSetupTargets.summaryList) {
+      championshipSetupTargets.summaryList.replaceChildren(
+        ...projection.championCards.map((card) =>
+          createSetupSummaryItem({
+            label: card.label,
+            value: card.displayName || "Not Selected",
+            status: card.selected ? "Champion Selected" : "Required",
+          })
+        )
+      );
+    }
+
+    if (championshipSetupTargets.complete) {
+      championshipSetupTargets.complete.disabled = !projection.canComplete;
+      championshipSetupTargets.complete.textContent = projection.displayLabels.actionLabel;
+      championshipSetupTargets.complete.classList.toggle("enabled", projection.canComplete);
+      championshipSetupTargets.complete.setAttribute(
+        "aria-disabled",
+        String(!projection.canComplete)
+      );
+    }
+
+    if (championshipSetupTargets.continue) {
+      championshipSetupTargets.continue.disabled = !projection.complete;
+      championshipSetupTargets.continue.classList.toggle("enabled", projection.complete);
+      championshipSetupTargets.continue.setAttribute(
+        "aria-disabled",
+        String(!projection.complete)
+      );
+    }
+
+    updatePostDraftSetupCards();
+  }
+
+  function updateRivalrySetupSurface() {
+    const projection = createRivalrySetupProjection({
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+
+    setText(rivalrySetupTargets.status, projection.displayLabels.statusLine);
+    setText(rivalrySetupTargets.message, projection.displayLabels.statusLine);
+
+    rivalrySetupTargets.slots.forEach((slotTarget, index) => {
+      const slot = projection.rivalrySlots[index];
+      renderRosterSelectOptions({
+        select: slotTarget.wrestlerA,
+        rosterOptions: projection.rosterOptions,
+        selectedId: slot?.wrestlerAId,
+        placeholder: "Select Wrestler A",
+      });
+      renderRosterSelectOptions({
+        select: slotTarget.wrestlerB,
+        rosterOptions: projection.rosterOptions,
+        selectedId: slot?.wrestlerBId,
+        placeholder: "Select Wrestler B",
+      });
+      renderTextSelectOptions({
+        select: slotTarget.type,
+        options: LOCAL_RIVALRY_TYPES,
+        selectedValue: slot?.rivalryType,
+      });
+      renderTextSelectOptions({
+        select: slotTarget.intensity,
+        options: LOCAL_RIVALRY_INTENSITIES,
+        selectedValue: slot?.intensity,
+      });
+
+      [slotTarget.wrestlerA, slotTarget.wrestlerB, slotTarget.type, slotTarget.intensity]
+        .filter(Boolean)
+        .forEach((select) => {
+          select.disabled = projection.locked;
+        });
+    });
+
+    if (rivalrySetupTargets.summaryList) {
+      rivalrySetupTargets.summaryList.replaceChildren(
+        ...(projection.validRivalries.length
+          ? projection.validRivalries.map((rivalry, index) =>
+              createSetupSummaryItem({
+                label: `Rivalry ${index + 1}`,
+                value: `${findRosterOptionName(projection.rosterOptions, rivalry.wrestlerAId)} vs ${findRosterOptionName(projection.rosterOptions, rivalry.wrestlerBId)}`,
+                status: `${rivalry.rivalryType} / ${rivalry.intensity}`,
+              })
+            )
+          : [
+              createSetupSummaryItem({
+                label: "Starter Rivalry",
+                value: "Not Selected",
+                status: "Required",
+              }),
+            ])
+      );
+    }
+
+    if (rivalrySetupTargets.complete) {
+      rivalrySetupTargets.complete.disabled = !projection.canComplete;
+      rivalrySetupTargets.complete.textContent = projection.displayLabels.actionLabel;
+      rivalrySetupTargets.complete.classList.toggle("enabled", projection.canComplete);
+      rivalrySetupTargets.complete.setAttribute(
+        "aria-disabled",
+        String(!projection.canComplete)
+      );
+    }
+
+    if (rivalrySetupTargets.continue) {
+      rivalrySetupTargets.continue.disabled = !projection.complete;
+      rivalrySetupTargets.continue.classList.toggle("enabled", projection.complete);
+      rivalrySetupTargets.continue.setAttribute(
+        "aria-disabled",
+        String(!projection.complete)
+      );
+    }
+
+    updatePostDraftSetupCards();
+  }
+
+  function updateWeekOneHqSurface() {
+    const projection = createWeekOneHqProjection({
+      selectedBrand: getSelectedBrandDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+
+    setText(weekOneHqTargets.title, `${projection.brandLabel} ${projection.displayLabels.titleLine}`);
+    setText(weekOneHqTargets.note, projection.displayLabels.statusLine);
+    setText(weekOneHqTargets.rosterCount, `${projection.signedRosterCount} Signed`);
+    setText(weekOneHqTargets.budget, `Remaining ${projection.remainingDraftBudget}`);
+    setText(
+      weekOneHqTargets.setupStatus,
+      projection.unlocked ? "Setup Complete" : "Setup Locked"
+    );
+    setText(weekOneHqTargets.local, projection.displayLabels.localOnlyLine);
+    setText(weekOneHqTargets.bookingAction, projection.displayLabels.bookingLine);
+    setText(weekOneHqTargets.statusCard, projection.displayLabels.titleLine);
+    setText(weekOneHqTargets.rosterTile, `${projection.signedRosterCount} superstars signed`);
+    setText(weekOneHqTargets.budgetTile, `${projection.remainingDraftBudget} remaining`);
+    setText(
+      weekOneHqTargets.championTile,
+      projection.unlocked ? "Setup Complete" : "Locked"
+    );
+    setText(
+      weekOneHqTargets.rivalryTile,
+      projection.unlocked ? "Setup Complete" : "Locked"
+    );
+
+    if (weekOneHqTargets.champions) {
+      weekOneHqTargets.champions.replaceChildren(
+        ...projection.champions.map((champion) => {
+          const item = document.createElement("article");
+          item.className = "alert-leak important";
+          const severity = document.createElement("span");
+          severity.className = "severity important";
+          severity.textContent = champion.label;
+          const title = document.createElement("strong");
+          title.textContent = champion.displayName;
+          const note = document.createElement("em");
+          note.textContent = "Champion Selected";
+          item.append(severity, title, note);
+          return item;
+        })
+      );
+    }
+
+    if (weekOneHqTargets.rivalries) {
+      weekOneHqTargets.rivalries.replaceChildren(
+        ...(projection.rivalries.length
+          ? projection.rivalries.map((rivalry) => {
+              const item = document.createElement("span");
+              item.textContent = `${rivalry.wrestlerALabel} vs ${rivalry.wrestlerBLabel} / ${rivalry.rivalryType} / ${rivalry.intensity}`;
+              return item;
+            })
+          : [createTextSpan("Rivalries locked")])
+      );
+    }
+
+    updatePostDraftSetupCards();
+  }
+
+  function renderRosterSelectOptions({
+    select,
+    rosterOptions,
+    selectedId,
+    placeholder,
+  }) {
+    if (!select) {
+      return;
+    }
+
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = placeholder;
+    select.replaceChildren(
+      placeholderOption,
+      ...rosterOptions.map((option) => {
+        const node = document.createElement("option");
+        node.value = option.candidateId;
+        node.textContent = `${option.displayName} / ${option.sourceRosterPool} / ${option.signingTier}`;
+        return node;
+      })
+    );
+    select.value = selectedId || "";
+  }
+
+  function renderTextSelectOptions({ select, options, selectedValue }) {
+    if (!select) {
+      return;
+    }
+
+    select.replaceChildren(
+      ...options.map((option) => {
+        const node = document.createElement("option");
+        node.value = option;
+        node.textContent = option;
+        return node;
+      })
+    );
+    select.value = selectedValue || options[0];
+  }
+
+  function createSetupSummaryItem({ label, value, status }) {
+    const item = document.createElement("article");
+    item.className = "setup-summary-item";
+
+    const eyebrow = document.createElement("span");
+    eyebrow.textContent = label;
+
+    const title = document.createElement("strong");
+    title.textContent = value;
+
+    const note = document.createElement("em");
+    note.textContent = status;
+
+    item.append(eyebrow, title, note);
+    return item;
+  }
+
+  function findRosterOptionName(rosterOptions, candidateId) {
+    return (
+      rosterOptions.find((option) => option.candidateId === candidateId)
+        ?.displayName || "Signed Wrestler"
+    );
+  }
+
+  function createTextSpan(value) {
+    const span = document.createElement("span");
+    span.textContent = value;
+    return span;
   }
 
   function createPostDraftRosterCard(talent) {
@@ -1063,6 +1497,53 @@ import {
         showSection(control.dataset.goTo);
       }
     });
+  });
+
+  Object.entries(championshipSetupTargets.selects).forEach(([slotId, select]) => {
+    select?.addEventListener("change", () => {
+      uiState.localPostDraftSetup = updateLocalChampionshipSelection({
+        setupState: uiState.localPostDraftSetup,
+        slotId,
+        candidateId: select.value,
+      });
+      updateChampionshipSetupSurface();
+    });
+  });
+
+  championshipSetupTargets.complete?.addEventListener("click", () => {
+    const result = completeLocalChampionshipSetup({
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+    uiState.localPostDraftSetup = result.setupState;
+    updateChampionshipSetupSurface();
+  });
+
+  rivalrySetupTargets.slots.forEach((slotTarget, slotIndex) => {
+    [slotTarget.wrestlerA, slotTarget.wrestlerB, slotTarget.type, slotTarget.intensity]
+      .filter(Boolean)
+      .forEach((select) => {
+        select.addEventListener("change", () => {
+          uiState.localPostDraftSetup = updateLocalRivalrySlot({
+            setupState: uiState.localPostDraftSetup,
+            slotIndex,
+            wrestlerAId: slotTarget.wrestlerA?.value,
+            wrestlerBId: slotTarget.wrestlerB?.value,
+            rivalryType: slotTarget.type?.value,
+            intensity: slotTarget.intensity?.value,
+          });
+          updateRivalrySetupSurface();
+        });
+      });
+  });
+
+  rivalrySetupTargets.complete?.addEventListener("click", () => {
+    const result = completeLocalRivalrySetup({
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+    uiState.localPostDraftSetup = result.setupState;
+    updateRivalrySetupSurface();
   });
 
   previewControls.forEach((control) => {
