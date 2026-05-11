@@ -41,3 +41,8 @@ export { createSQLiteDurableSaveIdentityRepositoryDeleteContractShell } from "./
 export type * from "./sqliteDurableSaveIdentityRepositoryDeleteContractShell.ts";
 export { createSQLiteDurableSaveIdentityRepositoryUpdateContractShell } from "./sqliteDurableSaveIdentityRepositoryUpdateContractShell.ts";
 export type * from "./sqliteDurableSaveIdentityRepositoryUpdateContractShell.ts";
+export {
+  createSQLiteDurableSavePayloadRepositoryReadShell,
+  createSQLiteDurableSavePayloadRepositoryWriteShell
+} from "./sqliteDurableSavePayloadRepositoryShell.ts";
+export type * from "./sqliteDurableSavePayloadRepositoryShell.ts";
