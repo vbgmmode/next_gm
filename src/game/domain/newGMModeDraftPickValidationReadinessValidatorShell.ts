@@ -9,6 +9,7 @@ import {
   createNewGMModeDraftPickValidationContractShell
 } from "./newGMModeDraftPickValidationContractShell.ts";
 import { createNewGMModeRosterSlotRequirementContractShell } from "./newGMModeRosterSlotRequirementContractShell.ts";
+import { createNewGMModeStaticWrestlerFixtureCatalogMetrics } from "./newGMModeStaticWrestlerFixtureCatalogMetrics.ts";
 import {
   type NewGMModeTalentPoolReadinessAggregatorInput,
   createNewGMModeTalentPoolReadinessAggregatorShell
@@ -118,9 +119,8 @@ export interface NewGMModeDraftPickValidationReadinessValidatorShell {
   readonly genAIUsed: false;
 }
 
-const EXPECTED_FIXTURE_COUNT = 245;
-const EXPECTED_DISPLAY_READY_ELIGIBLE_COUNT = 235;
-const EXPECTED_EXCLUDED_INELIGIBLE_COUNT = 10;
+const EXPECTED_CATALOG_METRICS =
+  createNewGMModeStaticWrestlerFixtureCatalogMetrics();
 
 export function createNewGMModeDraftPickValidationReadinessValidatorShell(
   input: NewGMModeTalentPoolReadinessAggregatorInput = {}
@@ -200,9 +200,11 @@ export function createNewGMModeDraftPickValidationReadinessValidatorShell(
         displayReadiness.displayReadinessSummary.displayReadyEligibleCount,
       excludedIneligibleCount:
         displayReadiness.displayReadinessSummary.excludedIneligibleCount,
-      expectedFixtureCount: EXPECTED_FIXTURE_COUNT,
-      expectedDisplayReadyEligibleCount: EXPECTED_DISPLAY_READY_ELIGIBLE_COUNT,
-      expectedExcludedIneligibleCount: EXPECTED_EXCLUDED_INELIGIBLE_COUNT,
+      expectedFixtureCount: EXPECTED_CATALOG_METRICS.totalFixtureCount,
+      expectedDisplayReadyEligibleCount:
+        EXPECTED_CATALOG_METRICS.eligibleFixtureCount,
+      expectedExcludedIneligibleCount:
+        EXPECTED_CATALOG_METRICS.ineligibleFixtureCount,
       selectedWrestlerChosen: false,
       concreteDraftPickValidated: false,
       actualDraftPickExecutionReady: false,
@@ -322,11 +324,13 @@ function collectValidationReadinessIssues(
     );
   }
 
-  if (totalFixtureCount !== EXPECTED_FIXTURE_COUNT) {
+  if (totalFixtureCount !== EXPECTED_CATALOG_METRICS.totalFixtureCount) {
     issues.push(createIssue("totalFixtureCount", "fixture-count-not-stable"));
   }
 
-  if (displayReadyEligibleCount !== EXPECTED_DISPLAY_READY_ELIGIBLE_COUNT) {
+  if (
+    displayReadyEligibleCount !== EXPECTED_CATALOG_METRICS.eligibleFixtureCount
+  ) {
     issues.push(
       createIssue(
         "displayReadyEligibleCount",
@@ -335,7 +339,9 @@ function collectValidationReadinessIssues(
     );
   }
 
-  if (excludedIneligibleCount !== EXPECTED_EXCLUDED_INELIGIBLE_COUNT) {
+  if (
+    excludedIneligibleCount !== EXPECTED_CATALOG_METRICS.ineligibleFixtureCount
+  ) {
     issues.push(
       createIssue(
         "excludedIneligibleCount",

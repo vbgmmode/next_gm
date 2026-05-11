@@ -8,6 +8,7 @@ import {
   createNewGMModeRosterAssignmentRuleInputContractShell
 } from "./newGMModeRosterAssignmentRuleInputContractShell.ts";
 import { createNewGMModeRosterSlotRequirementContractShell } from "./newGMModeRosterSlotRequirementContractShell.ts";
+import { createNewGMModeStaticWrestlerFixtureCatalogMetrics } from "./newGMModeStaticWrestlerFixtureCatalogMetrics.ts";
 import {
   type NewGMModeTalentPoolReadinessAggregatorInput,
   createNewGMModeTalentPoolReadinessAggregatorShell
@@ -124,9 +125,8 @@ export interface NewGMModeRosterAssignmentRuleInputReadinessValidatorShell {
   readonly genAIUsed: false;
 }
 
-const EXPECTED_FIXTURE_COUNT = 245;
-const EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT = 235;
-const EXPECTED_EXCLUDED_INELIGIBLE_COUNT = 10;
+const EXPECTED_CATALOG_METRICS =
+  createNewGMModeStaticWrestlerFixtureCatalogMetrics();
 
 export function createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell(
   input: NewGMModeTalentPoolReadinessAggregatorInput = {}
@@ -204,9 +204,11 @@ export function createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell(
       totalFixtureCount,
       eligibleDisplayReadyCount,
       excludedIneligibleCount,
-      expectedFixtureCount: EXPECTED_FIXTURE_COUNT,
-      expectedEligibleDisplayReadyCount: EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT,
-      expectedExcludedIneligibleCount: EXPECTED_EXCLUDED_INELIGIBLE_COUNT,
+      expectedFixtureCount: EXPECTED_CATALOG_METRICS.totalFixtureCount,
+      expectedEligibleDisplayReadyCount:
+        EXPECTED_CATALOG_METRICS.eligibleFixtureCount,
+      expectedExcludedIneligibleCount:
+        EXPECTED_CATALOG_METRICS.ineligibleFixtureCount,
       selectedWrestlerIdentityAvailable: false,
       selectedWrestlerChosen: false,
       executedPickAvailable: false,
@@ -336,11 +338,13 @@ function collectRuleInputReadinessIssues(
     );
   }
 
-  if (totalFixtureCount !== EXPECTED_FIXTURE_COUNT) {
+  if (totalFixtureCount !== EXPECTED_CATALOG_METRICS.totalFixtureCount) {
     issues.push(createIssue("totalFixtureCount", "fixture-count-not-stable"));
   }
 
-  if (eligibleDisplayReadyCount !== EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT) {
+  if (
+    eligibleDisplayReadyCount !== EXPECTED_CATALOG_METRICS.eligibleFixtureCount
+  ) {
     issues.push(
       createIssue(
         "eligibleDisplayReadyCount",
@@ -349,7 +353,9 @@ function collectRuleInputReadinessIssues(
     );
   }
 
-  if (excludedIneligibleCount !== EXPECTED_EXCLUDED_INELIGIBLE_COUNT) {
+  if (
+    excludedIneligibleCount !== EXPECTED_CATALOG_METRICS.ineligibleFixtureCount
+  ) {
     issues.push(
       createIssue(
         "excludedIneligibleCount",

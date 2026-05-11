@@ -17,10 +17,12 @@ import {
 
 const UNTOUCHED_HANDOFF_SUMMARY_DATABASE =
   "data/saves/__new-gm-mode-roster-assignment-handoff-summary-should-not-exist.sqlite";
+const rosterAssignmentHandoffSummary =
+  createNewGMModeRosterAssignmentHandoffSummaryShell();
 
 describe("New GM Mode Roster Assignment Handoff Summary Shell v0.1", () => {
   it("reports stable shell ID, version, and diagnostics boundaries", () => {
-    const summary = createNewGMModeRosterAssignmentHandoffSummaryShell();
+    const summary = rosterAssignmentHandoffSummary;
 
     assert.equal(
       summary.rosterAssignmentHandoffSummaryId,
@@ -35,7 +37,7 @@ describe("New GM Mode Roster Assignment Handoff Summary Shell v0.1", () => {
   });
 
   it("includes stable handoff phase values and deterministic ordering", () => {
-    const summary = createNewGMModeRosterAssignmentHandoffSummaryShell();
+    const summary = rosterAssignmentHandoffSummary;
 
     assert.deepEqual(
       summary.handoffPhases.map((phase) => phase.id),
@@ -55,7 +57,7 @@ describe("New GM Mode Roster Assignment Handoff Summary Shell v0.1", () => {
   });
 
   it("summarizes upstream readiness and fixture handoff counts while roster mutation stays blocked", () => {
-    const summary = createNewGMModeRosterAssignmentHandoffSummaryShell();
+    const summary = rosterAssignmentHandoffSummary;
 
     assert.equal(
       summary.topLevelHandoffPhase,
@@ -137,7 +139,7 @@ describe("New GM Mode Roster Assignment Handoff Summary Shell v0.1", () => {
   });
 
   it("does not handle selected wrestlers, create picks, assign rosters, mutate state, persist, add UI, or generate text", () => {
-    const summary = createNewGMModeRosterAssignmentHandoffSummaryShell();
+    const summary = rosterAssignmentHandoffSummary;
 
     assert.equal(summary.selectedWrestlerChosen, false);
     assert.equal(summary.selectedWrestlerId, null);

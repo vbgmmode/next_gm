@@ -20,11 +20,12 @@ import {
 
 const UNTOUCHED_RULE_EVALUATION_SUMMARY_DATABASE =
   "data/saves/__new-gm-mode-roster-assignment-rule-evaluation-summary-should-not-exist.sqlite";
+const ruleEvaluationSummary =
+  createNewGMModeRosterAssignmentRuleEvaluationSummaryShell();
 
 describe("New GM Mode Roster Assignment Rule Evaluation Summary Shell v0.1", () => {
   it("reports stable shell ID, version, and diagnostics boundaries", () => {
-    const summary =
-      createNewGMModeRosterAssignmentRuleEvaluationSummaryShell();
+    const summary = ruleEvaluationSummary;
 
     assert.equal(
       summary.rosterAssignmentRuleEvaluationSummaryId,
@@ -39,8 +40,7 @@ describe("New GM Mode Roster Assignment Rule Evaluation Summary Shell v0.1", () 
   });
 
   it("summarizes contract, validator, input readiness, counts, and blocked rule evaluation", () => {
-    const summary =
-      createNewGMModeRosterAssignmentRuleEvaluationSummaryShell();
+    const summary = ruleEvaluationSummary;
 
     assert.deepEqual(summary.contractAvailability, {
       ruleEvaluationContractAvailable: true,
@@ -100,8 +100,7 @@ describe("New GM Mode Roster Assignment Rule Evaluation Summary Shell v0.1", () 
   });
 
   it("keeps selected wrestler, executed pick, roster state, rule evaluation, and roster mutation unavailable", () => {
-    const summary =
-      createNewGMModeRosterAssignmentRuleEvaluationSummaryShell();
+    const summary = ruleEvaluationSummary;
 
     assert.equal(summary.selectedWrestlerChosen, false);
     assert.equal(summary.selectedWrestlerId, null);
@@ -124,8 +123,7 @@ describe("New GM Mode Roster Assignment Rule Evaluation Summary Shell v0.1", () 
   });
 
   it("does not choose, validate, execute, assign, create match/show/week state, persist, add UI, or generate text", () => {
-    const summary =
-      createNewGMModeRosterAssignmentRuleEvaluationSummaryShell();
+    const summary = ruleEvaluationSummary;
 
     assert.equal(summary.concreteDraftPickValidated, false);
     assert.equal(summary.validatedPickAvailable, false);

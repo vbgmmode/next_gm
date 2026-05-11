@@ -19,11 +19,12 @@ import {
 
 const UNTOUCHED_RULE_INPUT_SUMMARY_DATABASE =
   "data/saves/__new-gm-mode-roster-assignment-rule-input-summary-should-not-exist.sqlite";
+const ruleInputReadinessSummary =
+  createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell();
 
 describe("New GM Mode Roster Assignment Rule Input Readiness Summary Shell v0.1", () => {
   it("reports stable shell ID, version, and diagnostics boundaries", () => {
-    const summary =
-      createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell();
+    const summary = ruleInputReadinessSummary;
 
     assert.equal(
       summary.rosterAssignmentRuleInputReadinessSummaryId,
@@ -38,8 +39,7 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Summary Shell v0.1"
   });
 
   it("summarizes structurally ready rule inputs while actual roster assignment remains blocked", () => {
-    const summary =
-      createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell();
+    const summary = ruleInputReadinessSummary;
 
     assert.equal(summary.ruleInputContractAvailable, true);
     assert.equal(summary.ruleInputValidatorAvailable, true);
@@ -88,8 +88,7 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Summary Shell v0.1"
   });
 
   it("keeps selected wrestler, executed pick, roster state, and actual assignment unavailable", () => {
-    const summary =
-      createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell();
+    const summary = ruleInputReadinessSummary;
 
     assert.equal(summary.selectedWrestlerChosen, false);
     assert.equal(summary.selectedWrestlerId, null);
@@ -108,8 +107,7 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Summary Shell v0.1"
   });
 
   it("references roster slot and championship division contracts but does not execute assignment", () => {
-    const summary =
-      createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell();
+    const summary = ruleInputReadinessSummary;
 
     assert.equal(summary.rosterSlotRequirementAvailable, true);
     assert.equal(summary.championshipDivisionRequirementAvailable, true);
@@ -127,8 +125,7 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Summary Shell v0.1"
   });
 
   it("does not choose, validate, execute, create boards, create roster state, persist, or generate text", () => {
-    const summary =
-      createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell();
+    const summary = ruleInputReadinessSummary;
 
     assert.equal(summary.concreteDraftPickValidated, false);
     assert.equal(summary.validatedPickAvailable, false);

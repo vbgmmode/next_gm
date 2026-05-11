@@ -4,7 +4,6 @@ import {
   type NewGMModeRosterAssignmentRuleEvaluationReadinessValidatorInput,
   createNewGMModeRosterAssignmentRuleEvaluationReadinessValidatorShell
 } from "./newGMModeRosterAssignmentRuleEvaluationReadinessValidatorShell.ts";
-import { createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell } from "./newGMModeRosterAssignmentRuleInputReadinessSummaryShell.ts";
 
 export interface NewGMModeRosterAssignmentRuleEvaluationSummaryShell {
   readonly status: "diagnostics-only";
@@ -90,8 +89,6 @@ export function createNewGMModeRosterAssignmentRuleEvaluationSummaryShell(
   const contract = createNewGMModeRosterAssignmentRuleEvaluationContractShell();
   const validator =
     createNewGMModeRosterAssignmentRuleEvaluationReadinessValidatorShell(input);
-  const inputReadinessSummary =
-    createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell(input);
 
   return Object.freeze({
     status: "diagnostics-only",
@@ -109,8 +106,8 @@ export function createNewGMModeRosterAssignmentRuleEvaluationSummaryShell(
         validator.rosterAssignmentRuleEvaluationReadinessValidatorId ===
         "new-gm-mode-roster-assignment-rule-evaluation-readiness-validator-v0.1",
       inputReadinessSummaryAvailable:
-        inputReadinessSummary.rosterAssignmentRuleInputReadinessSummaryId ===
-        "new-gm-mode-roster-assignment-rule-input-readiness-summary-v0.1"
+        validator.requiredInputAvailabilitySummary
+          .assignmentInputReadinessSummaryAvailable
     }),
     topLevelReadinessPhase: validator.readinessPhase,
     futureRosterAssignmentRuleEvaluationStructurallyReady:

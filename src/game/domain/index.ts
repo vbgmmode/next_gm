@@ -254,6 +254,8 @@ export { createNewGMModeSetupSelectionValidatorShell } from "./newGMModeSetupSel
 export type * from "./newGMModeSetupSelectionValidatorShell.ts";
 export { createNewGMModeStaticWrestlerFixtureCatalogShell } from "./newGMModeStaticWrestlerFixtureCatalogShell.ts";
 export type * from "./newGMModeStaticWrestlerFixtureCatalogShell.ts";
+export { createNewGMModeStaticWrestlerFixtureCatalogMetrics } from "./newGMModeStaticWrestlerFixtureCatalogMetrics.ts";
+export type * from "./newGMModeStaticWrestlerFixtureCatalogMetrics.ts";
 export { createNewGMModeStaticWrestlerFixtureValidationSummaryShell } from "./newGMModeStaticWrestlerFixtureValidationSummaryShell.ts";
 export type * from "./newGMModeStaticWrestlerFixtureValidationSummaryShell.ts";
 export { createNewGMModeStaticWrestlerFixtureValidatorShell } from "./newGMModeStaticWrestlerFixtureValidatorShell.ts";

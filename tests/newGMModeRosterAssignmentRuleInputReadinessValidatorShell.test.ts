@@ -9,11 +9,12 @@ import {
 
 const UNTOUCHED_RULE_INPUT_VALIDATOR_DATABASE =
   "data/saves/__new-gm-mode-roster-assignment-rule-input-validator-should-not-exist.sqlite";
+const ruleInputReadinessValidator =
+  createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell();
 
 describe("New GM Mode Roster Assignment Rule Input Readiness Validator Shell v0.1", () => {
   it("reports stable shell ID, version, and diagnostics boundaries", () => {
-    const validator =
-      createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell();
+    const validator = ruleInputReadinessValidator;
 
     assert.equal(
       validator.rosterAssignmentRuleInputReadinessValidatorId,
@@ -28,8 +29,7 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Validator Shell v0.
   });
 
   it("reports structurally ready rule inputs while actual roster assignment remains blocked", () => {
-    const validator =
-      createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell();
+    const validator = ruleInputReadinessValidator;
 
     assert.equal(validator.ruleInputContractAvailable, true);
     assert.equal(validator.rosterAssignmentPrerequisiteAvailable, true);
@@ -110,8 +110,7 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Validator Shell v0.
   });
 
   it("keeps selected wrestler, executed pick, roster state, and actual assignment unavailable", () => {
-    const validator =
-      createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell();
+    const validator = ruleInputReadinessValidator;
 
     assert.equal(validator.selectedWrestlerChosen, false);
     assert.equal(validator.selectedWrestlerId, null);
@@ -130,8 +129,7 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Validator Shell v0.
   });
 
   it("references roster slot and championship division contracts but does not execute assignment", () => {
-    const validator =
-      createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell();
+    const validator = ruleInputReadinessValidator;
 
     assert.equal(validator.rosterSlotRequirementAvailable, true);
     assert.equal(validator.championshipDivisionRequirementAvailable, true);
@@ -149,8 +147,7 @@ describe("New GM Mode Roster Assignment Rule Input Readiness Validator Shell v0.
   });
 
   it("does not create draft board, UI, match/show/week state, persistence, or generated output", () => {
-    const validator =
-      createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell();
+    const validator = ruleInputReadinessValidator;
 
     assert.equal(validator.concreteDraftPickValidated, false);
     assert.equal(validator.validatedPickAvailable, false);

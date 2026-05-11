@@ -7,9 +7,9 @@ import {
   createNewGMModeRosterAssignmentRuleEvaluationContractShell
 } from "./newGMModeRosterAssignmentRuleEvaluationContractShell.ts";
 import { createNewGMModeRosterAssignmentRuleInputContractShell } from "./newGMModeRosterAssignmentRuleInputContractShell.ts";
-import { createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell } from "./newGMModeRosterAssignmentRuleInputReadinessSummaryShell.ts";
 import { createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell } from "./newGMModeRosterAssignmentRuleInputReadinessValidatorShell.ts";
 import { createNewGMModeRosterSlotRequirementContractShell } from "./newGMModeRosterSlotRequirementContractShell.ts";
+import { createNewGMModeStaticWrestlerFixtureCatalogMetrics } from "./newGMModeStaticWrestlerFixtureCatalogMetrics.ts";
 import {
   type NewGMModeTalentPoolReadinessAggregatorInput,
   createNewGMModeTalentPoolReadinessAggregatorShell
@@ -144,17 +144,14 @@ export interface NewGMModeRosterAssignmentRuleEvaluationReadinessValidatorShell 
   readonly genAIUsed: false;
 }
 
-const EXPECTED_FIXTURE_COUNT = 245;
-const EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT = 235;
-const EXPECTED_EXCLUDED_INELIGIBLE_COUNT = 10;
+const EXPECTED_CATALOG_METRICS =
+  createNewGMModeStaticWrestlerFixtureCatalogMetrics();
 
 export function createNewGMModeRosterAssignmentRuleEvaluationReadinessValidatorShell(
   input: NewGMModeRosterAssignmentRuleEvaluationReadinessValidatorInput = {}
 ): NewGMModeRosterAssignmentRuleEvaluationReadinessValidatorShell {
   const ruleEvaluationContract =
     createNewGMModeRosterAssignmentRuleEvaluationContractShell();
-  const assignmentInputReadinessSummary =
-    createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell(input);
   const assignmentInputReadinessValidator =
     createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell(input);
   const assignmentInputContract =
@@ -174,8 +171,8 @@ export function createNewGMModeRosterAssignmentRuleEvaluationReadinessValidatorS
     ruleEvaluationContract.rosterAssignmentRuleEvaluationContractAvailable;
   const assignmentInputReadinessAvailable =
     overrides?.assignmentInputReadinessAvailable ??
-    (assignmentInputReadinessSummary.rosterAssignmentRuleInputReadinessSummaryId ===
-      "new-gm-mode-roster-assignment-rule-input-readiness-summary-v0.1");
+    (assignmentInputReadinessValidator.rosterAssignmentRuleInputReadinessValidatorId ===
+      "new-gm-mode-roster-assignment-rule-input-readiness-validator-v0.1");
   const executedPickPrerequisiteAvailable =
     overrides?.executedPickPrerequisiteAvailable ??
     (executionPrerequisiteSummary.draftPickExecutionPrerequisiteSummaryId ===
@@ -187,14 +184,16 @@ export function createNewGMModeRosterAssignmentRuleEvaluationReadinessValidatorS
     overrides?.championshipDivisionRequirementAvailable ??
     championshipDivisionRequirement.championshipDivisionRequirementContractAvailable;
   const totalFixtureCount =
-    assignmentInputReadinessSummary.totalFixtureCount;
+    assignmentInputReadinessValidator.ruleInputReadinessSummary.totalFixtureCount;
   const eligibleDisplayReadyCount =
-    assignmentInputReadinessSummary.eligibleDisplayReadyCount;
+    assignmentInputReadinessValidator.ruleInputReadinessSummary
+      .eligibleDisplayReadyCount;
   const excludedIneligibleCount =
-    assignmentInputReadinessSummary.excludedIneligibleCount;
+    assignmentInputReadinessValidator.ruleInputReadinessSummary
+      .excludedIneligibleCount;
   const assignmentInputReadinessStructurallySatisfied =
     assignmentInputReadinessAvailable &&
-    assignmentInputReadinessSummary.futureRosterAssignmentRuleInputsStructurallySatisfied;
+    assignmentInputReadinessValidator.futureRosterAssignmentRuleInputsStructurallySatisfied;
   const draftPickExecutionPrerequisitesStructurallySatisfied =
     executedPickPrerequisiteAvailable &&
     executionPrerequisiteSummary.futureDraftPickExecutionPrerequisitesStructurallySatisfied;
@@ -265,9 +264,11 @@ export function createNewGMModeRosterAssignmentRuleEvaluationReadinessValidatorS
       totalFixtureCount,
       eligibleDisplayReadyCount,
       excludedIneligibleCount,
-      expectedFixtureCount: EXPECTED_FIXTURE_COUNT,
-      expectedEligibleDisplayReadyCount: EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT,
-      expectedExcludedIneligibleCount: EXPECTED_EXCLUDED_INELIGIBLE_COUNT
+      expectedFixtureCount: EXPECTED_CATALOG_METRICS.totalFixtureCount,
+      expectedEligibleDisplayReadyCount:
+        EXPECTED_CATALOG_METRICS.eligibleFixtureCount,
+      expectedExcludedIneligibleCount:
+        EXPECTED_CATALOG_METRICS.ineligibleFixtureCount
     }),
     evaluationRuleCount: ruleEvaluationContract.evaluationRuleCount,
     issueCount: issues.length,
@@ -389,11 +390,13 @@ function collectRuleEvaluationReadinessIssues(
     );
   }
 
-  if (totalFixtureCount !== EXPECTED_FIXTURE_COUNT) {
+  if (totalFixtureCount !== EXPECTED_CATALOG_METRICS.totalFixtureCount) {
     issues.push(createIssue("totalFixtureCount", "fixture-count-not-stable"));
   }
 
-  if (eligibleDisplayReadyCount !== EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT) {
+  if (
+    eligibleDisplayReadyCount !== EXPECTED_CATALOG_METRICS.eligibleFixtureCount
+  ) {
     issues.push(
       createIssue(
         "eligibleDisplayReadyCount",
@@ -402,7 +405,9 @@ function collectRuleEvaluationReadinessIssues(
     );
   }
 
-  if (excludedIneligibleCount !== EXPECTED_EXCLUDED_INELIGIBLE_COUNT) {
+  if (
+    excludedIneligibleCount !== EXPECTED_CATALOG_METRICS.ineligibleFixtureCount
+  ) {
     issues.push(
       createIssue(
         "excludedIneligibleCount",

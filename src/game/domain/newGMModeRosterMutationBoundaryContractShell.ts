@@ -5,6 +5,7 @@ import {
 import {
   type NewGMModeRosterAssignmentResultShapeReadinessValidatorInput
 } from "./newGMModeRosterAssignmentResultShapeReadinessValidatorShell.ts";
+import { createNewGMModeStaticWrestlerFixtureCatalogMetrics } from "./newGMModeStaticWrestlerFixtureCatalogMetrics.ts";
 
 export type NewGMModeRosterMutationBoundaryRequirementId =
   | "roster-assignment-handoff-availability"
@@ -211,9 +212,8 @@ const BLOCKED_REASONS: readonly NewGMModeRosterMutationBoundaryBlockedReason[] =
     "genai-not-implemented"
   ]);
 
-const EXPECTED_FIXTURE_COUNT = 245;
-const EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT = 235;
-const EXPECTED_EXCLUDED_INELIGIBLE_COUNT = 10;
+const EXPECTED_CATALOG_METRICS =
+  createNewGMModeStaticWrestlerFixtureCatalogMetrics();
 
 export function createNewGMModeRosterMutationBoundaryContractShell(
   input: NewGMModeRosterAssignmentResultShapeReadinessValidatorInput = {}
@@ -280,9 +280,11 @@ export function createNewGMModeRosterMutationBoundaryContractShell(
       totalFixtureCount,
       eligibleDisplayReadyCount,
       excludedIneligibleCount,
-      expectedFixtureCount: EXPECTED_FIXTURE_COUNT,
-      expectedEligibleDisplayReadyCount: EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT,
-      expectedExcludedIneligibleCount: EXPECTED_EXCLUDED_INELIGIBLE_COUNT
+      expectedFixtureCount: EXPECTED_CATALOG_METRICS.totalFixtureCount,
+      expectedEligibleDisplayReadyCount:
+        EXPECTED_CATALOG_METRICS.eligibleFixtureCount,
+      expectedExcludedIneligibleCount:
+        EXPECTED_CATALOG_METRICS.ineligibleFixtureCount
     }),
     blockedReasons: BLOCKED_REASONS,
     capabilityFlags: Object.freeze({

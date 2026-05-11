@@ -17,10 +17,12 @@ import {
 
 const UNTOUCHED_DRAFT_PICK_VALIDATION_VALIDATOR_DATABASE =
   "data/saves/__new-gm-mode-draft-pick-validation-validator-should-not-exist.sqlite";
+const draftPickValidationReadinessValidator =
+  createNewGMModeDraftPickValidationReadinessValidatorShell();
 
 describe("New GM Mode Draft Pick Validation Readiness Validator Shell v0.1", () => {
   it("reports stable shell ID, version, and diagnostics boundaries", () => {
-    const validator = createNewGMModeDraftPickValidationReadinessValidatorShell();
+    const validator = draftPickValidationReadinessValidator;
 
     assert.equal(
       validator.draftPickValidationReadinessValidatorId,
@@ -36,7 +38,7 @@ describe("New GM Mode Draft Pick Validation Readiness Validator Shell v0.1", () 
   });
 
   it("reports validation prerequisites ready while concrete pick validation remains blocked", () => {
-    const validator = createNewGMModeDraftPickValidationReadinessValidatorShell();
+    const validator = draftPickValidationReadinessValidator;
 
     assert.equal(validator.draftPickValidationContractAvailable, true);
     assert.equal(validator.selectionPrerequisiteSummaryAvailable, true);
@@ -114,7 +116,7 @@ describe("New GM Mode Draft Pick Validation Readiness Validator Shell v0.1", () 
   });
 
   it("references roster slot and championship division contracts without executing them", () => {
-    const validator = createNewGMModeDraftPickValidationReadinessValidatorShell();
+    const validator = draftPickValidationReadinessValidator;
 
     assert.equal(validator.rosterSlotRequirementAvailable, true);
     assert.equal(validator.championshipDivisionRequirementAvailable, true);
@@ -131,7 +133,7 @@ describe("New GM Mode Draft Pick Validation Readiness Validator Shell v0.1", () 
   });
 
   it("does not choose a wrestler, validate a concrete pick, create pick state, UI, gameplay, or persistence", () => {
-    const validator = createNewGMModeDraftPickValidationReadinessValidatorShell();
+    const validator = draftPickValidationReadinessValidator;
 
     assert.equal(validator.selectedWrestlerChosen, false);
     assert.equal(validator.selectedWrestlerId, null);

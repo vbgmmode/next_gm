@@ -9,11 +9,12 @@ import {
 
 const UNTOUCHED_RESULT_SHAPE_VALIDATOR_DATABASE =
   "data/saves/__new-gm-mode-roster-assignment-result-shape-validator-should-not-exist.sqlite";
+const resultShapeReadinessValidator =
+  createNewGMModeRosterAssignmentResultShapeReadinessValidatorShell();
 
 describe("New GM Mode Roster Assignment Result Shape Readiness Validator Shell v0.1", () => {
   it("reports stable shell ID, version, and diagnostics boundaries", () => {
-    const validator =
-      createNewGMModeRosterAssignmentResultShapeReadinessValidatorShell();
+    const validator = resultShapeReadinessValidator;
 
     assert.equal(
       validator.rosterAssignmentResultShapeReadinessValidatorId,
@@ -28,8 +29,7 @@ describe("New GM Mode Roster Assignment Result Shape Readiness Validator Shell v
   });
 
   it("reports structurally ready result shape while assignment result creation and roster mutation stay blocked", () => {
-    const validator =
-      createNewGMModeRosterAssignmentResultShapeReadinessValidatorShell();
+    const validator = resultShapeReadinessValidator;
 
     assert.equal(
       validator.readinessPhase,
@@ -144,8 +144,7 @@ describe("New GM Mode Roster Assignment Result Shape Readiness Validator Shell v
   });
 
   it("keeps selected wrestler, executed pick, assignment result, roster state, and mutation unavailable", () => {
-    const validator =
-      createNewGMModeRosterAssignmentResultShapeReadinessValidatorShell();
+    const validator = resultShapeReadinessValidator;
 
     assert.equal(validator.selectedWrestlerChosen, false);
     assert.equal(validator.selectedWrestlerId, null);
@@ -173,8 +172,7 @@ describe("New GM Mode Roster Assignment Result Shape Readiness Validator Shell v
   });
 
   it("does not create draft picks, rosters, championship assignments, match/show/week state, persistence, UI, or generated output", () => {
-    const validator =
-      createNewGMModeRosterAssignmentResultShapeReadinessValidatorShell();
+    const validator = resultShapeReadinessValidator;
 
     assert.equal(validator.concreteDraftPickValidated, false);
     assert.equal(validator.validatedPickAvailable, false);

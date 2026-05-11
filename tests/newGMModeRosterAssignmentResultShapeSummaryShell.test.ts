@@ -20,10 +20,12 @@ import {
 
 const UNTOUCHED_RESULT_SHAPE_SUMMARY_DATABASE =
   "data/saves/__new-gm-mode-roster-assignment-result-shape-summary-should-not-exist.sqlite";
+const resultShapeSummary =
+  createNewGMModeRosterAssignmentResultShapeSummaryShell();
 
 describe("New GM Mode Roster Assignment Result Shape Summary Shell v0.1", () => {
   it("reports stable shell ID, version, and diagnostics boundaries", () => {
-    const summary = createNewGMModeRosterAssignmentResultShapeSummaryShell();
+    const summary = resultShapeSummary;
 
     assert.equal(
       summary.rosterAssignmentResultShapeSummaryId,
@@ -38,7 +40,7 @@ describe("New GM Mode Roster Assignment Result Shape Summary Shell v0.1", () => 
   });
 
   it("summarizes contract, validator, rule evaluation readiness, counts, and blocked result creation", () => {
-    const summary = createNewGMModeRosterAssignmentResultShapeSummaryShell();
+    const summary = resultShapeSummary;
 
     assert.deepEqual(summary.contractAvailability, {
       resultShapeContractAvailable: true,
@@ -100,7 +102,7 @@ describe("New GM Mode Roster Assignment Result Shape Summary Shell v0.1", () => 
   });
 
   it("keeps selected wrestler, executed pick, assignment result, roster state, and roster mutation unavailable", () => {
-    const summary = createNewGMModeRosterAssignmentResultShapeSummaryShell();
+    const summary = resultShapeSummary;
 
     assert.equal(summary.selectedWrestlerChosen, false);
     assert.equal(summary.selectedWrestlerId, null);
@@ -128,7 +130,7 @@ describe("New GM Mode Roster Assignment Result Shape Summary Shell v0.1", () => 
   });
 
   it("does not choose, validate, execute, assign, create match/show/week state, persist, add UI, or generate text", () => {
-    const summary = createNewGMModeRosterAssignmentResultShapeSummaryShell();
+    const summary = resultShapeSummary;
 
     assert.equal(summary.concreteDraftPickValidated, false);
     assert.equal(summary.validatedPickAvailable, false);

@@ -1,7 +1,3 @@
-import { createNewGMModeChampionshipDivisionRequirementContractShell } from "./newGMModeChampionshipDivisionRequirementContractShell.ts";
-import { createNewGMModeDraftBoardSelectionPrerequisiteSummaryShell } from "./newGMModeDraftBoardSelectionPrerequisiteSummaryShell.ts";
-import { createNewGMModeDraftPickExecutionPrerequisiteSummaryShell } from "./newGMModeDraftPickExecutionPrerequisiteSummaryShell.ts";
-import { createNewGMModeDraftPickValidationReadinessSummaryShell } from "./newGMModeDraftPickValidationReadinessSummaryShell.ts";
 import {
   type NewGMModeRosterAssignmentResultShapeBlockedReason,
   type NewGMModeRosterAssignmentResultShapeCapabilityFlags
@@ -10,11 +6,7 @@ import {
   type NewGMModeRosterAssignmentResultShapeReadinessValidatorInput,
   createNewGMModeRosterAssignmentResultShapeReadinessValidatorShell
 } from "./newGMModeRosterAssignmentResultShapeReadinessValidatorShell.ts";
-import { createNewGMModeRosterAssignmentResultShapeSummaryShell } from "./newGMModeRosterAssignmentResultShapeSummaryShell.ts";
-import { createNewGMModeRosterAssignmentRuleEvaluationSummaryShell } from "./newGMModeRosterAssignmentRuleEvaluationSummaryShell.ts";
-import { createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell } from "./newGMModeRosterAssignmentRuleInputReadinessSummaryShell.ts";
-import { createNewGMModeRosterSlotRequirementContractShell } from "./newGMModeRosterSlotRequirementContractShell.ts";
-import { createNewGMModeTalentPoolReadinessAggregatorShell } from "./newGMModeTalentPoolReadinessAggregatorShell.ts";
+import { createNewGMModeStaticWrestlerFixtureCatalogMetrics } from "./newGMModeStaticWrestlerFixtureCatalogMetrics.ts";
 
 export type NewGMModeRosterAssignmentHandoffPhaseId =
   | "missing-result-shape-readiness"
@@ -133,9 +125,8 @@ export interface NewGMModeRosterAssignmentHandoffSummaryShell {
   readonly genAIUsed: false;
 }
 
-const EXPECTED_FIXTURE_COUNT = 245;
-const EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT = 235;
-const EXPECTED_EXCLUDED_INELIGIBLE_COUNT = 10;
+const EXPECTED_CATALOG_METRICS =
+  createNewGMModeStaticWrestlerFixtureCatalogMetrics();
 
 const HANDOFF_PHASES: readonly NewGMModeRosterAssignmentHandoffPhase[] =
   Object.freeze([
@@ -150,46 +141,31 @@ const HANDOFF_PHASES: readonly NewGMModeRosterAssignmentHandoffPhase[] =
 export function createNewGMModeRosterAssignmentHandoffSummaryShell(
   input: NewGMModeRosterAssignmentResultShapeReadinessValidatorInput = {}
 ): NewGMModeRosterAssignmentHandoffSummaryShell {
-  const resultShapeSummary =
-    createNewGMModeRosterAssignmentResultShapeSummaryShell(input);
   const resultShapeReadiness =
     createNewGMModeRosterAssignmentResultShapeReadinessValidatorShell(input);
-  const ruleEvaluationSummary =
-    createNewGMModeRosterAssignmentRuleEvaluationSummaryShell(input);
-  const assignmentInputReadiness =
-    createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell(input);
-  const executionPrerequisite =
-    createNewGMModeDraftPickExecutionPrerequisiteSummaryShell(input);
-  const validationReadiness =
-    createNewGMModeDraftPickValidationReadinessSummaryShell(input);
-  const selectionPrerequisite =
-    createNewGMModeDraftBoardSelectionPrerequisiteSummaryShell(input);
-  const rosterSlotRequirement = createNewGMModeRosterSlotRequirementContractShell();
-  const championshipDivisionRequirement =
-    createNewGMModeChampionshipDivisionRequirementContractShell();
-  const talentPoolReadiness =
-    createNewGMModeTalentPoolReadinessAggregatorShell(input);
   const resultShapeReadinessStructurallySatisfied =
-    resultShapeSummary.futureRosterAssignmentResultShapeStructurallyReady &&
     resultShapeReadiness.futureRosterAssignmentResultShapeStructurallyReady;
   const ruleEvaluationReadinessStructurallySatisfied =
-    ruleEvaluationSummary.futureRosterAssignmentRuleEvaluationStructurallyReady;
+    resultShapeReadiness.requiredInputAvailabilitySummary
+      .ruleEvaluationReadinessStructurallySatisfied;
   const assignmentInputReadinessStructurallySatisfied =
-    assignmentInputReadiness.futureRosterAssignmentRuleInputsStructurallySatisfied;
+    resultShapeReadiness.requiredInputAvailabilitySummary
+      .assignmentInputReadinessStructurallySatisfied;
   const draftPickExecutionPrerequisiteStructurallySatisfied =
-    executionPrerequisite.futureDraftPickExecutionPrerequisitesStructurallySatisfied;
+    resultShapeReadiness.requiredInputAvailabilitySummary
+      .draftPickExecutionPrerequisitesStructurallySatisfied;
   const draftPickValidationReadinessStructurallySatisfied =
-    validationReadiness.futureDraftPickValidationPrerequisitesStructurallySatisfied;
+    assignmentInputReadinessStructurallySatisfied;
   const draftBoardSelectionPrerequisiteStructurallySatisfied =
-    selectionPrerequisite.futureSelectionPrerequisitesStructurallySatisfied;
+    assignmentInputReadinessStructurallySatisfied;
   const talentPoolReadinessStructurallySatisfied =
-    talentPoolReadiness.readinessSummary.structuralTalentPoolReadinessSatisfied;
+    assignmentInputReadinessStructurallySatisfied;
   const totalFixtureCount =
-    resultShapeSummary.fixtureHandoffCounts.totalFixtureCount;
+    resultShapeReadiness.fixtureHandoffCounts.totalFixtureCount;
   const eligibleDisplayReadyCount =
-    resultShapeSummary.fixtureHandoffCounts.eligibleDisplayReadyCount;
+    resultShapeReadiness.fixtureHandoffCounts.eligibleDisplayReadyCount;
   const excludedIneligibleCount =
-    resultShapeSummary.fixtureHandoffCounts.excludedIneligibleCount;
+    resultShapeReadiness.fixtureHandoffCounts.excludedIneligibleCount;
   const issues = collectHandoffIssues(
     resultShapeReadinessStructurallySatisfied,
     ruleEvaluationReadinessStructurallySatisfied,
@@ -217,50 +193,54 @@ export function createNewGMModeRosterAssignmentHandoffSummaryShell(
       draftPickExecutionPrerequisiteStructurallySatisfied
     ),
     resultShapeReadinessAvailable:
-      resultShapeSummary.rosterAssignmentResultShapeSummaryId ===
-      "new-gm-mode-roster-assignment-result-shape-summary-v0.1",
+      resultShapeReadiness.rosterAssignmentResultShapeReadinessValidatorId ===
+      "new-gm-mode-roster-assignment-result-shape-readiness-validator-v0.1",
     resultShapeReadinessStructurallySatisfied,
     ruleEvaluationReadinessAvailable:
-      ruleEvaluationSummary.rosterAssignmentRuleEvaluationSummaryId ===
-      "new-gm-mode-roster-assignment-rule-evaluation-summary-v0.1",
+      resultShapeReadiness.requiredInputAvailabilitySummary
+        .ruleEvaluationSummaryAvailable,
     ruleEvaluationReadinessStructurallySatisfied,
     assignmentInputReadinessAvailable:
-      assignmentInputReadiness.rosterAssignmentRuleInputReadinessSummaryId ===
-      "new-gm-mode-roster-assignment-rule-input-readiness-summary-v0.1",
+      resultShapeReadiness.requiredInputAvailabilitySummary
+        .assignmentInputReadinessSummaryAvailable,
     assignmentInputReadinessStructurallySatisfied,
     draftPickExecutionPrerequisiteAvailable:
-      executionPrerequisite.draftPickExecutionPrerequisiteSummaryId ===
-      "new-gm-mode-draft-pick-execution-prerequisite-summary-v0.1",
+      resultShapeReadiness.requiredInputAvailabilitySummary
+        .draftPickExecutionPrerequisiteSummaryAvailable,
     draftPickExecutionPrerequisiteStructurallySatisfied,
     draftPickValidationReadinessAvailable:
-      validationReadiness.draftPickValidationReadinessSummaryId ===
-      "new-gm-mode-draft-pick-validation-readiness-summary-v0.1",
+      resultShapeReadiness.requiredInputAvailabilitySummary
+        .assignmentInputReadinessSummaryAvailable,
     draftPickValidationReadinessStructurallySatisfied,
     draftBoardSelectionPrerequisiteAvailable:
-      selectionPrerequisite.draftBoardSelectionPrerequisiteSummaryId ===
-      "new-gm-mode-draft-board-selection-prerequisite-summary-v0.1",
+      resultShapeReadiness.requiredInputAvailabilitySummary
+        .assignmentInputReadinessSummaryAvailable,
     draftBoardSelectionPrerequisiteStructurallySatisfied,
     rosterSlotRequirementAvailable:
-      rosterSlotRequirement.rosterSlotRequirementContractAvailable,
+      resultShapeReadiness.requiredInputAvailabilitySummary
+        .rosterSlotRequirementContractAvailable,
     championshipDivisionRequirementAvailable:
-      championshipDivisionRequirement.championshipDivisionRequirementContractAvailable,
+      resultShapeReadiness.requiredInputAvailabilitySummary
+        .championshipDivisionRequirementContractAvailable,
     talentPoolReadinessAvailable:
-      talentPoolReadiness.talentPoolReadinessAggregatorId ===
-      "new-gm-mode-talent-pool-readiness-aggregator-v0.1",
+      resultShapeReadiness.requiredInputAvailabilitySummary
+        .assignmentInputReadinessSummaryAvailable,
     talentPoolReadinessStructurallySatisfied,
     futureRosterMutationBoundaryAvailable: false,
     fixtureHandoffCounts: Object.freeze({
       totalFixtureCount,
       eligibleDisplayReadyCount,
       excludedIneligibleCount,
-      expectedFixtureCount: EXPECTED_FIXTURE_COUNT,
-      expectedEligibleDisplayReadyCount: EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT,
-      expectedExcludedIneligibleCount: EXPECTED_EXCLUDED_INELIGIBLE_COUNT
+      expectedFixtureCount: EXPECTED_CATALOG_METRICS.totalFixtureCount,
+      expectedEligibleDisplayReadyCount:
+        EXPECTED_CATALOG_METRICS.eligibleFixtureCount,
+      expectedExcludedIneligibleCount:
+        EXPECTED_CATALOG_METRICS.ineligibleFixtureCount
     }),
     issueCount: issues.length,
     handoffIssues: issues,
-    deterministicBlockedReasons: resultShapeSummary.deterministicBlockedReasons,
-    capabilityFlags: resultShapeSummary.capabilityFlags,
+    deterministicBlockedReasons: resultShapeReadiness.blockedReasons,
+    capabilityFlags: resultShapeReadiness.capabilityFlags,
     assignmentResultObjectCreated: false,
     assignmentResultObjectAvailable: false,
     actualRosterAssignmentResultCreationAvailable: false,
@@ -359,11 +339,13 @@ function collectHandoffIssues(
     );
   }
 
-  if (totalFixtureCount !== EXPECTED_FIXTURE_COUNT) {
+  if (totalFixtureCount !== EXPECTED_CATALOG_METRICS.totalFixtureCount) {
     issues.push(createIssue("totalFixtureCount", "fixture-count-not-stable"));
   }
 
-  if (eligibleDisplayReadyCount !== EXPECTED_ELIGIBLE_DISPLAY_READY_COUNT) {
+  if (
+    eligibleDisplayReadyCount !== EXPECTED_CATALOG_METRICS.eligibleFixtureCount
+  ) {
     issues.push(
       createIssue(
         "eligibleDisplayReadyCount",
@@ -372,7 +354,9 @@ function collectHandoffIssues(
     );
   }
 
-  if (excludedIneligibleCount !== EXPECTED_EXCLUDED_INELIGIBLE_COUNT) {
+  if (
+    excludedIneligibleCount !== EXPECTED_CATALOG_METRICS.ineligibleFixtureCount
+  ) {
     issues.push(
       createIssue(
         "excludedIneligibleCount",

@@ -1,13 +1,8 @@
-import { createNewGMModeChampionshipDivisionRequirementContractShell } from "./newGMModeChampionshipDivisionRequirementContractShell.ts";
-import { createNewGMModeDraftPickExecutionPrerequisiteSummaryShell } from "./newGMModeDraftPickExecutionPrerequisiteSummaryShell.ts";
-import { createNewGMModeDraftPickRosterAssignmentPrerequisiteSummaryShell } from "./newGMModeDraftPickRosterAssignmentPrerequisiteSummaryShell.ts";
-import { createNewGMModeDraftPickValidationReadinessSummaryShell } from "./newGMModeDraftPickValidationReadinessSummaryShell.ts";
 import { createNewGMModeRosterAssignmentRuleInputContractShell } from "./newGMModeRosterAssignmentRuleInputContractShell.ts";
 import {
   type NewGMModeRosterAssignmentRuleInputReadinessPhaseId,
   createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell
 } from "./newGMModeRosterAssignmentRuleInputReadinessValidatorShell.ts";
-import { createNewGMModeRosterSlotRequirementContractShell } from "./newGMModeRosterSlotRequirementContractShell.ts";
 import {
   type NewGMModeTalentPoolReadinessAggregatorInput
 } from "./newGMModeTalentPoolReadinessAggregatorShell.ts";
@@ -92,18 +87,8 @@ export interface NewGMModeRosterAssignmentRuleInputReadinessSummaryShell {
 export function createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell(
   input: NewGMModeTalentPoolReadinessAggregatorInput = {}
 ): NewGMModeRosterAssignmentRuleInputReadinessSummaryShell {
-  const ruleInputContract = createNewGMModeRosterAssignmentRuleInputContractShell();
   const ruleInputValidator =
     createNewGMModeRosterAssignmentRuleInputReadinessValidatorShell(input);
-  const rosterAssignmentPrerequisites =
-    createNewGMModeDraftPickRosterAssignmentPrerequisiteSummaryShell(input);
-  const executionPrerequisites =
-    createNewGMModeDraftPickExecutionPrerequisiteSummaryShell(input);
-  const validationReadiness =
-    createNewGMModeDraftPickValidationReadinessSummaryShell(input);
-  const rosterSlotRequirement = createNewGMModeRosterSlotRequirementContractShell();
-  const championshipDivisionRequirement =
-    createNewGMModeChampionshipDivisionRequirementContractShell();
 
   return Object.freeze({
     status: "diagnostics-only",
@@ -115,23 +100,20 @@ export function createNewGMModeRosterAssignmentRuleInputReadinessSummaryShell(
     gameplayAffecting: false,
     deterministicOrdering: true,
     ruleInputContractAvailable:
-      ruleInputContract.rosterAssignmentRuleInputContractAvailable,
+      ruleInputValidator.ruleInputContractAvailable,
     ruleInputValidatorAvailable:
       ruleInputValidator.rosterAssignmentRuleInputReadinessValidatorId ===
       "new-gm-mode-roster-assignment-rule-input-readiness-validator-v0.1",
     rosterAssignmentPrerequisiteAvailable:
-      rosterAssignmentPrerequisites.draftPickRosterAssignmentPrerequisiteSummaryId ===
-      "new-gm-mode-draft-pick-roster-assignment-prerequisite-summary-v0.1",
+      ruleInputValidator.rosterAssignmentPrerequisiteAvailable,
     executionPrerequisiteAvailable:
-      executionPrerequisites.draftPickExecutionPrerequisiteSummaryId ===
-      "new-gm-mode-draft-pick-execution-prerequisite-summary-v0.1",
+      ruleInputValidator.executionPrerequisiteAvailable,
     validationReadinessAvailable:
-      validationReadiness.draftPickValidationReadinessSummaryId ===
-      "new-gm-mode-draft-pick-validation-readiness-summary-v0.1",
+      ruleInputValidator.validationReadinessAvailable,
     rosterSlotRequirementAvailable:
-      rosterSlotRequirement.rosterSlotRequirementContractAvailable,
+      ruleInputValidator.rosterSlotRequirementAvailable,
     championshipDivisionRequirementAvailable:
-      championshipDivisionRequirement.championshipDivisionRequirementContractAvailable,
+      ruleInputValidator.championshipDivisionRequirementAvailable,
     totalFixtureCount:
       ruleInputValidator.ruleInputReadinessSummary.totalFixtureCount,
     eligibleDisplayReadyCount:

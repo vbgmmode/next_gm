@@ -39,8 +39,9 @@ describe("New GM Mode Static Wrestler Fixture Validator Shell v0.1", () => {
 
     assert.equal(validator.sourceCatalogId, catalog.staticWrestlerFixtureCatalogId);
     assert.equal(validator.fixtureValidationStatus, "structurally-valid");
-    assert.equal(validator.fixturesInspected, 10);
-    assert.equal(validator.validFixtureCount, 10);
+    assert.equal(validator.fixturesInspected, catalog.fixtures.length);
+    assert.ok(validator.fixturesInspected >= 245);
+    assert.equal(validator.validFixtureCount, catalog.fixtures.length);
     assert.equal(validator.invalidFixtureCount, 0);
     assert.deepEqual(validator.validationIssues, []);
   });
@@ -64,7 +65,8 @@ describe("New GM Mode Static Wrestler Fixture Validator Shell v0.1", () => {
     });
 
     assert.equal(validator.fixtureValidationStatus, "blocked");
-    assert.equal(validator.validFixtureCount, 9);
+    assert.equal(validator.fixturesInspected, catalog.fixtures.length);
+    assert.equal(validator.validFixtureCount, catalog.fixtures.length - 1);
     assert.equal(validator.invalidFixtureCount, 1);
     assert.deepEqual(validator.validationIssues, [
       {
