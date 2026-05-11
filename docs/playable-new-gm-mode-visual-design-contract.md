@@ -59,6 +59,53 @@ The UI must not feel like:
 
 If a screen can be mistaken for a business dashboard with wrestling labels, it fails this contract.
 
+## Game Flow Contract
+
+Playable New GM Mode must feel like a guided game flow, not a static dashboard with tabs.
+
+The player experience starts with Save Selection, not Dashboard.
+
+Required early flow:
+
+1. Save Selection.
+2. New GM Setup.
+3. Setup Review.
+4. Initial Draft.
+5. Post-Draft Brand HQ.
+
+Save Selection requirements:
+
+- It is the entry screen into the game.
+- It should feel like a premium game start surface, not a card inside Dashboard.
+- Continue, create, and empty save states should feel like mode-entry choices.
+- After choosing or creating a save, the player moves into a new screen or flow step.
+
+Pre-draft requirements:
+
+- New GM Setup and Setup Review should feel like guided setup steps.
+- Draft Preview is valid only before or during the initial draft.
+- Draft Preview should prepare the player for the Initial Draft, not become a permanent hub.
+
+Active-draft requirements:
+
+- Initial Draft should use Draft Room composition.
+- Draft Room should feel like the active draft broadcast surface.
+- Draft execution can remain locked in mock/static UI until explicitly approved.
+
+Post-draft requirements:
+
+- After the initial draft is complete, Draft Preview must not remain a primary surface.
+- The primary hub should shift toward Post-Draft Brand HQ.
+- Post-draft surfaces should emphasize Brand HQ, Week 1 Setup, Book Show, Roster, Rivalries, Championships, Calendar, IWC Pulse, and Analytics.
+- Draft Room may remain accessible as history or draft board review, but not as the main next action after draft completion.
+
+Static/mock implementation guidance:
+
+- Static UI may show the flow through states, labels, preview compositions, or disabled future states.
+- Static UI may include post-draft preview compositions without executing the draft.
+- Static UI must not wire real draft execution, gameplay start, persistence, storage, SQLite writes, generated text, GenAI, or network calls.
+- The shell should make the player feel they are progressing through a game mode, not freely clicking unrelated dashboard tabs.
+
 ## Viewport-First Contract
 
 Each major screen must fit inside the visible app viewport, especially on 11-13 inch laptops.
@@ -400,6 +447,16 @@ Reject an implementation if any of these are true:
 - Disabled states feel accidental instead of intentionally locked.
 - Wrestler/prospect areas are text-only when portrait/card placeholders would improve game feel.
 
+## Flow Rejection Criteria
+
+Reject an implementation if any of these are true:
+
+- The game starts directly on a generic Dashboard.
+- Save Selection feels like just another card inside Dashboard.
+- Draft Preview remains prominent after the initial draft is completed.
+- The UI does not clearly distinguish pre-draft, active-draft, and post-draft states.
+- The shell feels like static dashboard navigation instead of a guided game flow.
+
 ## Implementation Acceptance Gate
 
 Before future UI changes are accepted, Codex should verify:
@@ -415,6 +472,10 @@ Before future UI changes are accepted, Codex should verify:
 - Navigation defaults to hidden/hover or compact game-overlay behavior rather than a chunky sidebar.
 - Roster/Rivalries/Championships feel like connected game hubs.
 - IWC/Analytics/Calendar feel like game systems.
+- Save Selection is the entry point.
+- Early flow is Save Selection -> New GM Setup -> Setup Review -> Initial Draft -> Post-Draft Brand HQ.
+- Draft Preview is limited to pre-draft or active-draft presentation.
+- Post-draft state shifts toward Brand HQ and Week 1 preparation.
 - Labels are short, polished, and player-facing.
 - Runtime boundaries remain intact.
 
