@@ -1641,6 +1641,36 @@ dd {
   white-space: nowrap;
 }
 
+.draft-budget-board {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 40%, var(--border-subtle));
+  border-left: 5px solid color-mix(in srgb, var(--brand-accent) 58%, var(--brand-primary));
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 15px),
+    rgba(0, 0, 0, 0.3);
+  padding: 8px;
+}
+
+.draft-budget-board span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 900;
+  font-family: var(--font-data);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.draft-budget-board span:nth-child(2) {
+  color: var(--brand-accent);
+}
+
 .draft-buttons {
   display: grid;
   gap: 7px;
@@ -1832,6 +1862,10 @@ dd {
 .talent-row.unavailable {
   border-left-color: var(--warning);
   color: var(--text-muted);
+}
+
+.talent-row.budget-blocked {
+  border-left-color: var(--danger);
 }
 
 .talent-row.drafted {

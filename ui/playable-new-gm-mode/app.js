@@ -8,7 +8,11 @@ import {
   createMakePickReadiness,
   executeInMemoryMakePick,
 } from "./inMemoryDraftActionController.js";
-import { createNewGMModeDraftFinanceProjection } from "../../src/game/domain/index.ts";
+import {
+  createNewGMModeDraftFinanceProjection,
+  NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
+  NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
+} from "../../src/game/domain/index.ts";
 import {
   resolveActiveDockSection,
   shouldShowDock,
@@ -30,6 +34,13 @@ import {
   const brandBug = document.getElementById("brand-bug");
   const phaseLabel = document.getElementById("phase-label");
   const miniDraftPickBadge = document.getElementById("mini-draft-pick-badge");
+  const draftBudgetTargets = {
+    starting: document.getElementById("draft-budget-starting"),
+    remaining: document.getElementById("draft-budget-remaining"),
+    spent: document.getElementById("draft-budget-spent"),
+    signed: document.getElementById("draft-budget-signed"),
+    minimumRosterTarget: document.getElementById("draft-budget-minimum-roster"),
+  };
   const brandNameTargets = Array.from(document.querySelectorAll(".js-brand-name"));
   const intentPreviewTargets = {
     candidate: document.getElementById("intent-preview-candidate"),
@@ -55,6 +66,7 @@ import {
     brand: document.getElementById("draft-recap-brand"),
     candidate: document.getElementById("draft-recap-candidate"),
     pick: document.getElementById("draft-recap-pick"),
+    budget: document.getElementById("draft-recap-budget-summary"),
     status: document.getElementById("draft-recap-result-status"),
     rosterStatus: document.getElementById("draft-recap-roster-status"),
     roster: document.getElementById("draft-recap-roster"),
@@ -83,8 +95,6 @@ import {
     riskMeter: document.getElementById("talent-detail-risk-meter"),
     confidenceMeter: document.getElementById("talent-detail-confidence-meter"),
   };
-  const draftFinanceProjection = createNewGMModeDraftFinanceProjection();
-
   const flowOrder = [
     "save-selection",
     "contract-signing",
@@ -342,8 +352,7 @@ import {
   function updateFinancePreviewForCandidate(candidate) {
     const projection = createNewGMModeDraftFinanceProjection({
       selectedCandidateId: candidate?.candidateId,
-      remainingDraftBudgetPreview:
-        draftFinanceProjection.placeholderTuning.startingDraftBudget,
+      remainingDraftBudgetPreview: uiState.miniDraftProgress.remainingDraftBudget,
       alreadyDraftedCandidateIds: uiState.miniDraftProgress.draftedCandidateIds,
     });
     const candidateProjection = projection.selectedCandidateProjection;
@@ -354,7 +363,7 @@ import {
     );
     setText(
       financePreviewTargets.remainingBudget,
-      projection.displayLabels.remainingBudgetLine
+      `Remaining Budget: ${uiState.miniDraftProgress.remainingDraftBudget}`
     );
     setText(
       financePreviewTargets.tier,
@@ -368,14 +377,60 @@ import {
     );
     setText(
       financePreviewTargets.afterSigning,
-      candidateProjection?.displayLabels.afterSigningLine ||
-        "Budget Preview After Signing: Locked pending rules"
+      candidateProjection
+        ? `Budget After Signing: ${candidateProjection.budgetPreviewAfterSigning}`
+        : "Budget After Signing: Locked pending rules"
     );
     setText(
       financePreviewTargets.affordability,
-      candidateProjection?.displayLabels.affordabilityLine ||
+      formatCandidateAffordabilityLine(candidateProjection) ||
         "Locked pending finance rules"
     );
+  }
+
+  function updateDraftBudgetPanel() {
+    const progress = uiState.miniDraftProgress;
+
+    setText(
+      draftBudgetTargets.starting,
+      `Starting Budget: ${progress.startingDraftBudget ?? NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER}`
+    );
+    setText(draftBudgetTargets.remaining, `Remaining Budget: ${progress.remainingDraftBudget}`);
+    setText(draftBudgetTargets.spent, `Spent Budget: ${progress.budgetSpent}`);
+    setText(draftBudgetTargets.signed, `Signed Talent: ${progress.signedTalentCount}`);
+    setText(
+      draftBudgetTargets.minimumRosterTarget,
+      `Minimum Roster Target: ${progress.minimumRosterTarget ?? NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER}`
+    );
+  }
+
+  function updateFinanceCandidateRows() {
+    talentRows.forEach((row) => {
+      const projection = createNewGMModeDraftFinanceProjection({
+        selectedCandidateId: row.dataset.candidateId,
+        remainingDraftBudgetPreview: uiState.miniDraftProgress.remainingDraftBudget,
+        alreadyDraftedCandidateIds: uiState.miniDraftProgress.draftedCandidateIds,
+      });
+      const candidateProjection = projection.selectedCandidateProjection;
+      const drafted = uiState.miniDraftProgress.draftedCandidateIds.includes(row.dataset.candidateId);
+      const unavailable = row.dataset.availability === "Unavailable";
+      const unaffordable =
+        candidateProjection?.affordabilityStatus === "not-affordable" &&
+        !drafted &&
+        !unavailable;
+      const meta = row.querySelector("small");
+
+      row.classList.toggle("budget-blocked", unaffordable);
+
+      if (meta && candidateProjection) {
+        meta.textContent = [
+          row.dataset.draftRank,
+          drafted ? "Already Drafted" : unavailable ? "Unavailable" : formatRowAffordability(candidateProjection),
+          candidateProjection.projectedSigningTier,
+          `Cost ${candidateProjection.projectedSigningCost}`,
+        ].join(" | ");
+      }
+    });
   }
 
   function createMockDraftRecapPreviewFromUiState() {
@@ -398,6 +453,7 @@ import {
     setText(draftRecapTargets.brand, preview.displayLabels.brandLine);
     setText(draftRecapTargets.candidate, preview.displayLabels.candidateLine);
     setText(draftRecapTargets.pick, "Mock continuation only");
+    setText(draftRecapTargets.budget, "No local budget spent");
     setText(draftRecapTargets.status, "No real draft result");
     setText(draftRecapTargets.rosterStatus, "No roster assignment");
     setText(draftRecapTargets.roster, preview.displayLabels.rosterLine);
@@ -414,6 +470,7 @@ import {
     setText(draftRecapTargets.brand, projection.displayLabels.brandLine);
     setText(draftRecapTargets.candidate, projection.displayLabels.candidateLine);
     setText(draftRecapTargets.pick, projection.displayLabels.pickLine);
+    setText(draftRecapTargets.budget, projection.displayLabels.budgetLine);
     setText(draftRecapTargets.status, projection.displayLabels.draftResultStatusLine);
     setText(draftRecapTargets.rosterStatus, projection.displayLabels.rosterStatusLine);
     setText(draftRecapTargets.roster, projection.displayLabels.rosterLine);
@@ -466,6 +523,7 @@ import {
         meta.textContent = `${row.dataset.draftRank} | Drafted | Local pick`;
       }
     });
+    updateFinanceCandidateRows();
   }
 
   function updateMakePickControl() {
@@ -484,13 +542,54 @@ import {
     makePickControl.textContent = readiness.displayLabels.buttonLabel;
     makePickControl.setAttribute("aria-disabled", String(!readiness.canMakePick));
     makePickControl.classList.toggle("enabled", readiness.canMakePick);
+    setText(intentPreviewTargets.status, readiness.displayLabels.statusLine);
+    setText(intentPreviewTargets.note, readiness.displayLabels.noteLine);
+    setText(talentDetail.previewStatus, readiness.displayLabels.statusLine);
     updateMiniDraftPickBadge();
+    updateDraftBudgetPanel();
+    updateFinanceCandidateRows();
   }
 
   function setText(target, value) {
     if (target) {
       target.textContent = value;
     }
+  }
+
+  function formatCandidateAffordabilityLine(candidateProjection) {
+    if (!candidateProjection) {
+      return undefined;
+    }
+
+    if (candidateProjection.affordabilityStatus === "not-affordable") {
+      return `Not enough draft budget. Need ${candidateProjection.projectedSigningCost} budget, you have ${uiState.miniDraftProgress.remainingDraftBudget}.`;
+    }
+
+    if (candidateProjection.affordabilityStatus === "already-drafted-signed") {
+      return "Already drafted in this local preview";
+    }
+
+    if (candidateProjection.affordabilityStatus === "expensive-but-affordable") {
+      return "Expensive but affordable";
+    }
+
+    return "Affordable";
+  }
+
+  function formatRowAffordability(candidateProjection) {
+    if (candidateProjection.affordabilityStatus === "not-affordable") {
+      return "Not Enough Budget";
+    }
+
+    if (candidateProjection.affordabilityStatus === "expensive-but-affordable") {
+      return "Affordable";
+    }
+
+    if (candidateProjection.affordabilityStatus === "already-drafted-signed") {
+      return "Already Drafted";
+    }
+
+    return "Affordable";
   }
 
   function setMeter(target, value) {
@@ -666,6 +765,7 @@ import {
     if (result.miniDraftProgress) {
       uiState.miniDraftProgress = result.miniDraftProgress;
       updateDraftedCandidateRows();
+      updateDraftBudgetPanel();
     }
 
     if (result.projection) {

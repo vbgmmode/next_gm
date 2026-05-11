@@ -624,6 +624,13 @@
               <p class="kicker">On the clock</p>
               <h2 id="draft-room-title" class="js-brand-name">Raw</h2>
               <span class="pick-badge" id="mini-draft-pick-badge">Pick 1 of 3</span>
+              <div class="draft-budget-board" aria-label="Local draft budget">
+                <span id="draft-budget-starting">Starting Budget: 100</span>
+                <span id="draft-budget-remaining">Remaining Budget: 100</span>
+                <span id="draft-budget-spent">Spent Budget: 0</span>
+                <span id="draft-budget-signed">Signed Talent: 0</span>
+                <span id="draft-budget-minimum-roster">Minimum Roster Target: 16</span>
+              </div>
               <div class="need-board">
                 <span>Men's division: main-event anchor needed</span>
                 <span>Women's division: top contender needed</span>
@@ -780,13 +787,13 @@
                 <span id="intent-preview-pick">Round 1 / Pick 1 placeholder</span>
                 <span id="intent-preview-status">Ready for in-memory Make Pick</span>
                 <span id="finance-preview-starting-budget">Starting Budget: 100</span>
-                <span id="finance-preview-remaining-budget">Remaining Budget Preview: 100</span>
+                <span id="finance-preview-remaining-budget">Remaining Budget: 100</span>
                 <span id="finance-preview-tier">Projected Cost Tier: Franchise</span>
                 <span id="finance-preview-cost">Projected Signing Cost: 18</span>
-                <span id="finance-preview-after-signing">Budget Preview After Signing: 82</span>
-                <span id="finance-preview-affordability">Expensive but affordable in preview</span>
+                <span id="finance-preview-after-signing">Budget After Signing: 82</span>
+                <span id="finance-preview-affordability">Expensive but affordable</span>
               </div>
-              <p class="quiet-note" id="intent-preview-note">Finance preview only. Budget spend is not active yet. Make Pick stays local-only and does not save or start Week 1.</p>
+              <p class="quiet-note" id="intent-preview-note">Make Pick will run the approved Real Draft System v1 in memory only and spend local draft budget after success.</p>
             </article>
           </div>
 
@@ -825,6 +832,7 @@
                 <div><dt>Brand</dt><dd id="draft-recap-brand">Raw mock preview</dd></div>
                 <div><dt>Local Picks</dt><dd id="draft-recap-candidate">Ace Mercer carried forward as preview context</dd></div>
                 <div><dt>Pick Slot</dt><dd id="draft-recap-pick">Mock continuation only</dd></div>
+                <div><dt>Budget Summary</dt><dd id="draft-recap-budget-summary">No local budget spent</dd></div>
                 <div><dt>Draft Result</dt><dd id="draft-recap-result-status">No real draft result</dd></div>
                 <div><dt>Roster Status</dt><dd id="draft-recap-roster-status">No roster assignment</dd></div>
               </dl>
