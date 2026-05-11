@@ -66,9 +66,11 @@ Expected local URL style:
 - Confirm Initial Draft makes the selected superstar/prospect the visual focus, not the pick order board.
 - Confirm the selected superstar/prospect spotlight includes a large portrait/silhouette/card placeholder with initials only as a fallback badge.
 - Confirm clicking a draft candidate updates the selected candidate spotlight and a UI-only selection intent preview.
+- Confirm the selection intent preview is adapter-backed by `draftSelectionIntentAdapter.js`, not inline draft execution logic.
 - Confirm selected candidate stats are readable, use compact rating rows/meters, and do not truncate into ugly inline strings.
+- Confirm the selected superstar scouting projection uses display-safe fields only: name, role/tier, division or roster fit, availability, display bands/meters, risk/uncertainty, scout confidence, short scout note, and pick preview status.
 - Confirm the selection intent preview shows selected candidate, selected brand, Round 1 / Pick 1 placeholder, and preview-only locked status.
-- Confirm selecting Ivan North reports preview-only unavailable status and still does not create a pick.
+- Confirm selecting Ivan North reports an unavailable blocked preview state and still does not create a pick.
 - Confirm Make Pick and Auto Draft stay disabled after selecting any candidate.
 - Confirm Draft Recap does not unlock from the candidate preview.
 - Confirm Draft Recap appears as the first post-draft state.
@@ -192,8 +194,10 @@ Expected local URL style:
 - Confirm Draft Room controls remain disabled, including Make Pick and Auto Draft.
 - Confirm clicking a talent row only updates the selected talent card in the DOM.
 - Confirm clicking a talent row only updates local JS memory and the UI-only selection intent preview.
+- Confirm the adapter-backed selection intent preview never calls draft pick creation, execution, roster assignment, roster state creation, draft completion, or gameplay start.
 - Confirm reload resets current screen, selected GM, selected brand, selected candidate, and selection intent preview to the static defaults.
 - Confirm Draft Recap and Brand Dashboard are preview states only.
+- Confirm selected superstar scouting projection never exposes hidden formulas, hidden rolls, raw backend diagnostics, exact internal deltas, or engine reads.
 - Confirm no save payloads are created.
 - Confirm no database writes are triggered.
 - Confirm no browser storage is used.

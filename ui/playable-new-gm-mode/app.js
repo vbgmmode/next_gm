@@ -1,3 +1,9 @@
+import {
+  DEFAULT_LOCAL_DRAFT_SLOT,
+  createCandidateDisplayFromDataset,
+  createDraftSelectionIntentPreview,
+} from "./draftSelectionIntentAdapter.js";
+
 (() => {
   const sections = Array.from(document.querySelectorAll("[data-screen-title]"));
   const navDock = document.querySelector(".bottom-nav-dock");
@@ -210,49 +216,35 @@
   }
 
   function createDraftSelectionIntentPresentationPreview(row) {
-    const candidateName = row.dataset.talentName;
-    const candidateId = row.dataset.candidateId;
-    const availability = row.dataset.availability || "Available";
-
-    return {
-      previewKind: "ui-only-draft-selection-intent-presentation-preview",
-      candidateId,
-      candidateName,
-      brandId: uiState.selectedBrandId,
-      brandName: getBrandLabel(),
-      roundLabel: "Round 1",
-      pickLabel: "Pick 1",
-      boardRank: row.dataset.draftRank,
-      previewStatus:
-        availability === "Available"
-          ? "preview-only-pick-locked"
-          : "preview-only-candidate-unavailable",
-    };
+    return createDraftSelectionIntentPreview({
+      selectedCandidate: createCandidateDisplayFromDataset(row.dataset),
+      selectedBrand: {
+        brandId: uiState.selectedBrandId,
+        brandLabel: getBrandLabel(),
+      },
+      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
+    });
   }
 
   function updateIntentPreview(preview) {
     if (intentPreviewTargets.candidate) {
-      intentPreviewTargets.candidate.textContent = `${preview.candidateName} selected`;
+      intentPreviewTargets.candidate.textContent = preview.displayLabels.candidateLine;
     }
 
     if (intentPreviewTargets.brand) {
-      intentPreviewTargets.brand.textContent = `${preview.brandName} local preview`;
+      intentPreviewTargets.brand.textContent = preview.displayLabels.brandLine;
     }
 
     if (intentPreviewTargets.pick) {
-      intentPreviewTargets.pick.textContent = `${preview.roundLabel} / ${preview.pickLabel} placeholder`;
+      intentPreviewTargets.pick.textContent = preview.displayLabels.pickLine;
     }
 
     if (intentPreviewTargets.status) {
-      intentPreviewTargets.status.textContent =
-        preview.previewStatus === "preview-only-candidate-unavailable"
-          ? "Preview only - candidate unavailable"
-          : "Preview only - pick locked";
+      intentPreviewTargets.status.textContent = preview.displayLabels.statusLine;
     }
 
     if (intentPreviewTargets.note) {
-      intentPreviewTargets.note.textContent =
-        "Preview only. No pick, roster, or recap is created.";
+      intentPreviewTargets.note.textContent = preview.displayLabels.noteLine;
     }
   }
 
@@ -271,8 +263,8 @@
   function setSelectedCandidate(row) {
     uiState.selectedCandidateId = row.dataset.candidateId;
     uiState.selectedDraftIntentPreview = createDraftSelectionIntentPresentationPreview(row);
+    const preview = uiState.selectedDraftIntentPreview;
     const isUnavailable = row.dataset.availability !== "Available";
-    const previewStatus = isUnavailable ? "Preview only - candidate unavailable" : "Preview only - pick locked";
 
     talentRows.forEach((item) => {
       const isSelected = item === row;
@@ -293,17 +285,17 @@
     talentDetail.availability?.classList.toggle("blocked", isUnavailable);
     setText(talentDetail.read, row.dataset.talentRead);
     setText(talentDetail.fit, row.dataset.talentFit);
-    setText(talentDetail.previewStatus, previewStatus);
+    setText(talentDetail.previewStatus, preview.displayLabels.statusLine);
     setText(talentDetail.starPower, row.dataset.starPower || "--");
     setText(talentDetail.ringWork, row.dataset.ringWork || "--");
     setText(talentDetail.promo, row.dataset.promo || "--");
     setText(talentDetail.durability, row.dataset.durability || "--");
     setText(talentDetail.risk, row.dataset.risk || "Unknown");
     setText(talentDetail.confidence, row.dataset.confidence || "Unknown");
-    setMeter(talentDetail.starMeter, row.dataset.starPower);
-    setMeter(talentDetail.ringMeter, row.dataset.ringWork);
-    setMeter(talentDetail.promoMeter, row.dataset.promo);
-    setMeter(talentDetail.durabilityMeter, row.dataset.durability);
+    setMeter(talentDetail.starMeter, row.dataset.starPowerValue);
+    setMeter(talentDetail.ringMeter, row.dataset.ringWorkValue);
+    setMeter(talentDetail.promoMeter, row.dataset.promoValue);
+    setMeter(talentDetail.durabilityMeter, row.dataset.durabilityValue);
     setMeter(talentDetail.riskMeter, row.dataset.riskValue);
     setMeter(talentDetail.confidenceMeter, row.dataset.confidenceValue);
 
