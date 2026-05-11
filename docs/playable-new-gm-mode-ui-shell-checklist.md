@@ -49,6 +49,8 @@ Expected local URL style:
 - Confirm every GM archetype card includes a GM name, archetype title, short fantasy description, numerical ratings, and compact stat bars/meters.
 - Confirm Select Brand says brands are fantasy choices with equal starting baselines.
 - Confirm Initial Draft feels like the active draft broadcast surface.
+- Confirm Initial Draft visibly communicates the read-only draft projection boundary.
+- Confirm Initial Draft candidate names match the project-backed read-only projection contract.
 - Confirm Draft Recap appears as the first post-draft state.
 - Confirm Brand Dashboard becomes the primary Week 1 / post-draft surface.
 - Confirm Draft Preview is not presented as the primary surface after Draft Recap.
@@ -81,6 +83,7 @@ Expected local URL style:
 - Confirm New GM Setup and Setup Review feel like contract packet / league office / war-room surfaces.
 - Confirm Draft Room feels like a draft broadcast with ON THE CLOCK drama, board energy, and scouting desk framing.
 - Confirm selected talent reads as a broadcast profile card, not a generic info card.
+- Confirm Make Pick and Auto Draft are visible but locked.
 - Confirm Post-Draft Brand HQ centers Week 1 Setup, Book Show, Roster, Rivalries, Championships, Calendar, IWC Pulse, and Analytics instead of Draft Preview.
 - Confirm Brand Dashboard hero prioritizes This Week's Show, Brand Health, and GM Alerts.
 - Confirm Budget, Fans, and Momentum do not dominate the Brand Dashboard hero command strip.
@@ -161,14 +164,17 @@ Expected local URL style:
 - Confirm invalid/corrupt save recovery remains a mock visual state only.
 - Confirm setup choices are hardcoded visual placeholders.
 - Confirm assistant setup does not save keys, make calls, or activate live AI.
-- Confirm Draft Room controls remain disabled.
+- Confirm Draft Room controls remain disabled, including Make Pick and Auto Draft.
 - Confirm clicking a talent row only updates the selected talent card in the DOM.
 - Confirm Draft Recap and Brand Dashboard are preview states only.
 - Confirm no save payloads are created.
 - Confirm no database writes are triggered.
 - Confirm no browser storage is used.
 - Confirm no network calls are used.
-- Confirm no draft service or gameplay service is imported or called.
+- Confirm the browser UI does not import or call draft services or gameplay services.
+- Confirm the domain read-only projection boundary has tests proving draft actions remain locked.
+- Confirm real draft execution is still not wired.
+- Confirm the next approved runtime step is selection intent preview, not pick execution.
 - Confirm no draft pick, roster state, Week 1 state, show state, match state, fan/social state, business state, or AI flavor output is created.
 
 ## Rejection Criteria

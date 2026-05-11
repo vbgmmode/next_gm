@@ -614,9 +614,9 @@
           hidden
         >
           <div class="draft-lower-third">
-            <span>Draft Preview</span>
-            <strong>Pre-Draft Only</strong>
-            <em>SCOUTING FEED OPEN. DRAFT CONTROLS LOCKED.</em>
+            <span>Read-Only Projection</span>
+            <strong>Project-backed data</strong>
+            <em>CANDIDATE BOARD READY. MAKE PICK AND AUTO DRAFT LOCKED.</em>
           </div>
 
           <div class="draft-composition">
@@ -625,14 +625,14 @@
               <h2 id="draft-room-title" class="js-brand-name">Raw</h2>
               <span class="pick-badge">Pick 1</span>
               <div class="need-board">
-                <span>World title scene: thin</span>
-                <span>Women: needs anchor</span>
-                <span>Tag: open</span>
-                <span>Prospects: flexible</span>
+                <span>Men's division: main-event anchor needed</span>
+                <span>Women's division: top contender needed</span>
+                <span>Tag team scene: chemistry depth needed</span>
+                <span>Prospects: developmental upside open</span>
               </div>
               <div class="draft-buttons">
                 <button class="panel-button" type="button" disabled>Make Pick Locked</button>
-                <button class="panel-button" type="button" disabled>Confirm Pick Locked</button>
+                <button class="panel-button" type="button" disabled>Auto Draft Locked</button>
               </div>
             </article>
 
@@ -641,16 +641,16 @@
                 <p class="kicker">Draft Board</p>
                 <h3>Pick Order</h3>
               </div>
-              <div class="draft-board" aria-label="Mock draft board">
+              <div class="draft-board" aria-label="Read-only projected draft order">
                 <div class="board-row board-head"><span>Pick</span><span>Brand</span><span>Status</span><span>Result</span></div>
-                <div class="board-row current"><span>01</span><strong class="js-brand-name">Raw</strong><em>On Clock</em><span>Pending</span></div>
-                <div class="board-row"><span>02</span><strong>SmackDown</strong><em>Waiting</em><span>Logo only</span></div>
-                <div class="board-row"><span>03</span><strong>NXT</strong><em>Waiting</em><span>Logo only</span></div>
-                <div class="board-row"><span>04</span><strong>AEW</strong><em>Waiting</em><span>Logo only</span></div>
-                <div class="board-row"><span>05</span><strong class="js-brand-name">Raw</strong><em>Next turn</em><span>Roster need</span></div>
-                <div class="board-row"><span>06</span><strong>SmackDown</strong><em>Next turn</em><span>Logo only</span></div>
-                <div class="board-row"><span>07</span><strong>NXT</strong><em>Later</em><span>Logo only</span></div>
-                <div class="board-row"><span>08</span><strong>AEW</strong><em>Later</em><span>Logo only</span></div>
+                <div class="board-row current"><span>01</span><strong class="js-brand-name">Raw</strong><em>On Clock</em><span>Read-only</span></div>
+                <div class="board-row"><span>02</span><strong>SmackDown</strong><em>Waiting</em><span>Projected</span></div>
+                <div class="board-row"><span>03</span><strong>NXT</strong><em>Waiting</em><span>Projected</span></div>
+                <div class="board-row"><span>04</span><strong>AEW</strong><em>Waiting</em><span>Projected</span></div>
+                <div class="board-row"><span>05</span><strong class="js-brand-name">Raw</strong><em>Next turn</em><span>Read-only</span></div>
+                <div class="board-row"><span>06</span><strong>SmackDown</strong><em>Next turn</em><span>Projected</span></div>
+                <div class="board-row"><span>07</span><strong>NXT</strong><em>Later</em><span>Projected</span></div>
+                <div class="board-row"><span>08</span><strong>AEW</strong><em>Later</em><span>Projected</span></div>
               </div>
             </article>
 
@@ -659,52 +659,82 @@
                 <p class="kicker">Best Available</p>
                 <h3>Scouting Feed</h3>
               </div>
-              <div class="talent-list" aria-label="Static talent feed">
-                <button class="talent-row selected" type="button" aria-pressed="true" data-talent-name="Rex Nova" data-talent-role="World title anchor" data-talent-style="Explosive heavyweight" data-talent-read="Top-slot upside, medium risk range." data-talent-fit="Fills the main-event need.">
-                  <span class="mini-portrait">RN</span>
-                  <strong>Rex Nova</strong>
-                  <small>Trait: Big Stage | Range: High</small>
+              <div class="talent-list" aria-label="Read-only projected candidate feed">
+                <button class="talent-row selected" type="button" aria-pressed="true" data-talent-name="Ace Mercer" data-talent-role="Main Event / Technical / Veteran" data-talent-style="Star Power: High | Ring Work: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, world title and midcard title eligible.">
+                  <span class="mini-portrait">AM</span>
+                  <strong>Ace Mercer</strong>
+                  <small>01 | Available | Main Event</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Maya Steele" data-talent-role="Breakout striker" data-talent-style="Athletic workhorse" data-talent-read="Reliable TV base, medium-high upside." data-talent-fit="Balances weekly match quality.">
-                  <span class="mini-portrait">MS</span>
-                  <strong>Maya Steele</strong>
-                  <small>Trait: Workhorse | Range: Mid+</small>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Bruno Vale" data-talent-role="Upper Card / Powerhouse / Veteran" data-talent-style="Star Power: Strong | Ring Work: Solid" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, world title and tag team title eligible.">
+                  <span class="mini-portrait">BV</span>
+                  <strong>Bruno Vale</strong>
+                  <small>02 | Available | Upper Card</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Juno Vale" data-talent-role="Social spark" data-talent-style="Charismatic wildcard" data-talent-read="High conversation ceiling, volatile floor." data-talent-fit="Future IWC heat play.">
-                  <span class="mini-portrait">JV</span>
-                  <strong>Juno Vale</strong>
-                  <small>Trait: Buzz | Range: Swing</small>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Cassian Ryde" data-talent-role="Midcard / High Flyer / Prospect" data-talent-style="Star Power: Rising | Ring Work: Flashy" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible.">
+                  <span class="mini-portrait">CR</span>
+                  <strong>Cassian Ryde</strong>
+                  <small>03 | Available | Prospect</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Atlas King" data-talent-role="Powerhouse base" data-talent-style="Dominant heavyweight" data-talent-read="Safe title-scene presentation, lower surprise." data-talent-fit="Stabilizes top division.">
-                  <span class="mini-portrait">AK</span>
-                  <strong>Atlas King</strong>
-                  <small>Trait: Power | Range: Stable</small>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Dante Cross" data-talent-role="Midcard / Tag Specialist / Technical" data-talent-style="Star Power: Steady | Tag Fit: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible.">
+                  <span class="mini-portrait">DC</span>
+                  <strong>Dante Cross</strong>
+                  <small>04 | Available | Tag Specialist</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Elena Voss" data-talent-role="Main Event / Promo Specialist / Veteran" data-talent-style="Star Power: Elite | Promo: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world title eligible.">
+                  <span class="mini-portrait">EV</span>
+                  <strong>Elena Voss</strong>
+                  <small>05 | Available | Main Event</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Fiona Hale" data-talent-role="Upper Card / Technical / Tag Specialist" data-talent-style="Ring Work: Elite | Durability: Durable" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world and tag team title eligible.">
+                  <span class="mini-portrait">FH</span>
+                  <strong>Fiona Hale</strong>
+                  <small>06 | Available | Technical</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Gia Stone" data-talent-role="Midcard / Powerhouse / Prospect" data-talent-style="Star Power: Rising | Durability: Durable" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world title eligible.">
+                  <span class="mini-portrait">GS</span>
+                  <strong>Gia Stone</strong>
+                  <small>07 | Available | Prospect</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Hana Reyes" data-talent-role="Midcard / High Flyer / Tag Specialist" data-talent-style="Ring Work: Flashy | Tag Fit: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world and tag team title eligible.">
+                  <span class="mini-portrait">HR</span>
+                  <strong>Hana Reyes</strong>
+                  <small>08 | Available | High Flyer</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Ivan North" data-talent-role="Upper Card / Promo Specialist / Powerhouse" data-talent-style="Promo: Elite | Availability blocked" data-talent-read="Read-only candidate projection marks this fixture unavailable." data-talent-fit="Men's division, currently unavailable for draft validation.">
+                  <span class="mini-portrait">IN</span>
+                  <strong>Ivan North</strong>
+                  <small>09 | Unavailable | Blocked</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Jules Kade" data-talent-role="Midcard / Tag Specialist / Prospect" data-talent-style="Star Power: Developing | Tag Fit: Strong" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible.">
+                  <span class="mini-portrait">JK</span>
+                  <strong>Jules Kade</strong>
+                  <small>10 | Available | Prospect</small>
                 </button>
               </div>
             </article>
 
             <article class="selected-profile">
               <p class="kicker">Selected Prospect</p>
-              <div class="large-portrait" id="talent-detail-initials" aria-hidden="true">RN</div>
-              <h3 id="talent-detail-name">Rex Nova</h3>
-              <span class="profile-role" id="talent-detail-role">World title anchor</span>
+              <div class="large-portrait" id="talent-detail-initials" aria-hidden="true">AM</div>
+              <h3 id="talent-detail-name">Ace Mercer</h3>
+              <span class="profile-role" id="talent-detail-role">Main Event / Technical / Veteran</span>
               <dl class="profile-reads">
-                <div><dt>Style</dt><dd id="talent-detail-style">Explosive heavyweight</dd></div>
-                <div><dt>Scout read</dt><dd id="talent-detail-read">Top-slot upside, medium risk range.</dd></div>
-                <div><dt>Roster fit</dt><dd id="talent-detail-fit">Fills the main-event need.</dd></div>
+                <div><dt>Style</dt><dd id="talent-detail-style">Star Power: High | Ring Work: Elite</dd></div>
+                <div><dt>Scout read</dt><dd id="talent-detail-read">Project-backed candidate preview. Draft actions remain locked.</dd></div>
+                <div><dt>Roster fit</dt><dd id="talent-detail-fit">Men's division, world title and midcard title eligible.</dd></div>
               </dl>
             </article>
 
             <article class="pick-confirmation">
-              <p class="kicker">Confirmation Preview</p>
-              <h3>Quick broadcast beat</h3>
+              <p class="kicker">Status Panel</p>
+              <h3>Read-only draft board preview</h3>
               <div class="confirmation-steps">
-                <span>Select wrestler</span>
-                <span>Review roster fit</span>
-                <span>Confirm pick</span>
-                <span>Move to next pick</span>
+                <span>Candidate projection ready</span>
+                <span>Selection intent blocked</span>
+                <span>Roster assignment blocked</span>
+                <span>Draft completion blocked</span>
               </div>
-              <p class="quiet-note">This is a preview surface only. No pick is made.</p>
+              <p class="quiet-note">Project-backed candidate data is visible. No pick is made, no roster changes, and no draft completion occurs.</p>
             </article>
           </div>
 

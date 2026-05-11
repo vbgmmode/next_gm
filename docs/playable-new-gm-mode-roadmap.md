@@ -46,7 +46,7 @@ The first safe UI shell slice is complete and remains the player-facing baseline
 - Add static Save Selection screen affordances using clearly fake save-card data.
 - Add static Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, and Select Brand placeholders.
 - Choose GM presents 12 fictional GM archetypes with compact numerical stat meters.
-- Add a static Initial Draft surface using mock talent, pick order, roster needs, and confirmation preview.
+- Add an Initial Draft surface aligned to the read-only draft projection boundary: project-backed candidate names, pick order preview, roster needs, status panel, and locked draft actions.
 - Add a static Draft Recap surface focused on the player's grouped roster.
 - Add a static Brand Dashboard / Week 1 Setup surface with the guided checklist.
 - Brand Dashboard hero prioritizes This Week's Show, Brand Health, and GM Alerts before supporting budget/fan/momentum context.
@@ -124,7 +124,7 @@ Draft Recap should display the player's drafted roster grouped by safe display b
 
 The recap may show pick order, wrestler/candidate identity, role, brand fit, and roster need coverage from approved static/domain data. It must not assign championships, initialize divisions, start Week 1, create a save payload, or persist the roster.
 
-### Recommended First Implementation Slice
+### Current Read-Only Projection Slice
 
 Build a read-only draft room adapter and Initial Draft UI projection.
 
@@ -137,6 +137,19 @@ The slice should:
 - Add focused tests proving no draft execution, roster assignment, roster state creation, save writes, browser storage, backend calls, or GenAI calls occur.
 
 The slice should not call `createNewGMModeInMemoryDraftFlow()` yet. That belongs in a later explicit in-memory draft action slice.
+
+### Recommended Next Slice
+
+The next slice after the read-only projection boundary should be selection intent preview.
+
+That slice should:
+
+- Convert a focused candidate row into a local-only selection intent preview object.
+- Keep Make Pick and Auto Draft locked.
+- Display validation/readiness messaging without creating a pick.
+- Avoid roster assignment, roster mutation, draft completion, persistence, backend calls, browser storage, and GenAI.
+
+Pick execution must not be the next step unless it is explicitly approved in a separate prompt.
 
 ## Locked Flow Direction
 
@@ -213,6 +226,7 @@ Future Codex UI work must preserve the anti-botch visual rules:
 - Consume static candidate/readiness data through an approved adapter.
 - Display draft-board availability and setup readiness without mutation.
 - Keep player selection inert or disabled.
+- Keep Make Pick and Auto Draft locked.
 
 ### 80/100: Selection Intent Adapter
 

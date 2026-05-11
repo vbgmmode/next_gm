@@ -367,11 +367,11 @@ The first playable draft wiring should keep state minimal and disposable:
 
 All of this state resets on reload. It must not use URL hash state, `localStorage`, `sessionStorage`, `indexedDB`, save payload mutation, SQLite, or backend calls.
 
-## First Recommended Implementation Slice
+## Read-Only Draft Projection Boundary
 
-Build a read-only draft room adapter and UI projection.
+The first controlled runtime step is the read-only draft room adapter and UI projection.
 
-That slice should:
+This boundary should:
 
 - Reuse existing static candidate/readiness data.
 - Produce a UI-safe draft-board model for Initial Draft.
@@ -379,3 +379,14 @@ That slice should:
 - Leave all player draft actions disabled or preview-only.
 
 It should not call `createNewGMModeInMemoryDraftFlow()` yet. The one-shot in-memory draft action should wait for a separate explicitly approved slice.
+
+## Next Recommended Implementation Slice
+
+After the read-only projection boundary, the next safe step is selection intent preview.
+
+That step should:
+
+- Create a local-only preview of the intended selected candidate.
+- Keep Make Pick and Auto Draft locked.
+- Reuse the existing selection intent contract/readiness surfaces.
+- Avoid draft pick creation, draft pick execution, roster assignment, roster mutation, draft completion, persistence, backend calls, browser storage, generated text, and GenAI.

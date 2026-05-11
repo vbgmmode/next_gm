@@ -37,6 +37,17 @@ describe("Playable New GM Mode Draft Read-Only Integration Boundary v0.1", () =>
       ineligible: 1
     });
     assert.equal(boundary.draftRoomSnapshot.candidates.length, 10);
+    assert.equal(
+      boundary.initialDraftProjection.projectionSource,
+      "real-draft-system-v1-read-only-boundary"
+    );
+    assert.equal(boundary.initialDraftProjection.candidateBoard.length, 10);
+    assert.deepEqual(
+      boundary.initialDraftProjection.candidateBoard.map(
+        (candidate) => candidate.boardRankLabel
+      ),
+      ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10"]
+    );
     assert.deepEqual(
       boundary.draftRoomSnapshot.candidates.map((candidate) => candidate.displayName),
       [
@@ -54,6 +65,7 @@ describe("Playable New GM Mode Draft Read-Only Integration Boundary v0.1", () =>
     );
     assert.equal(Object.isFrozen(boundary), true);
     assert.equal(Object.isFrozen(boundary.draftRoomSnapshot.candidates), true);
+    assert.equal(Object.isFrozen(boundary.initialDraftProjection.actionLocks), true);
   });
 
   it("reuses the canonical candidate object set and readiness summary instead of creating a duplicate draft path", () => {
@@ -80,22 +92,84 @@ describe("Playable New GM Mode Draft Read-Only Integration Boundary v0.1", () =>
     );
   });
 
-  it("keeps execution, selection intent creation, roster state, gameplay start, persistence, and generated output blocked", () => {
+  it("projects player-safe candidate labels without exposing fixture marker strings", () => {
+    const boundary = createPlayableNewGMModeDraftReadOnlyIntegrationBoundary();
+    const firstCandidate = boundary.initialDraftProjection.candidateBoard[0];
+
+    assert.equal(firstCandidate.displayName, "Ace Mercer");
+    assert.equal(firstCandidate.primaryRoleLabel, "Main Event");
+    assert.equal(firstCandidate.divisionSummaryLabel, "Mens Division");
+    assert.deepEqual(firstCandidate.scoutingSignals, {
+      starPowerLabel: "High",
+      ringWorkLabel: "Elite",
+      durabilityLabel: "Durable",
+      promoLabel: "Strong",
+      tagFitLabel: "Flexible"
+    });
+    assert.equal(
+      Object.values(firstCandidate.scoutingSignals).some((value) =>
+        value.startsWith("fixture-")
+      ),
+      false
+    );
+  });
+
+  it("keeps execution, pick creation, selection submission, roster state, gameplay start, persistence, backend calls, and generated output blocked", () => {
     const boundary = createPlayableNewGMModeDraftReadOnlyIntegrationBoundary();
 
     assert.deepEqual(boundary.capabilityFlags, {
       canReadCandidateObjects: true,
       canProjectDraftRoomDisplay: true,
+      canCreateDraftPick: false,
       canExecuteDraftPick: false,
       canCreateSelectionIntent: false,
+      canSubmitSelectionIntent: false,
+      canAssignRoster: false,
+      canMutateRoster: false,
+      canCompleteDraft: false,
       canCreateRosterState: false,
       canPersistGameplayPayload: false,
+      canUseBrowserStorage: false,
+      canCallBackend: false,
       canWriteDatabase: false,
       canStartGameplay: false,
       canInitializeWeekOne: false,
       canCreateGeneratedText: false,
       canUseGenAI: false
     });
+    assert.deepEqual(boundary.blockedCapabilityFlags, {
+      pickExecutionBlocked: true,
+      pickCreationBlocked: true,
+      selectionIntentSubmissionBlocked: true,
+      rosterAssignmentBlocked: true,
+      rosterMutationBlocked: true,
+      draftCompletionBlocked: true,
+      persistenceBlocked: true,
+      backendCallsBlocked: true,
+      genAIBlocked: true
+    });
+    assert.deepEqual(boundary.initialDraftProjection.actionLocks, [
+      {
+        actionId: "make-pick",
+        label: "Make Pick",
+        enabled: false,
+        locked: true,
+        lockReason: "selection-intent-submission-not-approved",
+        displayLabel: "Make Pick Locked"
+      },
+      {
+        actionId: "auto-draft",
+        label: "Auto Draft",
+        enabled: false,
+        locked: true,
+        lockReason: "automated-draft-execution-not-approved",
+        displayLabel: "Auto Draft Locked"
+      }
+    ]);
+    assert.equal(
+      boundary.initialDraftProjection.statusPanel.nextApprovedStepLabel,
+      "Selection intent preview"
+    );
     assert.equal(boundary.gameplayAffecting, false);
     assert.equal(boundary.candidateReadinessSummary.capabilityFlags.canExecuteDraftPick, false);
     assert.equal(boundary.candidateReadinessSummary.capabilityFlags.canStartGameplay, false);
