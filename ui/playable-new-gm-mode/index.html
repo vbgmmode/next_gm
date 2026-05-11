@@ -865,7 +865,7 @@
                 <button class="ghost-button setup-card-action" id="post-draft-week-one-action" type="button" data-go-to="brand-dashboard" disabled>Open Week 1 HQ</button>
               </article>
               <article class="locked-setup-card">
-                <strong>Save/Persistence</strong>
+                <strong>Save</strong>
                 <span>Not Saved Yet</span>
               </article>
             </section>
@@ -939,7 +939,7 @@
                 <span>Locked</span>
               </article>
               <article class="locked-setup-card">
-                <strong>Save/Persistence</strong>
+                <strong>Save</strong>
                 <span>Not Saved Yet</span>
               </article>
             </section>
@@ -975,21 +975,29 @@
               </div>
               <p class="setup-message" id="championship-setup-message">Finish the draft before assigning champions.</p>
               <div class="setup-select-grid">
-                <label class="setup-field" for="champion-world-select">
-                  <span>World Champion</span>
-                  <select id="champion-world-select"></select>
+                <label class="setup-field" for="champion-mens-main-select">
+                  <span id="champion-mens-main-title">Men's Main Title</span>
+                  <select id="champion-mens-main-select"></select>
                 </label>
-                <label class="setup-field" for="champion-womens-select">
-                  <span>Women's Champion</span>
-                  <select id="champion-womens-select"></select>
+                <label class="setup-field" for="champion-mens-midcard-select">
+                  <span id="champion-mens-midcard-title">Men's Midcard Title</span>
+                  <select id="champion-mens-midcard-select"></select>
                 </label>
-                <label class="setup-field" for="champion-midcard-select">
-                  <span>Midcard Champion</span>
-                  <select id="champion-midcard-select"></select>
+                <label class="setup-field" for="champion-womens-main-select">
+                  <span id="champion-womens-main-title">Women's Main Title</span>
+                  <select id="champion-womens-main-select"></select>
+                </label>
+                <label class="setup-field" for="champion-womens-midcard-select">
+                  <span id="champion-womens-midcard-title">Women's Midcard Title</span>
+                  <select id="champion-womens-midcard-select"></select>
                 </label>
               </div>
               <article class="locked-setup-card setup-coming-later">
-                <strong>Tag Team Champions</strong>
+                <strong id="champion-mens-tag-title">Men's Tag Team Championship</strong>
+                <span>Coming Later</span>
+              </article>
+              <article class="locked-setup-card setup-coming-later">
+                <strong id="champion-womens-tag-title">Women's Tag Team Championship</strong>
                 <span>Coming Later</span>
               </article>
             </section>

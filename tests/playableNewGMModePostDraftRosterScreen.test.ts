@@ -78,9 +78,15 @@ describe("Playable New GM Mode post-draft roster screen", () => {
     assert.equal(manualSigning?.pickSource, "Manual");
     assert.equal(manualSigning?.signingTier, "Franchise");
     assert.equal(manualSigning?.signingCost, 18);
+    assert.equal(manualSigning?.activeBrandLabel, "Raw");
+    assert.equal(manualSigning?.signedToBrandLine, "Signed to Raw");
+    assert.match(manualSigning?.draftedFromLine || "", /Drafted From (Raw|SmackDown|NXT|AEW)/);
     assert.match(manualSigning?.sourceRosterPool || "", /Raw|SmackDown|NXT|AEW/);
     assert.equal(manualSigning?.signedStatus, "Signed");
     assert.equal(autoFilledSigning?.pickSource, "Auto-Filled");
+    assert.equal(autoFilledSigning?.activeBrandLabel, "Raw");
+    assert.equal(autoFilledSigning?.signedToBrandLine, "Signed to Raw");
+    assert.match(autoFilledSigning?.draftedFromLine || "", /Drafted From (Raw|SmackDown|NXT|AEW)/);
     assert.match(
       autoFilledSigning?.sourceRosterPool || "",
       /Raw|SmackDown|NXT|AEW/
@@ -150,14 +156,14 @@ describe("Playable New GM Mode post-draft roster screen", () => {
           displayOnly: true,
         },
         {
-          label: "Week 1 Booking",
+          label: "Week 1 HQ",
           status: "Week 1 Locked",
           locked: true,
           displayOnly: true,
         },
         {
-          label: "Save/Persistence",
-          status: "Not Active",
+          label: "Save",
+          status: "Not Saved Yet",
           locked: true,
           displayOnly: true,
         },
@@ -178,7 +184,7 @@ describe("Playable New GM Mode post-draft roster screen", () => {
     assert.match(html, /Championship Setup/);
     assert.match(html, /Rivalry Setup/);
     assert.match(html, /Week 1 HQ/);
-    assert.match(html, /Save\/Persistence/);
+    assert.match(html, />Save<\/strong>/);
     assert.match(appSource, /createPostDraftRosterHubProjection/);
     assert.match(appSource, /updateDraftRecapCommandSurface/);
     assert.doesNotMatch(html, /candidateId|fixtureId|validation object|diagnostic/i);

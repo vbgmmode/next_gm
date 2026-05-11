@@ -154,10 +154,19 @@ import {
     complete: document.getElementById("complete-championship-setup"),
     continue: document.getElementById("championship-continue-rivalries"),
     selects: {
-      worldChampionId: document.getElementById("champion-world-select"),
-      womensChampionId: document.getElementById("champion-womens-select"),
-      midcardChampionId: document.getElementById("champion-midcard-select"),
+      mensMainChampionId: document.getElementById("champion-mens-main-select"),
+      mensMidcardChampionId: document.getElementById("champion-mens-midcard-select"),
+      womensMainChampionId: document.getElementById("champion-womens-main-select"),
+      womensMidcardChampionId: document.getElementById("champion-womens-midcard-select"),
     },
+    titleLabels: {
+      mensMainChampionId: document.getElementById("champion-mens-main-title"),
+      mensMidcardChampionId: document.getElementById("champion-mens-midcard-title"),
+      womensMainChampionId: document.getElementById("champion-womens-main-title"),
+      womensMidcardChampionId: document.getElementById("champion-womens-midcard-title"),
+    },
+    mensTagTitle: document.getElementById("champion-mens-tag-title"),
+    womensTagTitle: document.getElementById("champion-womens-tag-title"),
   };
   const rivalrySetupTargets = {
     status: document.getElementById("rivalry-setup-status"),
@@ -802,10 +811,12 @@ import {
 
   function updatePostDraftSetupCards() {
     const championshipProjection = createChampionshipSetupProjection({
+      selectedBrand: getSelectedBrandDisplay(),
       miniDraftProgress: uiState.miniDraftProgress,
       setupState: uiState.localPostDraftSetup,
     });
     const rivalryProjection = createRivalrySetupProjection({
+      selectedBrand: getSelectedBrandDisplay(),
       miniDraftProgress: uiState.miniDraftProgress,
       setupState: uiState.localPostDraftSetup,
     });
@@ -881,12 +892,24 @@ import {
 
   function updateChampionshipSetupSurface() {
     const projection = createChampionshipSetupProjection({
+      selectedBrand: getSelectedBrandDisplay(),
       miniDraftProgress: uiState.miniDraftProgress,
       setupState: uiState.localPostDraftSetup,
     });
 
     setText(championshipSetupTargets.status, projection.displayLabels.statusLine);
     setText(championshipSetupTargets.message, projection.displayLabels.statusLine);
+    projection.championCards.forEach((card) => {
+      setText(championshipSetupTargets.titleLabels[card.slotId], card.label);
+    });
+    setText(
+      championshipSetupTargets.mensTagTitle,
+      projection.tagTitleCards.find((card) => card.slotId === "mensTagTeamChampionIds")?.label
+    );
+    setText(
+      championshipSetupTargets.womensTagTitle,
+      projection.tagTitleCards.find((card) => card.slotId === "womensTagTeamChampionIds")?.label
+    );
 
     Object.entries(championshipSetupTargets.selects).forEach(([slotId, select]) => {
       renderRosterSelectOptions({
@@ -936,6 +959,7 @@ import {
 
   function updateRivalrySetupSurface() {
     const projection = createRivalrySetupProjection({
+      selectedBrand: getSelectedBrandDisplay(),
       miniDraftProgress: uiState.miniDraftProgress,
       setupState: uiState.localPostDraftSetup,
     });
@@ -1097,7 +1121,7 @@ import {
       ...rosterOptions.map((option) => {
         const node = document.createElement("option");
         node.value = option.candidateId;
-        node.textContent = `${option.displayName} / ${option.sourceRosterPool} / ${option.signingTier}`;
+        node.textContent = `${option.displayName} / ${option.signedToBrandLine} / ${option.draftedFromLine}`;
         return node;
       })
     );
@@ -1163,7 +1187,7 @@ import {
 
     const eyebrow = document.createElement("p");
     eyebrow.className = "kicker";
-    eyebrow.textContent = `${talent.sourceRosterPool} / ${talent.pickSource}`;
+    eyebrow.textContent = `${talent.signedToBrandLine} / ${talent.pickSource}`;
 
     const title = document.createElement("h3");
     title.textContent = talent.displayName;
@@ -1176,8 +1200,8 @@ import {
       talent.signingTier,
       `Cost ${talent.signingCost}`,
       talent.divisionCategory,
+      talent.draftedFromLine,
       talent.signedStatus,
-      talent.bookingReserveStatus,
     ].forEach((label) => {
       const chip = document.createElement("span");
       chip.textContent = label;
@@ -1512,11 +1536,15 @@ import {
 
   championshipSetupTargets.complete?.addEventListener("click", () => {
     const result = completeLocalChampionshipSetup({
+      selectedBrand: getSelectedBrandDisplay(),
       miniDraftProgress: uiState.miniDraftProgress,
       setupState: uiState.localPostDraftSetup,
     });
     uiState.localPostDraftSetup = result.setupState;
     updateChampionshipSetupSurface();
+    if (result.actionStatus === "championship-setup-complete") {
+      showSection("rivalry-setup");
+    }
   });
 
   rivalrySetupTargets.slots.forEach((slotTarget, slotIndex) => {
@@ -1539,6 +1567,7 @@ import {
 
   rivalrySetupTargets.complete?.addEventListener("click", () => {
     const result = completeLocalRivalrySetup({
+      selectedBrand: getSelectedBrandDisplay(),
       miniDraftProgress: uiState.miniDraftProgress,
       setupState: uiState.localPostDraftSetup,
     });
@@ -1742,12 +1771,12 @@ function createTalentRow({ candidate, candidateProjection, draftRank }) {
   row.dataset.talentRole = `${projectedSigningTier} / ${formatDivisionCategory(
     divisionCategory
   )} / ${sourceRosterPool}`;
-  row.dataset.talentStyle = `Roster Pool: ${sourceRosterPool} | Cost ${projectedSigningCost}`;
+  row.dataset.talentStyle = `Source Pool: ${sourceRosterPool} | Cost ${projectedSigningCost}`;
   row.dataset.talentRead =
     "Draft board report. Signing cost reflects your current draft budget.";
   row.dataset.talentFit = `${formatDivisionCategory(
     divisionCategory
-  )}, ${sourceRosterPool} source roster pool.`;
+  )}, ${sourceRosterPool} source pool.`;
   row.dataset.starPower = rating.starPower;
   row.dataset.starPowerValue = rating.starPowerValue;
   row.dataset.ringWork = rating.ringWork;

@@ -485,7 +485,7 @@ export function createPostDraftRosterHubProjection({
     progress.selectedBrandReference.brandLabel ||
     "Selected brand";
   const signedTalent = progress.completedPickSummaries.map((summary, index) =>
-    createPostDraftRosterTalentCard(summary, index)
+    createPostDraftRosterTalentCard(summary, index, brandLabel)
   );
   const localDraftFinished = progress.localDraftFinished;
 
@@ -515,8 +515,8 @@ export function createPostDraftRosterHubProjection({
     lockedSetupCards: Object.freeze([
       createLockedSetupCard("Championship Setup", "Setup Locked"),
       createLockedSetupCard("Rivalry Setup", "Setup Locked"),
-      createLockedSetupCard("Week 1 Booking", "Week 1 Locked"),
-      createLockedSetupCard("Save/Persistence", "Not Active"),
+      createLockedSetupCard("Week 1 HQ", "Week 1 Locked"),
+      createLockedSetupCard("Save", "Not Saved Yet"),
     ]),
     capabilityFlags: createBlockedCapabilityFlags(),
     displayLabels: Object.freeze({
@@ -625,7 +625,7 @@ function createDraftRecapProjection({
     }),
     blockedCapabilityLabels: Object.freeze([
       "Auto-Fill stops at 16 in v0.1",
-      "Save Not Active",
+      "Not Saved Yet",
       "No SQLite write",
       "No Week 1 initialization",
       "No gameplay start",
@@ -1201,15 +1201,20 @@ function createPickSummary({
   });
 }
 
-function createPostDraftRosterTalentCard(summary, index) {
+function createPostDraftRosterTalentCard(summary, index, brandLabel) {
   const pickNumber = readPositiveNumber(summary?.pickNumber, index + 1);
   const pickSource = readString(summary?.pickSource) === "auto-fill"
     ? "Auto-Filled"
     : "Manual";
+  const activeBrandLabel = readString(brandLabel) || "Selected brand";
+  const sourceRosterPool = readString(summary?.sourceRosterPool) || "Roster";
 
   return Object.freeze({
     displayName: readString(summary?.candidateName) || "Signed superstar",
-    sourceRosterPool: readString(summary?.sourceRosterPool) || "Roster",
+    activeBrandLabel,
+    signedToBrandLine: `Signed to ${activeBrandLabel}`,
+    sourceRosterPool,
+    draftedFromLine: `Drafted From ${sourceRosterPool}`,
     signingTier: readString(summary?.signingTier) || "Locked pending rules",
     signingCost: readPositiveOrZeroNumber(summary?.signingCost, 0),
     pickSource,

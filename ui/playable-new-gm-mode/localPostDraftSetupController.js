@@ -1,7 +1,76 @@
+export const LOCAL_BRAND_TITLE_SETS = Object.freeze({
+  raw: Object.freeze({
+    brandLabel: "Raw",
+    mensMain: "World Heavyweight Championship",
+    mensMidcard: "Intercontinental Championship",
+    womensMain: "Women's World Championship",
+    womensMidcard: "Women's Intercontinental Championship",
+    mensTag: "World Tag Team Championship",
+    womensTag: "Women's Tag Team Championship",
+  }),
+  smackdown: Object.freeze({
+    brandLabel: "SmackDown",
+    mensMain: "WWE Championship",
+    mensMidcard: "United States Championship",
+    womensMain: "WWE Women's Championship",
+    womensMidcard: "Women's United States Championship",
+    mensTag: "WWE Tag Team Championship",
+    womensTag: "Women's Tag Team Championship",
+  }),
+  nxt: Object.freeze({
+    brandLabel: "NXT",
+    mensMain: "NXT Championship",
+    mensMidcard: "NXT North American Championship",
+    womensMain: "NXT Women's Championship",
+    womensMidcard: "NXT Women's North American Championship",
+    mensTag: "NXT Tag Team Championship",
+    womensTag: "NXT Women's Tag Team Championship",
+  }),
+  aew: Object.freeze({
+    brandLabel: "AEW",
+    mensMain: "AEW World Championship",
+    mensMidcard: "AEW TNT Championship",
+    womensMain: "AEW Women's World Championship",
+    womensMidcard: "AEW TBS Championship",
+    mensTag: "AEW World Tag Team Championship",
+    womensTag: "AEW Women's Tag Team Championship",
+  }),
+});
+
 export const LOCAL_CHAMPIONSHIP_TITLE_SLOTS = Object.freeze([
-  Object.freeze({ slotId: "worldChampionId", label: "World Champion" }),
-  Object.freeze({ slotId: "womensChampionId", label: "Women's Champion" }),
-  Object.freeze({ slotId: "midcardChampionId", label: "Midcard Champion" }),
+  Object.freeze({
+    slotId: "mensMainChampionId",
+    titleKey: "mensMain",
+    divisionLabel: "Men's Main",
+  }),
+  Object.freeze({
+    slotId: "mensMidcardChampionId",
+    titleKey: "mensMidcard",
+    divisionLabel: "Men's Midcard",
+  }),
+  Object.freeze({
+    slotId: "womensMainChampionId",
+    titleKey: "womensMain",
+    divisionLabel: "Women's Main",
+  }),
+  Object.freeze({
+    slotId: "womensMidcardChampionId",
+    titleKey: "womensMidcard",
+    divisionLabel: "Women's Midcard",
+  }),
+]);
+
+export const LOCAL_TAG_TITLE_SLOTS = Object.freeze([
+  Object.freeze({
+    slotId: "mensTagTeamChampionIds",
+    titleKey: "mensTag",
+    divisionLabel: "Men's Tag Team",
+  }),
+  Object.freeze({
+    slotId: "womensTagTeamChampionIds",
+    titleKey: "womensTag",
+    divisionLabel: "Women's Tag Team",
+  }),
 ]);
 
 export const LOCAL_RIVALRY_TYPES = Object.freeze([
@@ -22,33 +91,44 @@ export function createInitialLocalPostDraftSetupState() {
   return freezeSetupState({
     championshipSetupComplete: false,
     champions: {
-      worldChampionId: "",
-      womensChampionId: "",
-      midcardChampionId: "",
+      mensMainChampionId: "",
+      mensMidcardChampionId: "",
+      womensMainChampionId: "",
+      womensMidcardChampionId: "",
     },
     rivalrySetupComplete: false,
     rivalries: createEmptyRivalrySlots(),
   });
 }
 
-export function createLocalSetupRosterOptions(miniDraftProgress = {}) {
+export function createLocalSetupRosterOptions(
+  miniDraftProgress = {},
+  { selectedBrand } = {}
+) {
   const summaries = Array.isArray(miniDraftProgress.completedPickSummaries)
     ? miniDraftProgress.completedPickSummaries
     : [];
+  const brandLabel = resolveBrandTitleSet(selectedBrand, miniDraftProgress).brandLabel;
 
   return Object.freeze(
     summaries.map((summary, index) =>
-      Object.freeze({
+      {
+        const sourceRosterPool = readString(summary?.sourceRosterPool) || "Roster";
+        return Object.freeze({
         candidateId: readString(summary?.candidateId) || `signed-${index + 1}`,
         displayName: readString(summary?.candidateName) || `Signed Superstar ${index + 1}`,
-        sourceRosterPool: readString(summary?.sourceRosterPool) || "Roster",
+        activeBrandLabel: brandLabel,
+        sourceRosterPool,
+        signedToBrandLine: `Signed to ${brandLabel}`,
+        draftedFromLine: `Drafted From ${sourceRosterPool}`,
         signingTier: readString(summary?.signingTier) || "Signed Talent",
         signingCost: readPositiveOrZeroNumber(summary?.signingCost, 0),
         divisionCategory: readString(summary?.divisionCategory) || "Division TBD",
         pickSource:
           readString(summary?.pickSource) === "auto-fill" ? "Auto-Filled" : "Manual",
         pickNumber: readPositiveNumber(summary?.pickNumber, index + 1),
-      })
+        });
+      }
     )
   );
 }
@@ -75,11 +155,15 @@ export function updateLocalChampionshipSelection({
 }
 
 export function createChampionshipSetupProjection({
+  selectedBrand,
   miniDraftProgress,
   setupState,
 } = {}) {
   const currentState = normalizeSetupState(setupState);
-  const rosterOptions = createLocalSetupRosterOptions(miniDraftProgress);
+  const titleSet = resolveBrandTitleSet(selectedBrand, miniDraftProgress);
+  const rosterOptions = createLocalSetupRosterOptions(miniDraftProgress, {
+    selectedBrand,
+  });
   const rosterIds = new Set(rosterOptions.map((option) => option.candidateId));
   const localDraftFinished = Boolean(miniDraftProgress?.localDraftFinished);
   const champions = normalizeChampionSelections(currentState.champions, rosterIds);
@@ -97,6 +181,8 @@ export function createChampionshipSetupProjection({
   return Object.freeze({
     locked: !localDraftFinished,
     localDraftFinished,
+    brandLabel: titleSet.brandLabel,
+    titleSet,
     rosterOptions,
     champions: Object.freeze(champions),
     missingSlots: Object.freeze(missingSlots.map((slot) => slot.slotId)),
@@ -107,10 +193,21 @@ export function createChampionshipSetupProjection({
       LOCAL_CHAMPIONSHIP_TITLE_SLOTS.map((slot) =>
         Object.freeze({
           slotId: slot.slotId,
-          label: slot.label,
+          label: titleSet[slot.titleKey],
+          divisionLabel: slot.divisionLabel,
           candidateId: champions[slot.slotId],
           displayName: findRosterName(rosterOptions, champions[slot.slotId]),
           selected: Boolean(champions[slot.slotId]),
+        })
+      )
+    ),
+    tagTitleCards: Object.freeze(
+      LOCAL_TAG_TITLE_SLOTS.map((slot) =>
+        Object.freeze({
+          slotId: slot.slotId,
+          label: titleSet[slot.titleKey],
+          divisionLabel: slot.divisionLabel,
+          status: "Coming Later",
         })
       )
     ),
@@ -130,10 +227,12 @@ export function createChampionshipSetupProjection({
 }
 
 export function completeLocalChampionshipSetup({
+  selectedBrand,
   miniDraftProgress,
   setupState,
 } = {}) {
   const projection = createChampionshipSetupProjection({
+    selectedBrand,
     miniDraftProgress,
     setupState,
   });
@@ -156,6 +255,7 @@ export function completeLocalChampionshipSetup({
     actionStatus: "championship-setup-complete",
     setupState: nextState,
     projection: createChampionshipSetupProjection({
+      selectedBrand,
       miniDraftProgress,
       setupState: nextState,
     }),
@@ -192,11 +292,13 @@ export function updateLocalRivalrySlot({
 }
 
 export function createRivalrySetupProjection({
+  selectedBrand,
   miniDraftProgress,
   setupState,
 } = {}) {
   const currentState = normalizeSetupState(setupState);
   const championshipProjection = createChampionshipSetupProjection({
+    selectedBrand,
     miniDraftProgress,
     setupState: currentState,
   });
@@ -235,10 +337,12 @@ export function createRivalrySetupProjection({
 }
 
 export function completeLocalRivalrySetup({
+  selectedBrand,
   miniDraftProgress,
   setupState,
 } = {}) {
   const projection = createRivalrySetupProjection({
+    selectedBrand,
     miniDraftProgress,
     setupState,
   });
@@ -261,6 +365,7 @@ export function completeLocalRivalrySetup({
     actionStatus: "rivalry-setup-complete",
     setupState: nextState,
     projection: createRivalrySetupProjection({
+      selectedBrand,
       miniDraftProgress,
       setupState: nextState,
     }),
@@ -274,10 +379,12 @@ export function createWeekOneHqProjection({
 } = {}) {
   const currentState = normalizeSetupState(setupState);
   const championshipProjection = createChampionshipSetupProjection({
+    selectedBrand,
     miniDraftProgress,
     setupState: currentState,
   });
   const rivalryProjection = createRivalrySetupProjection({
+    selectedBrand,
     miniDraftProgress,
     setupState: currentState,
   });
@@ -353,8 +460,20 @@ function normalizeSetupState(setupState) {
     championshipSetupComplete: Boolean(setupState.championshipSetupComplete),
     champions: {
       worldChampionId: readString(setupState.champions?.worldChampionId) || "",
-      womensChampionId: readString(setupState.champions?.womensChampionId) || "",
-      midcardChampionId: readString(setupState.champions?.midcardChampionId) || "",
+      mensMainChampionId:
+        readString(setupState.champions?.mensMainChampionId) ||
+        readString(setupState.champions?.worldChampionId) ||
+        "",
+      mensMidcardChampionId:
+        readString(setupState.champions?.mensMidcardChampionId) ||
+        readString(setupState.champions?.midcardChampionId) ||
+        "",
+      womensMainChampionId:
+        readString(setupState.champions?.womensMainChampionId) ||
+        readString(setupState.champions?.womensChampionId) ||
+        "",
+      womensMidcardChampionId:
+        readString(setupState.champions?.womensMidcardChampionId) || "",
     },
     rivalrySetupComplete: Boolean(setupState.rivalrySetupComplete),
     rivalries: normalizeRivalrySlots(setupState.rivalries),
@@ -394,9 +513,22 @@ function normalizeRivalrySlots(rivalries) {
 
 function normalizeChampionSelections(champions, rosterIds) {
   return {
-    worldChampionId: normalizeRosterSelection(champions?.worldChampionId, rosterIds),
-    womensChampionId: normalizeRosterSelection(champions?.womensChampionId, rosterIds),
-    midcardChampionId: normalizeRosterSelection(champions?.midcardChampionId, rosterIds),
+    mensMainChampionId: normalizeRosterSelection(
+      champions?.mensMainChampionId,
+      rosterIds
+    ),
+    mensMidcardChampionId: normalizeRosterSelection(
+      champions?.mensMidcardChampionId,
+      rosterIds
+    ),
+    womensMainChampionId: normalizeRosterSelection(
+      champions?.womensMainChampionId,
+      rosterIds
+    ),
+    womensMidcardChampionId: normalizeRosterSelection(
+      champions?.womensMidcardChampionId,
+      rosterIds
+    ),
   };
 }
 
@@ -442,7 +574,7 @@ function createChampionshipStatusLine({
   }
 
   if (missingSlots.length > 0) {
-    return "Assign all required champions to continue.";
+    return "Assign all required singles champions to continue.";
   }
 
   return canComplete ? "Champions selected. Ready to complete setup." : "Setup Locked";
@@ -474,6 +606,34 @@ function findRosterName(rosterOptions, candidateId) {
     rosterOptions.find((option) => option.candidateId === candidateId)?.displayName ||
     ""
   );
+}
+
+function resolveBrandTitleSet(selectedBrand, miniDraftProgress) {
+  const brandId =
+    normalizeBrandId(selectedBrand?.brandId) ||
+    normalizeBrandId(miniDraftProgress?.selectedBrandReference?.brandId) ||
+    normalizeBrandId(miniDraftProgress?.selectedBrand?.brandId) ||
+    "raw";
+
+  return LOCAL_BRAND_TITLE_SETS[brandId] || LOCAL_BRAND_TITLE_SETS.raw;
+}
+
+function normalizeBrandId(value) {
+  const brandId = readString(value)?.toLowerCase();
+
+  if (!brandId) {
+    return undefined;
+  }
+
+  if (brandId === "smackdown" || brandId === "smack-down") {
+    return "smackdown";
+  }
+
+  if (brandId === "raw" || brandId === "nxt" || brandId === "aew") {
+    return brandId;
+  }
+
+  return undefined;
 }
 
 function normalizeOption(value, options, fallback) {
