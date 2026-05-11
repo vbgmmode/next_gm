@@ -44,9 +44,11 @@ The safest first implementation slice is UI shell-only, static/mock-first:
 - Add a static Game Landing / Title Screen as the default startup screen.
 - Add static Save Selection screen affordances using clearly fake save-card data.
 - Add static Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, and Select Brand placeholders.
+- Choose GM presents 12 fictional GM archetypes with compact numerical stat meters.
 - Add a static Initial Draft surface using mock talent, pick order, roster needs, and confirmation preview.
 - Add a static Draft Recap surface focused on the player's grouped roster.
 - Add a static Brand Dashboard / Week 1 Setup surface with the guided checklist.
+- Brand Dashboard hero prioritizes This Week's Show, Brand Health, and GM Alerts before supporting budget/fan/momentum context.
 - Add a tokenized Raw / SmackDown / NXT / AEW visual palette system.
 - Keep all screens viewport-first with contained scrolling only.
 - Use sharper sports-broadcast/glass panels instead of bubbly dashboard cards.

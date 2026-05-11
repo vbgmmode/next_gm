@@ -1306,23 +1306,89 @@ dd {
 .gm-card-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(214px, 1fr);
   gap: 10px;
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow: hidden auto;
+  padding-right: 4px;
 }
 
 .gm-card {
   display: grid;
-  grid-template-rows: minmax(108px, 0.56fr) minmax(0, 0.44fr);
-  gap: 9px;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-content: start;
   border-top: 4px solid var(--border-subtle);
-  padding: 11px;
+  padding: 10px;
+  min-width: 0;
+  min-height: 0;
 }
 
 .gm-card.selected {
   border-color: color-mix(in srgb, var(--brand-primary) 64%, var(--border-subtle));
   border-top-color: var(--brand-primary);
+}
+
+.gm-card > div {
+  min-width: 0;
+}
+
+.gm-card .gm-frame {
+  min-height: 56px;
+  font-size: 1.55rem;
+}
+
+.gm-stat-block {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.gm-stat {
+  display: grid;
+  grid-template-columns: minmax(72px, 0.72fr) minmax(0, 1fr) 28px;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 0.58rem;
+  font-weight: 950;
+  font-family: var(--data-font);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.gm-stat > span:first-child,
+.gm-stat strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gm-stat strong {
+  color: var(--brand-accent);
+  text-align: right;
+}
+
+.gm-stat-bar {
+  position: relative;
+  overflow: hidden;
+  height: 5px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 34%, var(--border-subtle));
+  background: rgba(0, 0, 0, 0.42);
+}
+
+.gm-stat-bar span {
+  display: block;
+  width: calc(var(--rating) * 1%);
+  max-width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(90deg, var(--brand-primary), var(--brand-accent)),
+    var(--brand-primary);
+  box-shadow: 0 0 12px var(--brand-glow);
 }
 
 .portrait-frame,
@@ -1801,7 +1867,7 @@ dd {
 .brand-dashboard-hero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(260px, 0.84fr) minmax(170px, 0.38fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1fr) minmax(176px, 0.38fr);
   gap: 12px;
   align-items: center;
   min-width: 0;
@@ -1874,6 +1940,88 @@ dd {
   background: linear-gradient(110deg, transparent 0 64%, rgba(255, 255, 255, 0.055) 65% 66%, transparent 67%);
 }
 
+.hero-command-stack {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+
+.command-monitor {
+  position: relative;
+  display: grid;
+  gap: 5px;
+  align-content: center;
+  min-width: 0;
+  min-height: 76px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 42%, var(--border-subtle));
+  border-left: 4px solid color-mix(in srgb, var(--brand-primary) 74%, transparent);
+  background:
+    radial-gradient(circle at 50% 118%, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 62%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.034) 0 1px, transparent 1px 5px),
+    rgba(0, 0, 0, 0.36);
+  padding: 9px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.24);
+}
+
+.command-monitor.healthy {
+  border-left-color: color-mix(in srgb, var(--brand-accent) 78%, var(--brand-primary));
+}
+
+.command-monitor.urgent {
+  border-left-color: color-mix(in srgb, var(--brand-primary) 72%, var(--brand-accent));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.24),
+    0 0 18px color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+
+.command-monitor::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(110deg, transparent 0 68%, rgba(255, 255, 255, 0.055) 69% 70%, transparent 71%);
+}
+
+.command-monitor span,
+.command-monitor strong,
+.command-monitor em {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.command-monitor span {
+  color: var(--text-muted);
+  font-size: 0.58rem;
+  font-weight: 950;
+  font-family: var(--data-font);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.command-monitor strong {
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-family: var(--display-font);
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+}
+
+.command-monitor em {
+  color: var(--brand-accent);
+  font-size: 0.64rem;
+  font-style: normal;
+  font-weight: 850;
+}
+
 .hero-actions {
   display: grid;
   gap: 8px;
@@ -1883,6 +2031,8 @@ dd {
 .hero-actions .hero-cta,
 .hero-actions .ghost-button {
   width: 100%;
+  white-space: normal;
+  line-height: 1.08;
 }
 
 .dashboard-layout {
@@ -2092,7 +2242,7 @@ dd {
   }
 
   .gm-card {
-    grid-template-rows: minmax(92px, 0.5fr) minmax(0, 0.5fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
   }
 
   .portrait-frame {
@@ -2171,6 +2321,7 @@ dd {
   .equal-baseline-strip,
   .division-groups,
   .hero-metrics,
+  .hero-command-stack,
   .compact-hq,
   .landing-signal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

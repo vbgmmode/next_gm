@@ -64,14 +64,14 @@ Game Landing / Title Screen must put the Next GM identity first and feel like a 
 - Setup Basics should include difficulty, save name, and optional assistant setup.
 - Optional assistant setup may mention an OpenAI API key or LLM setup as a skippable technical/privacy step, but core gameplay must work without AI.
 - No key persistence or GenAI calls are approved in static/mock UI.
-- Choose GM should use fictionalized real-world-inspired GM archetypes, not real people.
+- Choose GM should use 12 fictionalized real-world-inspired GM archetypes, not real people. Each archetype card should include a name, archetype title, short fantasy description, numerical ratings, and compact stat bars/meters.
 - Select Brand is a story/fantasy choice only. All brands start with the same money, prestige, resources, and baseline difficulty.
 - Initial Draft begins only after the setup flow.
 
 ### Dashboard And GM Alerts
 
 - The post-load home base is a cinematic Brand Dashboard.
-- Dashboard hero should blend brand identity, this week's show, the biggest alert, and key status numbers.
+- Dashboard hero should prioritize this week's show, Brand Health, and GM Alerts as a command-center strip. Budget, fans, and momentum may remain as supporting context, but they must not dominate the hero.
 - The main dashboard CTA should be Book / Continue This Week's Show.
 - The closest secondary dashboard action should be GM Alerts.
 - Dashboard density should be moderate: one cinematic hero plus a few important panels, not an analytics/admin dashboard.
@@ -117,7 +117,7 @@ Game Landing / Title Screen must put the Next GM identity first and feel like a 
 - Cards should use sharp sports-broadcast rectangles with subtle glass-panel treatment.
 - Avoid bubbly, circle-heavy, pill-heavy, overly rounded UI.
 - Use tactical glass as the default premium material: dark translucent layers, sharp 1px borders, inner highlights, subtle scanlines, and brand-colored under-glow.
-- Dashboard hero metrics should feel like backstage monitors or production-control surfaces, not generic SaaS KPI cards.
+- Dashboard hero status panels should feel like backstage monitors or production-control surfaces, not generic SaaS KPI cards.
 - GM Alerts can borrow dirt-sheet leak, ticker, and taped-note visual language when severity warrants it, while staying readable and action-oriented.
 - Buttons should lean premium glass/outline, with primary actions large and cinematic in hero areas and compact in dense command screens.
 - Wrestler imagery should be mixed by screen:

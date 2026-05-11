@@ -96,6 +96,12 @@ Save Selection requirements:
 - Continue, create, and empty save states should feel like mode-entry choices.
 - After choosing or creating a save, the player moves into a new screen or flow step.
 
+Choose GM requirements:
+
+- It presents 12 fictionalized GM archetypes, not real executive/person names.
+- Each archetype card includes a GM name, archetype title, short fantasy description, numerical ratings, and compact stat bars/meters.
+- Cards stay sharp, sports-broadcast, and contained. If 12 cards cannot fit, only the GM card area may scroll.
+
 Pre-draft requirements:
 
 - New GM Setup and Setup Review should feel like guided setup steps.
@@ -233,6 +239,7 @@ Required composition:
 - One obvious next major action, such as entering the Draft Room.
 - Strong brand/show identity moment.
 - Compact secondary status, not generic KPI boxes.
+- The dashboard hero command strip prioritizes This Week's Show, Brand Health, and GM Alerts before supporting budget, fan, or momentum context.
 - Budget, fans, momentum, and brand health should read as game HUD stats.
 - GM alerts in a contained broadcast-style strip or panel.
 - GM Alerts may use dirt-sheet leak or ticker-fragment styling for urgent/blocked pressure, but they must remain readable objective cards that state what is happening, why it matters, and what the player can do next.

@@ -45,7 +45,8 @@ Expected local URL style:
 - Confirm Contract Signing feels like a league office / GM office launch moment.
 - Confirm Setup Basics includes difficulty, save name, and optional assistant setup without saving anything.
 - Confirm Assistant Setup is skippable and clearly optional.
-- Confirm Choose GM uses fictional archetypes, not real people.
+- Confirm Choose GM uses 12 fictional archetypes, not real people.
+- Confirm every GM archetype card includes a GM name, archetype title, short fantasy description, numerical ratings, and compact stat bars/meters.
 - Confirm Select Brand says brands are fantasy choices with equal starting baselines.
 - Confirm Initial Draft feels like the active draft broadcast surface.
 - Confirm Draft Recap appears as the first post-draft state.
@@ -79,6 +80,8 @@ Expected local URL style:
 - Confirm Draft Room feels like a draft broadcast with ON THE CLOCK drama, board energy, and scouting desk framing.
 - Confirm selected talent reads as a broadcast profile card, not a generic info card.
 - Confirm Post-Draft Brand HQ centers Week 1 Setup, Book Show, Roster, Rivalries, Championships, Calendar, IWC Pulse, and Analytics instead of Draft Preview.
+- Confirm Brand Dashboard hero prioritizes This Week's Show, Brand Health, and GM Alerts.
+- Confirm Budget, Fans, and Momentum do not dominate the Brand Dashboard hero command strip.
 - Confirm Brand Dashboard hero reads as a backstage monitor stack or production-control wall, not a generic KPI row.
 - Confirm GM Alerts read like readable dirt-sheet leaks, objective fragments, or broadcast ticker pressure rather than a plain SaaS task list.
 - Confirm visual accents feel purposeful and brand-driven, not random decorative shapes.
@@ -134,6 +137,9 @@ Expected local URL style:
 - Confirm cards do not stretch endlessly to create a scrolling webpage feel.
 - Confirm long nav labels appear only in the expanded overlay and do not clip in collapsed state.
 - Confirm nav label, card, hero, and button text does not overflow at 1366x768, 1280x800, or 1440x900.
+- Confirm Choose GM uses contained internal scrolling for the card area if 12 cards cannot fit, without creating full-page scrolling.
+- Confirm GM stat labels, bars, and numerical ratings do not overflow cards.
+- Confirm Dashboard, Choose GM, and Landing CTAs are not covered by the bottom dock.
 
 ## Static/Mock Boundary QA
 
