@@ -1,5 +1,13 @@
 # SQLite Implementation Boundary Decision
 
+## Current Status Note
+
+This document describes an earlier foundation/identity-only SQLite boundary. It remains useful historical context for why persistence was constrained.
+
+Current first-session playable work is governed by `AGENTS.md`, `docs/next-gm-product-and-simulation-lock.md`, `docs/finished-product-goal.md`, `docs/next-gm-docs-reconciliation-report.md`, and current code/tests.
+
+Durable gameplay persistence remains controlled and must be explicitly scoped. This note does not authorize broad persistence expansion, destructive migrations, or unapproved save-payload schema work.
+
 ## Decision
 
 The SQLite persistence stack is currently foundation-only. It defines planning shells, readiness summaries, missing-piece reporting, warning aggregation, identity-only SQLite probes, durable identity initialization, create/read/list verification, and repository-facing identity shell reporting.

@@ -310,6 +310,10 @@ components:
     padding: "{spacing.sm}"
 ---
 
+## Authority Note
+
+`DESIGN.md` contains visual tokens/theme guidance plus player-facing UI doctrine. It is not the only product design authority. Product and simulation behavior are governed by `docs/next-gm-product-and-simulation-lock.md` and `docs/finished-product-goal.md`.
+
 ## Overview
 
 Next GM should feel like a premium wrestling GM game cockpit: a night-time production room where the player is a booker, TV producer, talent evaluator, and executive under pressure. The design is dark, sharp, tactical, and broadcast-driven. It borrows from sports draft shows, wrestling TV graphics, command-center monitors, and console franchise menus.

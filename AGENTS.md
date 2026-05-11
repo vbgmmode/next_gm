@@ -8,41 +8,53 @@ Wrestling quality matters, but perception matters just as much. The simulation s
 
 ## Current Phase
 
-This repository is in foundation mode. Do not build gameplay features yet.
+This repository is no longer pure foundation-only. The current phase is first-session playable compliance.
 
-Allowed work:
+A rough playable loop exists in the current code and tests. Day-to-day work should prioritize making the first 20 minutes comply with `docs/next-gm-product-and-simulation-lock.md` while preserving deterministic simulation boundaries, save safety, and explicit scope control.
 
+The required first-session flow is:
+
+Title Screen -> Start New Game / Continue -> Choose GM -> Difficulty -> Active Brands / Competing GMs -> Player Brand -> Draft Rules and Budget Intro -> Multi-brand Draft -> Post-Draft Brand HQ -> Assign Champions -> Create Rivalries -> Week 1 HQ -> Book First Show -> Run Show -> Show Recap.
+
+## Product Rules For Current Work
+
+- The game should feel like a real GM universe, not static setup cards.
+- Finance must use real money labels, not tokens.
+- Rival brands must be visibly present in the draft.
+- Drafted talent belongs to the drafting brand.
+- Source roster/source pool is metadata only.
+- Post-draft surfaces should move toward Brand HQ, champions, rivalries, Week 1 HQ, booking, run show, and recap.
+- GenAI is optional flavor later, not core simulation truth.
+
+## Work Allowed When Scoped
+
+- UI work under `ui/playable-new-gm-mode` when it advances the first-session flow.
+- Page-lifetime/local playable controller work already supported by current code/tests.
+- Copy and presentation updates that make the first session feel like a real game.
+- Focused tests for playable first-session behavior.
 - Documentation and operating guidance.
 - Architecture sketches and engine boundaries.
 - Deterministic test scaffolding and approved production shell engines when explicitly requested.
-- Lightweight placeholder types only when needed to support agreed design work.
 - Hidden/player-facing backend contract boundaries.
-- Seeded randomness through `SimulationContext` and `RandomService`.
-- SQLite identity-only probes.
-- SQLite initialization/migration scaffolding for the approved identity schema.
-- Durable SQLite save identity create, read, and list shell work that remains diagnostics-only and identity-only.
-- Minimal `save_metadata` row usage only as identity support.
-- `schema_migrations` tracking for the approved identity schema.
-- Diagnostics-only capability and status reporting for the durable identity boundary.
+- Seeded randomness through `SimulationContext`, `SimulationEngineContext`, or `RandomService`.
+- SQLite identity-only probes and other approved persistence shells only when the task is explicitly scoped to that boundary.
 
-Blocked work until explicitly requested:
+## Work Blocked Unless Explicitly Scoped
 
-- Full gameplay persistence.
-- Draft, roster, championship, division, calendar, week, match, show, rivalry, business, fan/social, generated-text, or GenAI persistence.
-- Full save repository objects.
-- Full save load/list behavior beyond identity-only read/list.
-- Gameplay payload persistence.
-- Save update behavior.
-- Save delete behavior.
-- Player-facing save management.
-- UI save/load/list wiring.
-- Frontend UI.
-- AI-generated text features.
-- Live gameplay loops.
-- Gameplay start or week advancement.
-- Business systems.
-- Real match outcomes, title changes, injuries, morale changes, or consequence systems.
-- Full match, fan, social, economy, or rival-company implementations.
+- Broad persistence expansion.
+- Destructive database/schema changes.
+- Unapproved durable gameplay payload persistence.
+- New backend service rewrites.
+- Deep CPU GM strategy.
+- Other-brand season simulation beyond visible deterministic draft participation.
+- GenAI runtime integration.
+- Live scraping.
+- Randomness via `Math.random`.
+- Engine ID or metadata changes unless directly required and approved.
+- Full save repository rewrites.
+- Save update/delete behavior unless directly approved.
+- Business systems, full economy, or full rival-company implementations.
+- Real match outcomes, title changes, injuries, morale changes, or consequence systems beyond the currently scoped playable/local preview behavior.
 
 ## Simulation Principles
 
@@ -54,6 +66,10 @@ Blocked work until explicitly requested:
 - Backstage politics matter as a moderate management layer, not as pure chaos.
 - Rival companies start from the same baseline and diverge through booking quality, stars, market share, momentum, profitability, and fan perception.
 - The player should manage uncertainty, not solve visible formulas.
+- Deterministic game facts come first.
+- Seeded variance comes later, when explicitly scoped.
+- GenAI reactions come after facts, when explicitly scoped.
+- GenAI must not decide winners, budget, injuries, standings, save-critical state, or canonical game facts.
 
 ## Implementation Rules
 
@@ -68,18 +84,30 @@ Blocked work until explicitly requested:
 
 ## Documentation Map
 
+- `docs/next-gm-product-and-simulation-lock.md` governs current product/simulation execution.
+- `docs/finished-product-goal.md` defines the final destination.
+- `docs/next-gm-docs-reconciliation-report.md` explains stale-doc and conflict handling.
 - `docs/design/simulation-doctrine.md` defines the project philosophy and player-facing information model.
 - `docs/systems/match-engine.md` defines the future match simulation boundaries.
 - `docs/systems/fan-reaction-engine.md` defines perception, audience segment, and booking-intent reactions.
 - `docs/systems/social-discourse-engine.md` defines noisy public discourse and IWC-style feedback loops.
 - `docs/architecture/sqlite-first-persistence.md` defines the SQLite identity-only foundation boundary.
-- `docs/architecture/sqlite-implementation-boundary-decision.md` defines approved and blocked persistence scope.
+- `docs/architecture/sqlite-implementation-boundary-decision.md` records the earlier foundation/identity-only SQLite boundary and current persistence cautions.
 - `docs/architecture/sqlite-isolated-identity-flow-completion.md` records the isolated-to-durable identity flow reconciliation.
 - `skills/gm-backend-simulation-architect/SKILL.md` defines how Codex should approach future backend simulation work.
 
+## Source-Of-Truth Precedence
+
+1. Current code/tests are implementation truth.
+2. `docs/next-gm-product-and-simulation-lock.md` governs product/simulation execution.
+3. `docs/finished-product-goal.md` governs the final destination.
+4. `docs/next-gm-docs-reconciliation-report.md` governs stale-doc/conflict handling.
+5. `AGENTS.md` is the current day-to-day contributor instruction layer.
+6. Older foundation/architecture docs remain valid only where they do not conflict with current code/tests, the lock, the finished goal, or the reconciliation report.
+
 ## Agent Working Style
 
-Before changing simulation code, read the relevant design and system docs. If a requested feature conflicts with these docs, call out the conflict and propose an update rather than quietly implementing against the doctrine.
+Before changing simulation code, read the relevant current design and system docs. If a requested feature conflicts with implementation truth, the product/simulation lock, the finished goal, or the reconciliation report, call out the conflict and propose a reconciliation step rather than quietly implementing against stale doctrine.
 
 When creating future simulation systems, describe:
 
