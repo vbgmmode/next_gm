@@ -904,9 +904,12 @@
 
           <div class="roster-hub-layout">
             <section class="roster-board-panel" aria-labelledby="post-draft-roster-list-title">
-              <div class="panel-title">
-                <p class="kicker">Signed Talent</p>
-                <h3 id="post-draft-roster-list-title">Local Draft Roster</h3>
+              <div class="panel-title roster-board-title">
+                <div>
+                  <p class="kicker">Signed Talent</p>
+                  <h3 id="post-draft-roster-list-title">Roster Board</h3>
+                </div>
+                <span class="broadcast-label live">Local Draft Only</span>
               </div>
               <p class="roster-lock-message" id="roster-hub-lock">Finish the draft to view your roster.</p>
               <div class="post-draft-roster-list locked" id="post-draft-roster-list" aria-label="Signed local draft roster"></div>
@@ -914,39 +917,39 @@
 
             <aside class="roster-summary-panel" aria-label="Roster summary">
               <div class="panel-title">
-                <p class="kicker">Roster Control</p>
-                <h3>Launch Status</h3>
+                <p class="kicker">GM Desk</p>
+                <h3>Roster Command</h3>
               </div>
               <div class="roster-summary-grid">
-                <span id="roster-summary-signed-count">Signed Superstars: 0</span>
-                <span id="roster-summary-minimum">Minimum Viable Roster: 16</span>
-                <span id="roster-summary-minimum-status">Minimum roster not viable</span>
+                <span class="summary-primary" id="roster-summary-signed-count">Signed Superstars: 0</span>
+                <span class="summary-primary" id="roster-summary-minimum">Minimum Viable Roster: 16</span>
+                <span class="summary-status" id="roster-summary-minimum-status">Minimum roster not viable</span>
                 <span id="roster-summary-starting-budget">Starting Budget: 120</span>
                 <span id="roster-summary-budget-spent">Budget Spent: 0</span>
                 <span id="roster-summary-remaining-budget">Remaining Budget: 120</span>
                 <span id="roster-summary-booking-reserve">Booking Reserve Target: 20</span>
-                <span id="roster-summary-reserve-status">Booking reserve protected</span>
-                <span id="roster-summary-local-only">Local-only / not saved</span>
-                <span id="roster-summary-week-one">Week 1 locked</span>
+                <span class="summary-status" id="roster-summary-reserve-status">Booking reserve protected</span>
+                <span class="summary-lock" id="roster-summary-local-only">Local Draft Only / Not Saved Yet</span>
+                <span class="summary-lock" id="roster-summary-week-one">Week 1 Locked</span>
               </div>
             </aside>
 
             <section class="locked-setup-panel" aria-label="Locked post-draft setup">
               <article class="locked-setup-card">
                 <strong>Championship Setup</strong>
-                <span>Locked</span>
+                <span>Setup Locked</span>
               </article>
               <article class="locked-setup-card">
                 <strong>Rivalry Setup</strong>
-                <span>Locked</span>
+                <span>Setup Locked</span>
               </article>
               <article class="locked-setup-card">
                 <strong>Week 1 Booking</strong>
-                <span>Locked</span>
+                <span>Week 1 Locked</span>
               </article>
               <article class="locked-setup-card">
                 <strong>Save/Persistence</strong>
-                <span>Not active</span>
+                <span>Not Saved Yet</span>
               </article>
             </section>
           </div>
