@@ -289,6 +289,24 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
       ),
       true
     );
+    assert.equal(
+      firstResult.recap.segmentResults.every((segment) =>
+        segment.matchRatingLabel.includes("Rating:")
+      ),
+      true
+    );
+    assert.equal(
+      firstResult.recap.segmentResults.every((segment) =>
+        segment.crowdResponseLine.startsWith("Crowd Response:")
+      ),
+      true
+    );
+    assert.equal(
+      firstResult.recap.segmentResults.every((segment) =>
+        segment.momentumSignalLine.startsWith("Momentum Signal:")
+      ),
+      true
+    );
   });
 
   it("advances to Week 2 HQ and reuses the local booking loop for the next week", () => {
@@ -341,6 +359,9 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.match(appSource, /runLocalWeeklyShow/);
     assert.match(appSource, /advanceLocalWeek/);
     assert.match(appSource, /showSection\("show-recap"\)/);
+    assert.match(appSource, /matchRatingLabel/);
+    assert.match(appSource, /crowdResponseLine/);
+    assert.match(appSource, /momentumSignalLine/);
     assert.match(html, /Local Session Only/);
     assert.match(html, /Not Saved Yet/);
     assert.equal(shouldShowDock("show-recap"), true);

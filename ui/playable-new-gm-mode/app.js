@@ -1904,7 +1904,13 @@ import {
     talent.textContent = segment.talentLine;
     const result = document.createElement("small");
     result.textContent = segment.resultLine;
-    content.append(title, talent, result);
+    const matchRating = document.createElement("small");
+    matchRating.textContent = segment.matchRatingLabel || segment.qualityBand;
+    const crowdResponse = document.createElement("small");
+    crowdResponse.textContent = segment.crowdResponseLine || "Crowd Response: Solid";
+    const momentumSignal = document.createElement("small");
+    momentumSignal.textContent = segment.momentumSignalLine || "Momentum Signal: Steady";
+    content.append(title, talent, result, matchRating, crowdResponse, momentumSignal);
     const badge = document.createElement("small");
     badge.textContent = segment.mainEvent ? "Main Event" : segment.qualityBand;
     item.append(number, content, badge);

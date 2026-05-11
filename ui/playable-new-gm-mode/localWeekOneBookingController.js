@@ -527,6 +527,9 @@ function createSegmentResult({
     rivalryInvolved,
     qualityBand,
     resultLine: createSegmentResultLine({ segment, qualityBand, engineMatchResult }),
+    matchRatingLabel: createMatchRatingLabel({ segment, qualityBand }),
+    crowdResponseLine: createCrowdResponseLine({ segment, engineMatchResult }),
+    momentumSignalLine: createMomentumSignalLine({ segment, engineMatchResult }),
     participantNames: Object.freeze(
       wrestlerIds.map((candidateId) => findRosterName(rosterOptions, candidateId))
     ),
@@ -575,6 +578,54 @@ function createSegmentResultLine({ segment, qualityBand, engineMatchResult }) {
   return segment.mainEvent
     ? `${qualityBand} main event match; ${crowdLine}.`
     : `${qualityBand} singles match; ${crowdLine}.`;
+}
+
+function createMatchRatingLabel({ segment, qualityBand }) {
+  if (segment.segmentType === "promo") {
+    return `Segment Rating: ${qualityBand}`;
+  }
+
+  return `Match Rating: ${qualityBand}`;
+}
+
+function createCrowdResponseLine({ segment, engineMatchResult }) {
+  if (segment.segmentType === "promo") {
+    return "Crowd Response: Story advanced";
+  }
+
+  const signalLabels = readEngineSignalLabels(engineMatchResult);
+
+  if (signalLabels.has("overdelivered")) {
+    return "Crowd Response: Overdelivered";
+  }
+
+  if (signalLabels.has("crowd was engaged")) {
+    return "Crowd Response: Engaged";
+  }
+
+  if (signalLabels.has("flat reaction")) {
+    return "Crowd Response: Needs spark";
+  }
+
+  return "Crowd Response: Solid";
+}
+
+function createMomentumSignalLine({ segment, engineMatchResult }) {
+  if (segment.segmentType === "promo") {
+    return "Momentum Signal: Story beat";
+  }
+
+  const signalLabels = readEngineSignalLabels(engineMatchResult);
+
+  if (signalLabels.has("momentum shift")) {
+    return "Momentum Signal: Shift";
+  }
+
+  if (segment.mainEvent) {
+    return "Momentum Signal: Featured";
+  }
+
+  return "Momentum Signal: Steady";
 }
 
 function createShowGrade(segmentResults) {
@@ -1191,6 +1242,12 @@ function normalizeSegmentResult(segmentResult) {
     rivalryInvolved: Boolean(segmentResult?.rivalryInvolved),
     qualityBand: readString(segmentResult?.qualityBand) || "Solid",
     resultLine: readString(segmentResult?.resultLine) || "Solid segment.",
+    matchRatingLabel:
+      readString(segmentResult?.matchRatingLabel) || "Match Rating: Solid",
+    crowdResponseLine:
+      readString(segmentResult?.crowdResponseLine) || "Crowd Response: Solid",
+    momentumSignalLine:
+      readString(segmentResult?.momentumSignalLine) || "Momentum Signal: Steady",
     participantNames: Object.freeze(
       Array.isArray(segmentResult?.participantNames)
         ? segmentResult.participantNames.map((name) => readString(name) || "Signed Talent")
