@@ -20,6 +20,7 @@ import {
   advanceLocalWeek,
   createInitialLocalWeekOneBookingState,
   createInitialLocalWeeklyLoopState,
+  createLocalSeasonCalendarProjection,
   createWeeklyHqProjection,
   createWeekOneBookingProjection,
   runLocalWeeklyShow,
@@ -347,8 +348,35 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.equal(hqProjection.displayLabels.titleLine, "Week 2 HQ");
     assert.equal(hqProjection.displayLabels.bookingLine, "Book Week 2 Show");
     assert.match(hqProjection.displayLabels.lastShowLine, /^Last Show: [ABCD] \//);
+    assert.equal(hqProjection.seasonCalendar.nextSpecialEventWeek, 4);
+    assert.equal(hqProjection.displayLabels.calendarLine, "Road To Special Event: Week 4 Special Event in 2 weeks");
+    assert.equal(hqProjection.displayLabels.showHistoryLine, "Show History: 1 show logged");
     assert.equal(weekTwoRun.actionStatus, "local-weekly-show-ran");
     assert.equal(weekTwoRun.recap.weekNumber, 2);
+  });
+
+  it("projects a deterministic local season calendar and road to special event", () => {
+    const initialCalendar = createLocalSeasonCalendarProjection({
+      weeklyState: createInitialLocalWeeklyLoopState(),
+    });
+    const eventWeekCalendar = createLocalSeasonCalendarProjection({
+      weeklyState: {
+        currentWeekNumber: 4,
+        completedShowRecaps: [],
+      },
+    });
+    const postEventCalendar = createLocalSeasonCalendarProjection({
+      weeklyState: {
+        currentWeekNumber: 5,
+        completedShowRecaps: [],
+      },
+    });
+
+    assert.equal(initialCalendar.specialEventLabel, "Week 4 Special Event");
+    assert.equal(initialCalendar.displayLabels.titleDefenseLine, "Title Defense Window: Opens Week 4");
+    assert.equal(eventWeekCalendar.displayLabels.titleDefenseLine, "Title Defense Window: Open");
+    assert.equal(eventWeekCalendar.displayLabels.rivalryPayoffLine, "Rivalry Payoff: Available");
+    assert.equal(postEventCalendar.specialEventLabel, "Week 8 Special Event");
   });
 
   it("wires Run Show, Show Recap, and Week 2 advancement in the UI", () => {
@@ -360,9 +388,13 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.match(html, /id="show-recap"/);
     assert.match(html, /id="show-recap-advance-week"/);
     assert.match(html, /id="show-recap-social"/);
+    assert.match(html, /id="week-one-hq-calendar-tile"/);
+    assert.match(html, /id="week-one-hq-history-tile"/);
     assert.match(appSource, /runLocalWeeklyShow/);
     assert.match(appSource, /advanceLocalWeek/);
     assert.match(appSource, /showSection\("show-recap"\)/);
+    assert.match(appSource, /calendarTile/);
+    assert.match(appSource, /historyTile/);
     assert.match(appSource, /socialBuzzNote/);
     assert.match(appSource, /matchRatingLabel/);
     assert.match(appSource, /crowdResponseLine/);

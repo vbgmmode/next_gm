@@ -215,6 +215,8 @@ import {
     budgetTile: document.getElementById("week-one-hq-budget-tile"),
     championTile: document.getElementById("week-one-hq-champion-tile"),
     rivalryTile: document.getElementById("week-one-hq-rivalry-tile"),
+    calendarTile: document.getElementById("week-one-hq-calendar-tile"),
+    historyTile: document.getElementById("week-one-hq-history-tile"),
   };
   const bookingTargets = {
     title: document.getElementById("week-one-booking-title"),
@@ -1147,6 +1149,8 @@ import {
       weekOneHqTargets.bookingTile,
       projection.displayLabels.bookingLine
     );
+    setText(weekOneHqTargets.calendarTile, projection.displayLabels.calendarLine);
+    setText(weekOneHqTargets.historyTile, projection.displayLabels.showHistoryLine);
     setText(
       weekOneHqTargets.bookingState,
       projection.unlocked ? "Available" : "Locked"

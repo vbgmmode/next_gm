@@ -28,6 +28,8 @@ export const LOCAL_WEEK_ONE_SEGMENT_TYPES = Object.freeze([
   }),
 ]);
 
+export const LOCAL_SPECIAL_EVENT_CADENCE_WEEKS = 4;
+
 export function createInitialLocalWeekOneBookingState() {
   return freezeBookingState({
     nextSegmentIdNumber: 1,
@@ -73,10 +75,14 @@ export function createWeeklyHqProjection({
   const currentWeeklyState = normalizeWeeklyLoopState(weeklyState);
   const weekNumber = currentWeeklyState.currentWeekNumber;
   const lastShowRecap = currentWeeklyState.lastShowRecap;
+  const seasonCalendar = createLocalSeasonCalendarProjection({
+    weeklyState: currentWeeklyState,
+  });
 
   return Object.freeze({
     ...hqProjection,
     weekNumber,
+    seasonCalendar,
     lastShowRecap,
     completedShowCount: currentWeeklyState.completedShowRecaps.length,
     displayLabels: Object.freeze({
@@ -92,6 +98,50 @@ export function createWeeklyHqProjection({
       bookingNoteLine: hqProjection.unlocked
         ? `Build the Week ${weekNumber} show card.`
         : "Complete setup first",
+      calendarLine: seasonCalendar.displayLabels.calendarLine,
+      titleDefenseLine: seasonCalendar.displayLabels.titleDefenseLine,
+      rivalryPayoffLine: seasonCalendar.displayLabels.rivalryPayoffLine,
+      showHistoryLine: seasonCalendar.displayLabels.showHistoryLine,
+    }),
+  });
+}
+
+export function createLocalSeasonCalendarProjection({ weeklyState } = {}) {
+  const currentWeeklyState = normalizeWeeklyLoopState(weeklyState);
+  const currentWeekNumber = currentWeeklyState.currentWeekNumber;
+  const nextSpecialEventWeek =
+    Math.ceil(currentWeekNumber / LOCAL_SPECIAL_EVENT_CADENCE_WEEKS) *
+    LOCAL_SPECIAL_EVENT_CADENCE_WEEKS;
+  const weeksUntilSpecialEvent = Math.max(
+    0,
+    nextSpecialEventWeek - currentWeekNumber
+  );
+  const specialEventLabel = `Week ${nextSpecialEventWeek} Special Event`;
+  const roadToEventLabel =
+    weeksUntilSpecialEvent === 0
+      ? `${specialEventLabel} is this week`
+      : `${specialEventLabel} in ${weeksUntilSpecialEvent} week${weeksUntilSpecialEvent === 1 ? "" : "s"}`;
+
+  return Object.freeze({
+    currentWeekNumber,
+    nextSpecialEventWeek,
+    weeksUntilSpecialEvent,
+    specialEventLabel,
+    completedShowCount: currentWeeklyState.completedShowRecaps.length,
+    displayLabels: Object.freeze({
+      calendarLine: `Road To Special Event: ${roadToEventLabel}`,
+      titleDefenseLine:
+        weeksUntilSpecialEvent === 0
+          ? "Title Defense Window: Open"
+          : `Title Defense Window: Opens Week ${nextSpecialEventWeek}`,
+      rivalryPayoffLine:
+        weeksUntilSpecialEvent === 0
+          ? "Rivalry Payoff: Available"
+          : `Rivalry Payoff: Build ${weeksUntilSpecialEvent} week${weeksUntilSpecialEvent === 1 ? "" : "s"}`,
+      showHistoryLine:
+        currentWeeklyState.completedShowRecaps.length === 0
+          ? "Show History: No shows run"
+          : `Show History: ${currentWeeklyState.completedShowRecaps.length} show${currentWeeklyState.completedShowRecaps.length === 1 ? "" : "s"} logged`,
     }),
   });
 }
