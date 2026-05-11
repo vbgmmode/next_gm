@@ -46,3 +46,8 @@ export {
   createSQLiteDurableSavePayloadRepositoryWriteShell
 } from "./sqliteDurableSavePayloadRepositoryShell.ts";
 export type * from "./sqliteDurableSavePayloadRepositoryShell.ts";
+export {
+  createPlayableNewGMModeContinueSaveShell,
+  createPlayableNewGMModeDurableNewSaveSlotShell
+} from "./playableNewGMModeDurableSaveOrchestration.ts";
+export type * from "./playableNewGMModeDurableSaveOrchestration.ts";

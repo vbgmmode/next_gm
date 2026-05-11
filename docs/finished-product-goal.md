@@ -37,6 +37,7 @@ Based on the current repo files and focused playable tests:
 - An initial save payload contract exists around the gameplay state model, but it does not write, read, list, delete, or persist saves yet.
 - A deterministic save payload serializer/parser exists for compatibility checks, but it still does not write to durable storage.
 - A backend SQLite durable payload write/read shell exists for the serialized gameplay payload, scoped to controlled local save files and not wired to player-facing save/load UI yet.
+- A backend durable save orchestration shell exists for creating a new save slot from the gameplay state model and continuing a save by reading the stored payload summary.
 - Current flow is mostly UI-local/page-lifetime.
 - Persistence and full gameplay loop are not finished yet.
 
