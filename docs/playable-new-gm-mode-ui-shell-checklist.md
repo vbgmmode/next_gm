@@ -37,6 +37,9 @@ Manual verification target:
 - Confirm the UI does not look "Codex coded" or like an AI-generated dashboard skin.
 - Confirm the visual system does not overuse circles, pills, bubbly cards, soft blobs, or decorative glow.
 - Confirm cards read as sharp sports-broadcast rectangles, not oversized rounded SaaS cards.
+- Confirm panel corners stay sharp and tactical instead of bubbly or startup-app rounded.
+- Confirm tactical glass surfaces use subtle borders, scanlines, inner highlights, and brand-lit under-glow without hurting readability.
+- Confirm brand lighting feels like arena/stage flare behind glass, not a cyberpunk wallpaper or flat solid brand background.
 - Confirm tags, badges, and lock states read as compact broadcast labels instead of rounded SaaS pills.
 - Confirm panels use sharper sports TV geometry, hard frames, bars, plates, and lower-third treatments.
 - Confirm Save Selection feels like a real sports/wrestling game campaign entry screen.
@@ -44,6 +47,8 @@ Manual verification target:
 - Confirm Draft Room feels like a draft broadcast with ON THE CLOCK drama, board energy, and scouting desk framing.
 - Confirm selected talent reads as a broadcast profile card, not a generic info card.
 - Confirm Post-Draft Brand HQ centers Week 1 Setup, Book Show, Roster, Rivalries, Championships, Calendar, IWC Pulse, and Analytics instead of Draft Preview.
+- Confirm Brand Dashboard hero reads as a backstage monitor stack or production-control wall, not a generic KPI row.
+- Confirm GM Alerts read like readable dirt-sheet leaks, objective fragments, or broadcast ticker pressure rather than a plain SaaS task list.
 - Confirm visual accents feel purposeful and brand-driven, not random decorative shapes.
 - Confirm the screen does not read as a generic SaaS/admin dashboard.
 

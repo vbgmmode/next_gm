@@ -112,6 +112,9 @@ Save Selection must feel like a clean sports/wrestling game mode and save-slot s
 
 - Cards should use sharp sports-broadcast rectangles with subtle glass-panel treatment.
 - Avoid bubbly, circle-heavy, pill-heavy, overly rounded UI.
+- Use tactical glass as the default premium material: dark translucent layers, sharp 1px borders, inner highlights, subtle scanlines, and brand-colored under-glow.
+- Dashboard hero metrics should feel like backstage monitors or production-control surfaces, not generic SaaS KPI cards.
+- GM Alerts can borrow dirt-sheet leak, ticker, and taped-note visual language when severity warrants it, while staying readable and action-oriented.
 - Buttons should lean premium glass/outline, with primary actions large and cinematic in hero areas and compact in dense command screens.
 - Wrestler imagery should be mixed by screen:
   - Roster cards: portrait/headshot style.

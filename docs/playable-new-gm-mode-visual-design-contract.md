@@ -21,6 +21,7 @@ Required feel:
 - Strong brand package and arena lighting.
 - Game home screen for Dashboard.
 - Broadcast command screen for Draft Room.
+- Tactical glass command-center material: dark layered glass, sharp panel edges, 1px borders, inner highlights, contained scanlines, and brand-lit under-glow.
 
 Current rejected problems:
 
@@ -216,12 +217,13 @@ The Dashboard is the player's game home screen and GM cockpit. It must not be a 
 Required composition:
 
 - Fewer, larger, more cinematic panels.
-- One dominant mode tile or hero/action area for the current GM moment.
+- One dominant mode tile or hero/action area for the current GM moment, staged like backstage production monitors rather than a SaaS KPI row.
 - One obvious next major action, such as entering the Draft Room.
 - Strong brand/show identity moment.
 - Compact secondary status, not generic KPI boxes.
 - Budget, fans, momentum, and brand health should read as game HUD stats.
 - GM alerts in a contained broadcast-style strip or panel.
+- GM Alerts may use dirt-sheet leak or ticker-fragment styling for urgent/blocked pressure, but they must remain readable objective cards that state what is happening, why it matters, and what the player can do next.
 - Draft or upcoming show preview as a mode tile, poster, or feature panel.
 - Roster spotlight with portrait/card placeholders.
 - Rivalry heat as a visual game module, not a table.

@@ -579,19 +579,22 @@
           aria-labelledby="brand-dashboard-title"
           hidden
         >
-          <div class="brand-dashboard-hero">
-            <div>
+          <div class="brand-dashboard-hero monitor-hero">
+            <div class="hero-copy">
               <p class="kicker"><span class="js-brand-name">Raw</span> Brand HQ</p>
               <h2 id="brand-dashboard-title">Book the first show</h2>
               <p>Draft night is over. Week 1 opens with roster review, titles, rivalries, and the first show card.</p>
             </div>
-            <div class="hero-metrics">
+            <div class="hero-metrics monitor-stack" aria-label="Brand command monitors">
               <span><strong>$2.4M</strong> Budget</span>
               <span><strong>1.2M</strong> Fans</span>
               <span><strong>82</strong> Momentum</span>
               <span><strong>Good</strong> Health</span>
             </div>
-            <button class="hero-cta" type="button" disabled>Book This Week's Show</button>
+            <div class="hero-actions">
+              <button class="hero-cta" type="button" disabled>Book This Week's Show</button>
+              <button class="ghost-button" type="button" disabled>GM Alerts</button>
+            </div>
           </div>
 
           <div class="dashboard-layout">
@@ -601,10 +604,10 @@
                 <h3 id="gm-alerts-title">GM Alerts</h3>
               </div>
               <div class="alert-list">
-                <article><span class="severity urgent">Urgent</span><strong>Book your champion this week.</strong><em>Title presence anchors the launch show.</em></article>
-                <article><span class="severity important">Important</span><strong>Review roster balance.</strong><em>Tag depth needs direction before TV.</em></article>
-                <article><span class="severity optional">Optional</span><strong>Create rivalry hooks.</strong><em>Heat can be manual now or emerge later.</em></article>
-                <article><span class="severity blocked">Blocked</span><strong>Run show is coming later.</strong><em>Week advancement is not part of this build.</em></article>
+                <article class="alert-leak urgent"><span class="severity urgent">Urgent</span><strong>Book your champion this week.</strong><em>Title presence anchors the launch show.</em></article>
+                <article class="alert-leak important"><span class="severity important">Important</span><strong>Review roster balance.</strong><em>Tag depth needs direction before TV.</em></article>
+                <article class="alert-leak optional"><span class="severity optional">Optional</span><strong>Create rivalry hooks.</strong><em>Heat can be manual now or emerge later.</em></article>
+                <article class="alert-leak blocked"><span class="severity blocked">Blocked</span><strong>Run show is coming later.</strong><em>Week advancement is not part of this build.</em></article>
               </div>
             </section>
 
