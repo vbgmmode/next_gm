@@ -1,11 +1,13 @@
 (() => {
   const sections = Array.from(document.querySelectorAll("[data-screen-title]"));
   const navItems = Array.from(document.querySelectorAll("[data-nav-target]"));
-  const flowSteps = Array.from(document.querySelectorAll("[data-flow-target]"));
+  const flowCards = Array.from(document.querySelectorAll("[data-flow-target]"));
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
-  const talentCards = Array.from(document.querySelectorAll("[data-talent-name]"));
+  const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
   const activeLabel = document.getElementById("active-screen-label");
+  const phaseLabel = document.getElementById("phase-label");
   const talentDetail = {
+    initials: document.getElementById("talent-detail-initials"),
     name: document.getElementById("talent-detail-name"),
     role: document.getElementById("talent-detail-role"),
     style: document.getElementById("talent-detail-style"),
@@ -13,7 +15,7 @@
     fit: document.getElementById("talent-detail-fit"),
   };
 
-  const flowOrder = ["save-selection", "new-gm-setup", "setup-review", "draft-room"];
+  const flowOrder = ["save-selection", "new-gm-setup", "setup-review", "draft-room", "brand-hq"];
 
   function getSection(targetId) {
     return sections.find((section) => section.id === targetId);
@@ -22,12 +24,14 @@
   function updateFlow(targetId) {
     const activeIndex = flowOrder.indexOf(targetId);
 
-    flowSteps.forEach((step) => {
-      const stepId = step.dataset.flowTarget;
-      const stepIndex = flowOrder.indexOf(stepId);
+    flowCards.forEach((card) => {
+      const cardId = card.dataset.flowTarget;
+      const cardIndex = flowOrder.indexOf(cardId);
+      const isCurrent = cardId === targetId;
+      const isComplete = activeIndex > -1 && cardIndex > -1 && cardIndex < activeIndex;
 
-      step.classList.toggle("flow-current", stepId === targetId);
-      step.classList.toggle("flow-complete", activeIndex > -1 && stepIndex > -1 && stepIndex < activeIndex);
+      card.classList.toggle("active", isCurrent);
+      card.classList.toggle("complete", isComplete);
     });
   }
 
@@ -41,7 +45,7 @@
     sections.forEach((section) => {
       const isActive = section === target;
       section.hidden = !isActive;
-      section.classList.toggle("active-section", isActive);
+      section.classList.toggle("active-screen", isActive);
     });
 
     navItems.forEach((item) => {
@@ -57,7 +61,11 @@
     updateFlow(targetId);
 
     if (activeLabel) {
-      activeLabel.textContent = `${target.dataset.screenTitle} - Preview Build`;
+      activeLabel.textContent = target.dataset.screenTitle;
+    }
+
+    if (phaseLabel) {
+      phaseLabel.textContent = target.dataset.flowPhase || "Preview";
     }
 
     if (window.location.hash !== `#${targetId}`) {
@@ -66,50 +74,58 @@
   }
 
   navItems.forEach((item) => {
-    item.addEventListener("click", (event) => {
-      event.preventDefault();
+    item.addEventListener("click", () => {
       showSection(item.dataset.navTarget);
     });
   });
 
-  flowSteps.forEach((step) => {
-    step.addEventListener("click", () => {
-      showSection(step.dataset.flowTarget);
+  flowCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      showSection(card.dataset.flowTarget);
     });
   });
 
   jumpControls.forEach((control) => {
     control.addEventListener("click", () => {
-      showSection(control.dataset.goTo);
+      if (!control.disabled) {
+        showSection(control.dataset.goTo);
+      }
     });
   });
 
-  talentCards.forEach((card) => {
-    card.addEventListener("click", () => {
-      talentCards.forEach((item) => {
-        const isSelected = item === card;
+  talentRows.forEach((row) => {
+    row.addEventListener("click", () => {
+      talentRows.forEach((item) => {
+        const isSelected = item === row;
         item.classList.toggle("selected", isSelected);
         item.setAttribute("aria-pressed", String(isSelected));
       });
 
+      if (talentDetail.initials) {
+        talentDetail.initials.textContent = row.dataset.talentName
+          .split(" ")
+          .map((part) => part.charAt(0))
+          .join("")
+          .slice(0, 2);
+      }
       if (talentDetail.name) {
-        talentDetail.name.textContent = card.dataset.talentName;
+        talentDetail.name.textContent = row.dataset.talentName;
       }
       if (talentDetail.role) {
-        talentDetail.role.textContent = card.dataset.talentRole;
+        talentDetail.role.textContent = row.dataset.talentRole;
       }
       if (talentDetail.style) {
-        talentDetail.style.textContent = card.dataset.talentStyle;
+        talentDetail.style.textContent = row.dataset.talentStyle;
       }
       if (talentDetail.read) {
-        talentDetail.read.textContent = card.dataset.talentRead;
+        talentDetail.read.textContent = row.dataset.talentRead;
       }
       if (talentDetail.fit) {
-        talentDetail.fit.textContent = card.dataset.talentFit;
+        talentDetail.fit.textContent = row.dataset.talentFit;
       }
     });
   });
 
-  const initialTarget = window.location.hash ? window.location.hash.slice(1) : "dashboard";
-  showSection(getSection(initialTarget) ? initialTarget : "dashboard");
+  const initialTarget = window.location.hash ? window.location.hash.slice(1) : "save-selection";
+  showSection(getSection(initialTarget) ? initialTarget : "save-selection");
 })();

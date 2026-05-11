@@ -3,45 +3,53 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Next GM - Playable Mode Static Shell</title>
+    <title>Next GM - Playable Mode Flow Prototype</title>
     <link rel="stylesheet" href="./styles.css" />
     <script src="./app.js" defer></script>
   </head>
   <body>
     <div class="app-shell">
-      <aside class="nav-rail" aria-label="Main">
-        <div class="brand-mark" aria-label="Next GM">NG</div>
-        <nav class="nav-list">
-          <a class="nav-item active" href="#dashboard" data-nav-target="dashboard" aria-current="page"><span class="nav-glyph">HQ</span><span class="nav-label">Dashboard</span></a>
-          <a class="nav-item" href="#save-selection" data-nav-target="save-selection"><span class="nav-glyph">SV</span><span class="nav-label">Saves</span></a>
-          <a class="nav-item" href="#new-gm-setup" data-nav-target="new-gm-setup"><span class="nav-glyph">GM</span><span class="nav-label">Setup</span></a>
-          <a class="nav-item" href="#setup-review" data-nav-target="setup-review"><span class="nav-glyph">OK</span><span class="nav-label">Review</span></a>
-          <a class="nav-item locked" href="#draft-room" data-nav-target="draft-room"><span class="nav-glyph">DR</span><span class="nav-label">Draft Room</span></a>
-          <a class="nav-item locked" href="#roster" data-nav-target="roster"><span class="nav-glyph">RS</span><span class="nav-label">Roster</span></a>
-          <a class="nav-item locked" href="#rivalries" data-nav-target="rivalries"><span class="nav-glyph">RV</span><span class="nav-label">Rivalries</span></a>
-          <a class="nav-item locked" href="#championships" data-nav-target="championships"><span class="nav-glyph">CH</span><span class="nav-label">Titles</span></a>
-          <a class="nav-item locked" href="#calendar" data-nav-target="calendar"><span class="nav-glyph">CL</span><span class="nav-label">Calendar</span></a>
-          <a class="nav-item locked" href="#iwc" data-nav-target="iwc"><span class="nav-glyph">IW</span><span class="nav-label">IWC</span></a>
-          <a class="nav-item locked" href="#analytics" data-nav-target="analytics"><span class="nav-glyph">AN</span><span class="nav-label">Analytics</span></a>
-          <a class="nav-item locked" href="#settings" data-nav-target="settings"><span class="nav-glyph">ST</span><span class="nav-label">Settings</span></a>
-        </nav>
-      </aside>
+      <nav class="edge-nav" aria-label="Game flow">
+        <button class="nav-tab active" type="button" data-nav-target="save-selection" aria-current="page">
+          <span class="nav-icon">SV</span>
+          <span class="nav-label">Save Selection</span>
+        </button>
+        <button class="nav-tab" type="button" data-nav-target="new-gm-setup">
+          <span class="nav-icon">GM</span>
+          <span class="nav-label">New GM Setup</span>
+        </button>
+        <button class="nav-tab" type="button" data-nav-target="setup-review">
+          <span class="nav-icon">OK</span>
+          <span class="nav-label">Setup Review</span>
+        </button>
+        <button class="nav-tab" type="button" data-nav-target="draft-room">
+          <span class="nav-icon">DR</span>
+          <span class="nav-label">Initial Draft</span>
+        </button>
+        <button class="nav-tab" type="button" data-nav-target="brand-hq">
+          <span class="nav-icon">HQ</span>
+          <span class="nav-label">Brand HQ</span>
+        </button>
+      </nav>
 
-      <main class="command-center">
-        <header class="top-command">
-          <div class="top-title-lockup">
-            <p class="eyebrow">Voltage control room</p>
-            <h1>Next GM</h1>
-            <p class="active-screen-label" id="active-screen-label">Dashboard - Preview Build</p>
+      <main class="game-shell">
+        <header class="game-hud" aria-label="Mock GM status">
+          <div class="brand-lockup">
+            <span class="brand-bug">NG</span>
+            <div>
+              <p class="kicker">Playable New GM Mode</p>
+              <h1 id="active-screen-label">Save Selection</h1>
+            </div>
           </div>
-          <dl class="status-strip" aria-label="Mock command status">
+
+          <dl class="scorebug">
+            <div>
+              <dt>Flow</dt>
+              <dd id="phase-label">Pre-Draft</dd>
+            </div>
             <div>
               <dt>Brand</dt>
               <dd>Voltage</dd>
-            </div>
-            <div>
-              <dt>Calendar</dt>
-              <dd>Season 1 - Week 0</dd>
             </div>
             <div>
               <dt>Budget</dt>
@@ -58,593 +66,378 @@
           </dl>
         </header>
 
-        <section id="dashboard" class="app-section dashboard-hub active-section" aria-labelledby="dashboard-title" data-screen-title="Dashboard">
-          <div class="dashboard-stage">
-            <div class="arena-hero">
-              <div class="show-brand-bug" aria-hidden="true">VX</div>
-              <div class="arena-hero-copy">
-                <p class="eyebrow">Draft night control room</p>
-                <h2 id="dashboard-title">Voltage Draft Night</h2>
-                <div class="hero-chips" aria-label="Dashboard status">
-                  <span>Preview Build</span>
-                  <span>Round 1</span>
-                  <span>War Room Open</span>
+        <section class="flow-board" aria-label="Mock flow state controls">
+          <button class="flow-card active" type="button" data-flow-target="save-selection">
+            <span>01</span>
+            <strong>Save Selection</strong>
+            <small>Entry screen</small>
+          </button>
+          <button class="flow-card" type="button" data-flow-target="new-gm-setup">
+            <span>02</span>
+            <strong>New GM Setup</strong>
+            <small>Contract signing</small>
+          </button>
+          <button class="flow-card" type="button" data-flow-target="setup-review">
+            <span>03</span>
+            <strong>Setup Review</strong>
+            <small>War room packet</small>
+          </button>
+          <button class="flow-card" type="button" data-flow-target="draft-room">
+            <span>04</span>
+            <strong>Initial Draft</strong>
+            <small>Broadcast desk</small>
+          </button>
+          <button class="flow-card" type="button" data-flow-target="brand-hq">
+            <span>05</span>
+            <strong>Brand HQ</strong>
+            <small>Post-draft home</small>
+          </button>
+        </section>
+
+        <section
+          id="save-selection"
+          class="screen save-screen active-screen"
+          data-screen-title="Save Selection"
+          data-flow-phase="Pre-Draft"
+          aria-labelledby="save-selection-title"
+        >
+          <div class="entry-hero">
+            <div class="broadcast-tag">Preview Build</div>
+            <div class="entry-copy">
+              <p class="kicker">Choose your campaign</p>
+              <h2 id="save-selection-title">Step into the GM chair</h2>
+              <p>
+                Pick a mock save slot and move into contract signing. This prototype shows the game flow only.
+              </p>
+            </div>
+            <button class="hero-cta" type="button" data-go-to="new-gm-setup">Start New GM Mode</button>
+          </div>
+
+          <div class="save-slot-stage">
+            <article class="save-slot continue-slot">
+              <div class="slot-poster voltage-poster" aria-hidden="true">
+                <span>VX</span>
+              </div>
+              <div class="slot-content">
+                <p class="kicker">Continue Save</p>
+                <h3>Voltage Wrestling</h3>
+                <div class="pill-row">
+                  <span class="pill good">Mock slot</span>
+                  <span class="pill locked">Load locked</span>
+                </div>
+                <dl class="meta-grid">
+                  <div><dt>GM</dt><dd>Avery Cross</dd></div>
+                  <div><dt>State</dt><dd>Draft Night</dd></div>
+                  <div><dt>Next</dt><dd>War Room</dd></div>
+                </dl>
+                <button class="panel-button" type="button" disabled>Continue Save Locked</button>
+              </div>
+            </article>
+
+            <article class="save-slot new-slot">
+              <div class="slot-poster contract-poster" aria-hidden="true">
+                <span>GM</span>
+              </div>
+              <div class="slot-content">
+                <p class="kicker">New GM Mode</p>
+                <h3>Contract Signing</h3>
+                <div class="pill-row">
+                  <span class="pill live">Next flow step</span>
+                  <span class="pill">Preview Mode</span>
+                </div>
+                <p class="compact-copy">Brand, GM identity, experience, and draft setup are staged as visual choices.</p>
+                <button class="panel-button enabled" type="button" data-go-to="new-gm-setup">Enter Setup</button>
+              </div>
+            </article>
+
+            <article class="save-slot empty-slot">
+              <div class="slot-poster empty-poster" aria-hidden="true">
+                <span>--</span>
+              </div>
+              <div class="slot-content">
+                <p class="kicker">Empty Slot</p>
+                <h3>Available Later</h3>
+                <div class="pill-row">
+                  <span class="pill locked">Save creation locked</span>
+                </div>
+                <p class="compact-copy">Reserved for the future save identity surface.</p>
+                <button class="panel-button" type="button" disabled>Unavailable</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section
+          id="new-gm-setup"
+          class="screen setup-screen"
+          data-screen-title="New GM Setup"
+          data-flow-phase="Pre-Draft"
+          aria-labelledby="new-gm-setup-title"
+          hidden
+        >
+          <div class="screen-header">
+            <div>
+              <p class="kicker">Contract signing</p>
+              <h2 id="new-gm-setup-title">Build the launch packet</h2>
+            </div>
+            <span class="header-badge">Preview Mode</span>
+          </div>
+
+          <div class="setup-composition">
+            <article class="setup-spotlight">
+              <span class="portrait-frame gm-frame" aria-hidden="true">GM</span>
+              <div>
+                <p class="kicker">Selected mock GM</p>
+                <h3>Avery Cross</h3>
+                <p class="compact-copy">Producer GM profile for a fast TV brand and controlled draft-night risk.</p>
+                <div class="pill-row">
+                  <span class="pill good">Voltage selected</span>
+                  <span class="pill">Standard experience</span>
                 </div>
               </div>
-              <button class="primary-link hero-command" type="button" data-go-to="draft-room">Enter Draft Room</button>
+            </article>
+
+            <div class="setup-lanes" aria-label="Static setup steps">
+              <article class="mode-tile active">
+                <span>01</span>
+                <strong>Choose Brand</strong>
+                <p>Voltage Wrestling leads the mock package.</p>
+              </article>
+              <article class="mode-tile">
+                <span>02</span>
+                <strong>GM Identity</strong>
+                <p>Name, profile, and portrait placeholder.</p>
+              </article>
+              <article class="mode-tile">
+                <span>03</span>
+                <strong>Difficulty</strong>
+                <p>Standard contract label only.</p>
+              </article>
+              <article class="mode-tile">
+                <span>04</span>
+                <strong>Draft Setup</strong>
+                <p>Serpentine board preview, no real picks.</p>
+              </article>
             </div>
 
-            <aside class="status-stack" aria-label="Brand status">
-              <div class="status-tile budget-card"><span>Budget</span><strong>$2.4M</strong></div>
-              <div class="status-tile fan-card"><span>Fans</span><strong>1.2M</strong></div>
-              <div class="status-tile momentum-card"><span>Momentum</span><strong>Draft Buzz</strong></div>
-              <div class="status-tile health-card"><span>Brand</span><strong>Stable</strong></div>
+            <aside class="setup-desk">
+              <p class="kicker">Launch packet</p>
+              <dl class="desk-list">
+                <div><dt>Brand</dt><dd>Voltage</dd></div>
+                <div><dt>GM</dt><dd>Avery Cross</dd></div>
+                <div><dt>Experience</dt><dd>Standard</dd></div>
+                <div><dt>Draft</dt><dd>Board Preview</dd></div>
+              </dl>
+              <div class="lock-stack">
+                <span>Save payloads locked</span>
+                <span>Roster assignment locked</span>
+                <span>Start season locked</span>
+              </div>
             </aside>
           </div>
 
-          <div class="dashboard-command-strip">
-            <article class="command-panel alerts-panel">
-              <p class="card-kicker">GM Alerts</p>
-              <ul class="alert-list">
-                <li><strong>Contract packet ready</strong><span>Review setup, then hit the war room.</span></li>
-                <li><strong>Board preview live</strong><span>Scout the first round before controls unlock.</span></li>
-                <li><strong>Draft controls locked</strong><span>Execution is not enabled in this build.</span></li>
-              </ul>
-            </article>
-
-            <article class="command-panel roster-watch-panel">
-              <p class="card-kicker">Roster Watch</p>
-              <h3>Locker room pending</h3>
-              <div class="spotlight-strip">
-                <span>Main event</span>
-                <span>Women's</span>
-                <span>Tag depth</span>
-              </div>
-            </article>
-
-            <article class="command-panel pulse-panel">
-              <p class="card-kicker">IWC Pulse</p>
-              <h3>No buzz yet</h3>
-              <div class="pulse-line"><span></span></div>
-            </article>
-
-            <article class="command-panel calendar-panel">
-              <p class="card-kicker">Road to PLE</p>
-              <h3>Clash Point</h3>
-              <dl class="mini-analytics-list">
-                <div><dt>Now</dt><dd>Draft Night</dd></div>
-                <div><dt>Next</dt><dd>Week 1 TV</dd></div>
-              </dl>
-            </article>
+          <div class="screen-actions">
+            <button class="ghost-button" type="button" data-go-to="save-selection">Back to Saves</button>
+            <button class="hero-cta small" type="button" data-go-to="setup-review">Review Setup</button>
           </div>
         </section>
 
-        <section class="flow-strip" aria-label="Static player flow">
-          <button class="flow-step flow-current" type="button" data-flow-target="save-selection">
-            <span>01</span>
-            <strong>Save Selection</strong>
-            <p>Choose a mock slot.</p>
-            <small>Static demo step</small>
-          </button>
-          <button class="flow-step" type="button" data-flow-target="new-gm-setup">
-            <span>02</span>
-            <strong>New GM Setup</strong>
-            <p>Preview static setup choices.</p>
-            <small>Mock setup</small>
-          </button>
-          <button class="flow-step" type="button" data-flow-target="setup-review">
-            <span>03</span>
-            <strong>Setup Review</strong>
-            <p>Confirm demo-only state.</p>
-            <small>Mock review</small>
-          </button>
-          <button class="flow-step flow-locked" type="button" data-flow-target="draft-room">
-            <span>04</span>
-            <strong>Draft Preview</strong>
-            <p>Enter the war-room preview.</p>
-            <small>Read-only draft feed</small>
-          </button>
-        </section>
-
-        <section id="save-selection" class="app-section section-block" aria-labelledby="save-title" data-screen-title="Save Selection" hidden>
-          <div class="section-heading">
+        <section
+          id="setup-review"
+          class="screen review-screen"
+          data-screen-title="Setup Review"
+          data-flow-phase="Pre-Draft"
+          aria-labelledby="setup-review-title"
+          hidden
+        >
+          <div class="screen-header">
             <div>
-              <p class="eyebrow">Mock screen</p>
-              <h2 id="save-title">Save Selection</h2>
-              <p class="section-note">Pick a static demo slot. Preview Mode only: no save loading or game state changes.</p>
+              <p class="kicker">War room packet</p>
+              <h2 id="setup-review-title">Confirm the launch board</h2>
             </div>
-            <span class="badge">Preview Mode</span>
+            <span class="header-badge">Draft controls locked</span>
           </div>
 
-          <div class="save-grid">
-            <article class="save-card featured">
-              <div class="poster-frame poster-voltage" aria-hidden="true">
-                <span>VX</span>
-              </div>
-              <div class="card-body">
-                <p class="card-kicker">Continue Save</p>
+          <div class="review-composition">
+            <article class="review-feature">
+              <div class="show-logo-card" aria-hidden="true">VX</div>
+              <div>
+                <p class="kicker">Brand package</p>
                 <h3>Voltage Wrestling</h3>
-                <div class="state-row">
-                  <span class="state-pill ready">Mock slot</span>
-                  <span class="state-pill blocked">Load locked</span>
-                </div>
-                <dl class="compact-list">
-                  <div><dt>GM</dt><dd>Avery Cross</dd></div>
-                  <div><dt>Season</dt><dd>1 - Week 0</dd></div>
-                  <div><dt>Difficulty</dt><dd>Standard</dd></div>
-                  <div><dt>Last played</dt><dd>Demo state</dd></div>
-                  <div><dt>Next show</dt><dd>Draft Night</dd></div>
-                  <div><dt>Next PLE</dt><dd>Clash Point</dd></div>
-                </dl>
-                <button class="primary-action" type="button" disabled>Continue locked for this build</button>
+                <p class="compact-copy">High-energy weekly TV brand with a draft-night launch and a clean path into the war room.</p>
               </div>
             </article>
 
-            <article class="save-card">
-              <div class="poster-frame poster-new" aria-hidden="true">
-                <span>GM</span>
-              </div>
-              <div class="card-body">
-                <p class="card-kicker">New GM Mode</p>
-                <h3>Contract Signing</h3>
-                <div class="state-row">
-                  <span class="state-pill ready">Mock setup</span>
-                  <span class="state-pill next">Next visual step</span>
-                </div>
-                <p class="muted">
-                  Static setup preview for brand, GM identity, experience, draft rules, and review.
-                </p>
-                <button class="secondary-action" type="button" disabled>Setup locked for this build</button>
-              </div>
-            </article>
-
-            <article class="save-card empty">
-              <div class="poster-frame poster-empty" aria-hidden="true">
-                <span>--</span>
-              </div>
-              <div class="card-body">
-                <p class="card-kicker">Empty Slot</p>
-                <h3>No save identity</h3>
-                <div class="state-row">
-                  <span class="state-pill blocked">Save creation locked</span>
-                </div>
-                <p class="muted">Reserved for the future save identity surface.</p>
-                <button class="secondary-action" type="button" disabled>Unavailable</button>
-              </div>
-            </article>
-          </div>
-
-          <div class="section-actions">
-            <button class="secondary-action" type="button" data-go-to="dashboard">Back to dashboard</button>
-            <button class="primary-action enabled-action" type="button" data-go-to="new-gm-setup">Next mock step - setup</button>
-          </div>
-        </section>
-
-        <section id="new-gm-setup" class="app-section section-block" aria-labelledby="setup-title" data-screen-title="New GM Setup" hidden>
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Mock screen</p>
-              <h2 id="setup-title">New GM Setup</h2>
-              <p class="section-note">All setup choices are hardcoded visual placeholders for the future flow.</p>
-            </div>
-            <span class="badge">Preview Mode</span>
-          </div>
-
-          <div class="setup-layout">
-            <ol class="setup-steps" aria-label="Static setup sections">
-              <li class="setup-step active">
-                <span>01</span>
-                <div>
-                  <strong>Choose Brand</strong>
-                  <p>Voltage, Dynasty, or Frontier mock options.</p>
-                  <small>Selected mock: Voltage</small>
-                </div>
-              </li>
-              <li class="setup-step">
-                <span>02</span>
-                <div>
-                  <strong>Choose GM Identity</strong>
-                  <p>Name, avatar style, and executive profile placeholders.</p>
-                  <small>Selected mock: Avery Cross</small>
-                </div>
-              </li>
-              <li class="setup-step">
-                <span>03</span>
-                <div>
-                  <strong>Difficulty / Experience</strong>
-                  <p>Standard, hard, and sandbox labels only.</p>
-                  <small>Selected mock: Standard</small>
-                </div>
-              </li>
-              <li class="setup-step">
-                <span>04</span>
-                <div>
-                  <strong>Draft Setup</strong>
-                  <p>Mock rule cards with no draft service invocation.</p>
-                  <small>Selected mock: Serpentine board</small>
-                </div>
-              </li>
-              <li class="setup-step">
-                <span>05</span>
-                <div>
-                  <strong>Review Setup</strong>
-                  <p>Static summary before the mock draft-night preview.</p>
-                  <small>Next intended visual step</small>
-                </div>
-              </li>
-            </ol>
-
-            <div class="setup-preview" aria-label="Mock setup review">
-              <div class="contract-card">
-                <p class="eyebrow">Contract packet</p>
-                <h3>Voltage Wrestling</h3>
-                <div class="state-row">
-                  <span class="state-pill ready">Ready for visual review</span>
-                  <span class="state-pill blocked">Save changes locked</span>
-                </div>
-                <dl class="compact-list">
-                  <div><dt>GM identity</dt><dd>Avery Cross</dd></div>
-                  <div><dt>Experience</dt><dd>Standard</dd></div>
-                  <div><dt>Draft style</dt><dd>Serpentine mock</dd></div>
-                  <div><dt>Roster need</dt><dd>Balanced mock board</dd></div>
-                  <div><dt>Status</dt><dd>Static review only</dd></div>
-                </dl>
-              </div>
-              <div class="blocked-panel">
-                <h3>Locked for this build</h3>
-                <ul>
-                  <li>Draft confirmation</li>
-                  <li>Roster assignment</li>
-                  <li>Start season</li>
-                  <li>Save payloads</li>
-                  <li>Database writes</li>
-                  <li>AI flavor text</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div class="section-actions">
-            <button class="secondary-action enabled-action" type="button" data-go-to="save-selection">Back to mock saves</button>
-            <button class="primary-action enabled-action" type="button" data-go-to="setup-review">Next mock step - review setup</button>
-          </div>
-        </section>
-
-        <section id="setup-review" class="app-section section-block" aria-labelledby="review-title" data-screen-title="Setup Review" hidden>
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Mock screen</p>
-              <h2 id="review-title">Setup Review</h2>
-              <p class="section-note">This review summarizes fake setup choices and makes blocked capabilities visible.</p>
-            </div>
-            <span class="badge">Preview Mode</span>
-          </div>
-
-          <div class="review-grid">
-            <article class="review-card brand-review">
-              <p class="card-kicker">Selected brand</p>
-              <h3>Voltage Wrestling</h3>
-              <div class="state-row">
-                <span class="state-pill ready">Selected mock</span>
-              </div>
-              <p class="muted">
-                Broadcast-forward mock brand with a fast weekly show identity and a young audience profile.
-              </p>
-              <dl class="compact-list">
-                <div><dt>Market</dt><dd>National demo</dd></div>
-                <div><dt>Style</dt><dd>High-energy TV</dd></div>
-                <div><dt>Pressure</dt><dd>Draft night launch</dd></div>
-              </dl>
-            </article>
-
-            <article class="review-card">
-              <p class="card-kicker">GM identity</p>
+            <article class="review-panel">
+              <p class="kicker">GM identity</p>
               <h3>Avery Cross</h3>
-              <div class="state-row">
-                <span class="state-pill ready">Static profile</span>
-              </div>
-              <p class="muted">
-                Mock executive profile for a TV producer who wants star-making stories and controlled risk.
-              </p>
-              <dl class="compact-list">
-                <div><dt>Persona</dt><dd>Producer GM</dd></div>
-                <div><dt>Preference</dt><dd>Balanced roster</dd></div>
-                <div><dt>Authority</dt><dd>Static preview</dd></div>
-              </dl>
+              <p class="compact-copy">Producer GM, standard pressure, balanced roster target.</p>
             </article>
 
-            <article class="review-card">
-              <p class="card-kicker">Difficulty / experience</p>
-              <h3>Standard contract</h3>
-              <div class="state-row">
-                <span class="state-pill blocked">Tuning not applied</span>
-              </div>
-              <p class="muted">
-                Mock difficulty label for early layout review. It does not tune simulation, economy, or AI.
-              </p>
-              <dl class="compact-list">
-                <div><dt>Budget</dt><dd>Moderate mock</dd></div>
-                <div><dt>Expectations</dt><dd>Build momentum</dd></div>
-                <div><dt>AI brands</dt><dd>Preview only</dd></div>
-              </dl>
+            <article class="review-panel">
+              <p class="kicker">Draft setup</p>
+              <h3>Serpentine Board</h3>
+              <p class="compact-copy">Five-round mock board with Voltage on the clock first.</p>
             </article>
 
-            <article class="review-card">
-              <p class="card-kicker">Draft setup</p>
-              <h3>Serpentine mock board</h3>
-              <div class="state-row">
-                <span class="state-pill blocked">Draft execution not enabled</span>
+            <article class="review-panel locked-panel">
+              <p class="kicker">Locked for this build</p>
+              <div class="lock-grid">
+                <span>Draft confirmation</span>
+                <span>Roster assignment</span>
+                <span>Start season</span>
+                <span>Save changes</span>
               </div>
-              <p class="muted">
-                Static rules summary for visual flow only. No candidate loading, pick creation, or roster mutation.
-              </p>
-              <dl class="compact-list">
-                <div><dt>Rounds</dt><dd>5 mock rounds</dd></div>
-                <div><dt>Order</dt><dd>Voltage opens</dd></div>
-                <div><dt>Roster need</dt><dd>Balanced mock</dd></div>
-              </dl>
             </article>
           </div>
 
-          <div class="blocked-state-strip" aria-label="Blocked capability labels">
-            <span>Draft execution not enabled</span>
-            <span>Roster assignment locked</span>
-            <span>Start season locked</span>
-            <span>Save system locked</span>
-            <span>AI flavor locked</span>
-          </div>
-
-          <div class="section-actions">
-            <button class="secondary-action enabled-action" type="button" data-go-to="new-gm-setup">Back to setup</button>
-            <button class="primary-action enabled-action" type="button" data-go-to="draft-room">Next mock step - draft preview</button>
+          <div class="screen-actions">
+            <button class="ghost-button" type="button" data-go-to="new-gm-setup">Back to Setup</button>
+            <button class="hero-cta small" type="button" data-go-to="draft-room">Enter Initial Draft</button>
           </div>
         </section>
 
-        <section id="draft-room" class="app-section section-block" aria-labelledby="draft-title" data-screen-title="Draft Room Preview" hidden>
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Draft-night war room</p>
-              <h2 id="draft-title">Commissioner Desk</h2>
-              <p class="section-note">Board Preview active. Draft controls stay locked for this build.</p>
-            </div>
-            <span class="badge feature-badge">Preview Mode</span>
-          </div>
-
-          <div class="draft-warroom">
-            <article class="on-clock-panel">
-              <p class="card-kicker">On the clock</p>
-              <h3>Voltage</h3>
-              <div class="pick-clock">Pick 1</div>
-              <div class="state-row">
-                <span class="state-pill next">Round 1</span>
-                <span class="state-pill blocked">Draft Controls Locked</span>
-              </div>
-              <div class="draft-action-row">
-                <button class="primary-action" type="button" disabled>Make Pick Locked</button>
-                <button class="secondary-action" type="button" disabled>Auto Draft Locked</button>
-              </div>
-            </article>
-
-            <article class="draft-board-panel">
-              <p class="card-kicker">Board Preview</p>
-              <h3>Round 1</h3>
-              <div class="draft-board-table" aria-label="Mock draft board table">
-                <div class="draft-board-row draft-board-head"><span>Pick</span><span>Brand</span><span>Status</span><span>Plan</span></div>
-                <div class="draft-board-row active-pick"><span>1</span><strong>Voltage</strong><em>On the clock</em><span>Main event anchor</span></div>
-                <div class="draft-board-row"><span>2</span><strong>Dynasty</strong><em>Waiting</em><span>TV centerpiece</span></div>
-                <div class="draft-board-row"><span>3</span><strong>Frontier</strong><em>Waiting</em><span>Athletic upside</span></div>
-                <div class="draft-board-row"><span>4</span><strong>Voltage</strong><em>Future turn</em><span>Division balance</span></div>
-                <div class="draft-board-row"><span>5</span><strong>Dynasty</strong><em>Future turn</em><span>Tag depth</span></div>
-                <div class="draft-board-row"><span>6</span><strong>Frontier</strong><em>Future turn</em><span>Prospect slot</span></div>
-              </div>
-            </article>
-
-            <article class="talent-pool-panel">
-              <p class="card-kicker">Scouting Feed</p>
-              <h3>Talent Pool</h3>
-              <div class="talent-card-list" aria-label="Mock talent pool preview">
-                <button class="talent-card selected" type="button" aria-pressed="true" data-talent-name="Rex Nova" data-talent-role="Main event upside" data-talent-style="Explosive heavyweight" data-talent-read="High ceiling, high spotlight pressure" data-talent-fit="Voltage needs a first-face centerpiece."><strong>Rex Nova</strong><span>Main event upside</span><small>Priority preview</small></button>
-                <button class="talent-card" type="button" aria-pressed="false" data-talent-name="Maya Steele" data-talent-role="Breakout striker" data-talent-style="Athletic workhorse" data-talent-read="Reliable TV match engine with future headline path" data-talent-fit="Strong weekly-show foundation without roster mutation."><strong>Maya Steele</strong><span>Breakout striker</span><small>Workhorse preview</small></button>
-                <button class="talent-card" type="button" aria-pressed="false" data-talent-name="Juno Vale" data-talent-role="Social buzz draw" data-talent-style="Charismatic wildcard" data-talent-read="Audience signal potential, booking discipline needed" data-talent-fit="Future IWC and fan systems remain blocked."><strong>Juno Vale</strong><span>Social buzz draw</span><small>Buzz preview</small></button>
-                <button class="talent-card" type="button" aria-pressed="false" data-talent-name="Atlas King" data-talent-role="Powerhouse anchor" data-talent-style="Dominant base" data-talent-read="Stable presentation floor with title-scene shape" data-talent-fit="Championship assignment remains locked."><strong>Atlas King</strong><span>Powerhouse anchor</span><small>Anchor preview</small></button>
-                <button class="talent-card" type="button" aria-pressed="false" data-talent-name="Sable Riot" data-talent-role="Tag division spark" data-talent-style="Fast-paced specialist" data-talent-read="Useful depth signal for future roster balance" data-talent-fit="Roster slots are still placeholders."><strong>Sable Riot</strong><span>Tag division spark</span><small>Depth preview</small></button>
-              </div>
-            </article>
-
-            <article class="talent-detail-panel" aria-live="polite">
-              <p class="card-kicker">Profile Card</p>
-              <h3 id="talent-detail-name">Rex Nova</h3>
-              <div class="state-row">
-                <span class="state-pill next" id="talent-detail-role">Main event upside</span>
-                <span class="state-pill blocked">Pick confirmation locked</span>
-              </div>
-              <dl class="readiness-list">
-                <div><dt>Style</dt><dd id="talent-detail-style">Explosive heavyweight</dd></div>
-                <div><dt>Read</dt><dd id="talent-detail-read">High ceiling, high spotlight pressure</dd></div>
-                <div><dt>Brand fit</dt><dd id="talent-detail-fit">Voltage needs a first-face centerpiece.</dd></div>
-              </dl>
-              <p class="integration-note">Board Preview only. No pick is created.</p>
-            </article>
-
-            <article class="pick-order-panel">
-              <p class="card-kicker">Pick Order</p>
-              <ol class="pick-order-list">
-                <li class="active-pick"><span>Voltage</span><strong>Pick 1</strong></li>
-                <li><span>Dynasty</span><strong>Pick 2</strong></li>
-                <li><span>Frontier</span><strong>Pick 3</strong></li>
-                <li><span>Voltage</span><strong>Pick 4</strong></li>
-                <li><span>Dynasty</span><strong>Pick 5</strong></li>
-                <li><span>Frontier</span><strong>Pick 6</strong></li>
-              </ol>
-            </article>
-
-            <article class="readiness-panel">
-              <p class="card-kicker">Desk Status</p>
-              <dl class="readiness-list">
-                <div><dt>Board</dt><dd>Preview Build</dd></div>
-                <div><dt>Scouting</dt><dd>Feed Online</dd></div>
-                <div><dt>Controls</dt><dd>Not Enabled</dd></div>
-                <div><dt>Roster</dt><dd>After Draft</dd></div>
-              </dl>
-            </article>
-          </div>
-
-          <div class="draft-ticker" aria-label="Draft notes ticker">
+        <section
+          id="draft-room"
+          class="screen draft-screen"
+          data-screen-title="Initial Draft"
+          data-flow-phase="Active Draft"
+          aria-labelledby="draft-room-title"
+          hidden
+        >
+          <div class="draft-lower-third">
             <span>Commissioner Desk</span>
             <strong>Preview Build</strong>
-            <em>Scout the board. Draft controls remain locked.</em>
+            <em>Board Preview active. Draft controls locked.</em>
           </div>
 
-          <div class="section-actions">
-            <button class="secondary-action enabled-action" type="button" data-go-to="setup-review">Back to review</button>
-            <button class="secondary-action enabled-action" type="button" data-go-to="roster">Preview locked roster shell</button>
-          </div>
-        </section>
-
-        <section id="roster" class="app-section section-block locked-section" aria-labelledby="roster-title" data-screen-title="Roster Placeholder" hidden>
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Roster command hub</p>
-              <h2 id="roster-title">Roster War Room</h2>
-              <p class="section-note">Post-draft roster hub preview. The lanes show where drafted talent, rivalry heat, and title scenes will live after draft confirmation.</p>
-            </div>
-            <span class="badge feature-badge">Coming after draft confirmation</span>
-          </div>
-          <div class="roster-command-grid">
-            <article class="placeholder-card roster-empty-card roster-hero-card">
-              <strong>Roster board waiting on draft night</strong>
-              <p>Future drafted wrestlers would appear here only after approved draft execution and roster assignment behavior exists.</p>
-              <div class="state-row">
-                <span class="state-pill blocked">Roster assignment locked</span>
-                <span class="state-pill blocked">Start season locked</span>
+          <div class="draft-composition">
+            <article class="on-clock">
+              <p class="kicker">On the clock</p>
+              <h2 id="draft-room-title">Voltage</h2>
+              <span class="pick-badge">Pick 1</span>
+              <div class="pill-row">
+                <span class="pill live">Round 1</span>
+                <span class="pill locked">Controls locked</span>
+              </div>
+              <div class="draft-buttons">
+                <button class="panel-button" type="button" disabled>Make Pick Locked</button>
+                <button class="panel-button" type="button" disabled>Auto Draft Locked</button>
               </div>
             </article>
-            <article class="placeholder-card">
-              <strong>Main event scene</strong>
-              <p>Empty mock slots for future brand leaders.</p>
-              <ul class="empty-slot-list">
-                <li>Slot locked</li>
-                <li>Slot locked</li>
-                <li>Slot locked</li>
-              </ul>
+
+            <article class="board-panel">
+              <div class="panel-title">
+                <p class="kicker">Broadcast Board</p>
+                <h3>Round 1</h3>
+              </div>
+              <div class="draft-board" aria-label="Mock draft board">
+                <div class="board-row board-head"><span>Pick</span><span>Brand</span><span>Status</span><span>Target</span></div>
+                <div class="board-row current"><span>01</span><strong>Voltage</strong><em>On Clock</em><span>Main event</span></div>
+                <div class="board-row"><span>02</span><strong>Dynasty</strong><em>Waiting</em><span>TV ace</span></div>
+                <div class="board-row"><span>03</span><strong>Frontier</strong><em>Waiting</em><span>Workhorse</span></div>
+                <div class="board-row"><span>04</span><strong>Voltage</strong><em>Next turn</em><span>Division depth</span></div>
+                <div class="board-row"><span>05</span><strong>Dynasty</strong><em>Next turn</em><span>Tag scene</span></div>
+                <div class="board-row"><span>06</span><strong>Frontier</strong><em>Next turn</em><span>Prospect</span></div>
+                <div class="board-row"><span>07</span><strong>Voltage</strong><em>Later</em><span>Wildcard</span></div>
+                <div class="board-row"><span>08</span><strong>Dynasty</strong><em>Later</em><span>Power base</span></div>
+              </div>
             </article>
-            <article class="placeholder-card">
-              <strong>Women's division</strong>
-              <p>Empty mock slots for future division setup.</p>
-              <ul class="empty-slot-list">
-                <li>Slot locked</li>
-                <li>Slot locked</li>
-                <li>Slot locked</li>
-              </ul>
+
+            <article class="scouting-panel">
+              <div class="panel-title">
+                <p class="kicker">Scouting Feed</p>
+                <h3>Available Talent</h3>
+              </div>
+              <div class="talent-list" aria-label="Static talent feed">
+                <button class="talent-row selected" type="button" aria-pressed="true" data-talent-name="Rex Nova" data-talent-role="Main event anchor" data-talent-style="Explosive heavyweight" data-talent-read="Big-stage profile with top-slot presence." data-talent-fit="Voltage gets a face-of-brand silhouette.">
+                  <span class="mini-portrait">RN</span>
+                  <strong>Rex Nova</strong>
+                  <small>Main event anchor</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Maya Steele" data-talent-role="Breakout striker" data-talent-style="Athletic workhorse" data-talent-read="Reliable weekly TV base with breakout upside." data-talent-fit="Balances the board without creating roster state.">
+                  <span class="mini-portrait">MS</span>
+                  <strong>Maya Steele</strong>
+                  <small>Breakout striker</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Juno Vale" data-talent-role="Social spark" data-talent-style="Charismatic wildcard" data-talent-read="High conversation potential if the audience buys the push." data-talent-fit="Future IWC reactions stay locked.">
+                  <span class="mini-portrait">JV</span>
+                  <strong>Juno Vale</strong>
+                  <small>Social spark</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Atlas King" data-talent-role="Powerhouse base" data-talent-style="Dominant heavyweight" data-talent-read="Stable title-scene presentation, built for big matches." data-talent-fit="Title assignment remains locked.">
+                  <span class="mini-portrait">AK</span>
+                  <strong>Atlas King</strong>
+                  <small>Powerhouse base</small>
+                </button>
+                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Sable Riot" data-talent-role="Tag spark" data-talent-style="Fast-paced specialist" data-talent-read="Useful roster texture and future division energy." data-talent-fit="Tag setup remains a post-draft preview.">
+                  <span class="mini-portrait">SR</span>
+                  <strong>Sable Riot</strong>
+                  <small>Tag spark</small>
+                </button>
+              </div>
             </article>
-            <article class="placeholder-card">
-              <strong>Tag and depth board</strong>
-              <p>Empty mock slots for future balance review.</p>
-              <ul class="empty-slot-list">
-                <li>Slot locked</li>
-                <li>Slot locked</li>
-                <li>Slot locked</li>
-              </ul>
+
+            <article class="selected-profile">
+              <p class="kicker">Profile Card</p>
+              <div class="large-portrait" id="talent-detail-initials" aria-hidden="true">RN</div>
+              <h3 id="talent-detail-name">Rex Nova</h3>
+              <span class="profile-role" id="talent-detail-role">Main event anchor</span>
+              <dl class="profile-reads">
+                <div><dt>Style</dt><dd id="talent-detail-style">Explosive heavyweight</dd></div>
+                <div><dt>Read</dt><dd id="talent-detail-read">Big-stage profile with top-slot presence.</dd></div>
+                <div><dt>Brand fit</dt><dd id="talent-detail-fit">Voltage gets a face-of-brand silhouette.</dd></div>
+              </dl>
+              <p class="quiet-note">Scouting preview only. No pick is created.</p>
             </article>
-            <article class="placeholder-card connected-hub-card"><strong>Rivalries heat</strong><p>Future feud pressure sits beside roster context.</p></article>
-            <article class="placeholder-card connected-hub-card"><strong>Championship desk</strong><p>Future title scenes connect directly to divisions.</p></article>
+          </div>
+
+          <div class="screen-actions">
+            <button class="ghost-button" type="button" data-go-to="setup-review">Back to Review</button>
+            <button class="hero-cta small" type="button" data-go-to="brand-hq">Preview Post-Draft Brand HQ</button>
           </div>
         </section>
 
-        <section id="rivalries" class="app-section section-block locked-section" aria-labelledby="rivalries-title" data-screen-title="Rivalries Placeholder" hidden>
-          <div class="section-heading">
+        <section
+          id="brand-hq"
+          class="screen hq-screen"
+          data-screen-title="Post-Draft Brand HQ"
+          data-flow-phase="Post-Draft"
+          aria-labelledby="brand-hq-title"
+          hidden
+        >
+          <div class="hq-hero">
             <div>
-              <p class="eyebrow">Roster-adjacent system</p>
-              <h2 id="rivalries-title">Rivalries Heat Board</h2>
-              <p class="section-note">Static future-state screen. Story heat, grudges, and audience pressure are shown as presentation only.</p>
+              <p class="kicker">Post-draft home</p>
+              <h2 id="brand-hq-title">Voltage Brand HQ</h2>
+              <p>
+                After the initial draft, the primary surface shifts here. Draft Preview stops being the main action.
+              </p>
             </div>
-            <span class="badge">Locked for this build</span>
+            <button class="hero-cta" type="button" disabled>Week 1 Setup Locked</button>
           </div>
-          <div class="hub-preview-grid">
-            <article class="placeholder-card rivalry-preview-card"><strong>Blood feud lane</strong><p>Awaiting roster and booking state.</p><div class="heat-meter"><span></span></div></article>
-            <article class="placeholder-card rivalry-preview-card"><strong>Title chase lane</strong><p>Coming after championship scenes exist.</p><div class="heat-meter low-heat"><span></span></div></article>
-            <article class="placeholder-card rivalry-preview-card"><strong>IWC debate lane</strong><p>Future social pulse will react after shows.</p><div class="heat-meter mid-heat"><span></span></div></article>
-          </div>
-        </section>
 
-        <section id="championships" class="app-section section-block locked-section" aria-labelledby="championships-title" data-screen-title="Championships Placeholder" hidden>
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Roster-adjacent system</p>
-              <h2 id="championships-title">Championship Desk</h2>
-              <p class="section-note">Static future-state screen. Title scenes are staged like a broadcast desk, but no assignment or lineage behavior exists.</p>
-            </div>
-            <span class="badge">Title scenes locked</span>
+          <div class="hq-tile-grid" aria-label="Post-draft preview surfaces">
+            <article class="hq-tile feature">
+              <span class="portrait-frame roster-frame" aria-hidden="true">RS</span>
+              <div>
+                <p class="kicker">Next major action</p>
+                <h3>Week 1 Setup</h3>
+                <p>Brand launch, show prep, and first booking loop appear here later.</p>
+              </div>
+            </article>
+            <article class="hq-tile"><strong>Book Show</strong><span>Coming after draft confirmation</span></article>
+            <article class="hq-tile"><strong>Roster</strong><span>Roster lanes unlock after approved assignment.</span></article>
+            <article class="hq-tile"><strong>Rivalries</strong><span>Heat board waits for booking state.</span></article>
+            <article class="hq-tile"><strong>Championships</strong><span>Title scenes connect to roster setup.</span></article>
+            <article class="hq-tile"><strong>Calendar</strong><span>Road to PLE starts after Week 1 setup.</span></article>
+            <article class="hq-tile"><strong>IWC Pulse</strong><span>No buzz until the first show runs.</span></article>
+            <article class="hq-tile"><strong>Analytics</strong><span>Signals unlock after live game history exists.</span></article>
           </div>
-          <div class="championship-preview-grid">
-            <article class="title-panel world-title"><span>World</span><strong>Champion TBD</strong><p>Prestige board locked until roster setup.</p></article>
-            <article class="title-panel womens-title"><span>Women's</span><strong>Champion TBD</strong><p>Division board awaiting draft completion.</p></article>
-            <article class="title-panel tag-title"><span>Tag</span><strong>Champions TBD</strong><p>Team scene coming after roster creation.</p></article>
-          </div>
-        </section>
 
-        <section id="calendar" class="app-section section-block locked-section" aria-labelledby="calendar-title" data-screen-title="Calendar Placeholder" hidden>
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Road to PLE</p>
-              <h2 id="calendar-title">Calendar Desk</h2>
-              <p class="section-note">Static road-to-PLE surface only. No Week 1 initialization, week advancement, or show booking is active.</p>
-            </div>
-            <span class="badge">Calendar locked</span>
-          </div>
-          <div class="calendar-road-grid">
-            <article class="road-card active-road"><span>Now</span><strong>Draft Night</strong><p>Preview desk active.</p></article>
-            <article class="road-card"><span>Next</span><strong>Week 1 TV</strong><p>Locked until start season is approved.</p></article>
-            <article class="road-card"><span>Endpoint</span><strong>Clash Point PLE</strong><p>Road marker only.</p></article>
-          </div>
-        </section>
-
-        <section id="iwc" class="app-section section-block locked-section" aria-labelledby="iwc-title" data-screen-title="IWC Placeholder" hidden>
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Audience pulse</p>
-              <h2 id="iwc-title">IWC Desk</h2>
-              <p class="section-note">Static discourse hub placeholder. No fan/social engines, reports, generated posts, or AI flavor are active.</p>
-            </div>
-            <span class="badge">No buzz yet</span>
-          </div>
-          <div class="social-preview-panel">
-            <strong>No buzz yet. Book your first show and let the internet react.</strong>
-            <div class="mock-feed-row"><span>Trending topics</span><em>Locked</em></div>
-            <div class="mock-feed-row"><span>Most talked-about star</span><em>Pending roster</em></div>
-            <div class="mock-feed-row"><span>Brand buzz comparison</span><em>Future system</em></div>
-          </div>
-        </section>
-
-        <section id="analytics" class="app-section section-block locked-section" aria-labelledby="analytics-title" data-screen-title="Analytics Placeholder" hidden>
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Command intelligence</p>
-              <h2 id="analytics-title">Analytics Preview</h2>
-              <p class="section-note">Command intelligence preview. Ratings, revenue, and heat reads unlock in a later build.</p>
-            </div>
-            <span class="badge">Preview signals only</span>
-          </div>
-          <div class="analytics-preview-grid">
-            <article class="analytics-tile"><span>Roster balance</span><strong>Pending draft</strong><p>Future post-draft composition read.</p></article>
-            <article class="analytics-tile"><span>Brand heat</span><strong>Preseason</strong><p>Future audience trend space.</p></article>
-            <article class="analytics-tile"><span>Budget pressure</span><strong>Stable</strong><p>Static office estimate.</p></article>
-            <article class="analytics-tile"><span>Road to PLE</span><strong>Not started</strong><p>Calendar endpoint preview.</p></article>
-          </div>
-        </section>
-
-        <section id="settings" class="app-section section-block locked-section" aria-labelledby="settings-title" data-screen-title="Settings Placeholder" hidden>
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">Locked placeholder</p>
-              <h2 id="settings-title">Settings</h2>
-              <p class="section-note">Settings desk preview. Preferences and save options unlock in a later build.</p>
-            </div>
-            <span class="badge">Locked for this build</span>
-          </div>
-          <div class="empty-command-panel">
-            <strong>Settings desk locked</strong>
-            <p>Reserved for future presentation and preference options after that scope is explicitly approved.</p>
+          <div class="post-draft-note">
+            <strong>Draft Preview is no longer primary in this state.</strong>
+            <span>Use Brand HQ, Week 1 Setup, Book Show, and roster-adjacent hubs after draft completion.</span>
           </div>
         </section>
       </main>
