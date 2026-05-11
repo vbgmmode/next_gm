@@ -42,6 +42,7 @@ export function createInitialLocalWeeklyLoopState() {
     currentWeekNumber: 1,
     lastShowRecap: undefined,
     completedShowRecaps: [],
+    rosterHistorySnapshots: [],
   });
 }
 
@@ -84,6 +85,7 @@ export function createWeeklyHqProjection({
     weekNumber,
     seasonCalendar,
     lastShowRecap,
+    latestRosterHistorySnapshot: getLatestRosterHistorySnapshot(currentWeeklyState),
     completedShowCount: currentWeeklyState.completedShowRecaps.length,
     displayLabels: Object.freeze({
       ...hqProjection.displayLabels,
@@ -102,6 +104,7 @@ export function createWeeklyHqProjection({
       titleDefenseLine: seasonCalendar.displayLabels.titleDefenseLine,
       rivalryPayoffLine: seasonCalendar.displayLabels.rivalryPayoffLine,
       showHistoryLine: seasonCalendar.displayLabels.showHistoryLine,
+      rosterHistoryLine: createRosterHistoryDisplayLine(currentWeeklyState),
     }),
   });
 }
@@ -143,6 +146,28 @@ export function createLocalSeasonCalendarProjection({ weeklyState } = {}) {
           ? "Show History: No shows run"
           : `Show History: ${currentWeeklyState.completedShowRecaps.length} show${currentWeeklyState.completedShowRecaps.length === 1 ? "" : "s"} logged`,
     }),
+  });
+}
+
+export function createLocalRosterHistorySnapshot({ projection, recap } = {}) {
+  const signedRosterCount = readPositiveNumber(projection?.signedRosterCount, 0);
+  const showRecap = normalizeShowRecap(recap);
+  const weekNumber = showRecap?.weekNumber || readPositiveNumber(projection?.weekNumber, 1);
+  const momentumLine = readString(showRecap?.momentumNote) || "Momentum: Steady";
+  const fanResponseLine = readString(showRecap?.fanResponseNote) || "Fan Response: Solid";
+  const topSegmentLine =
+    readString(showRecap?.bestSegmentLine) || "No standout segment";
+
+  return freezeRosterHistorySnapshot({
+    snapshotId: `local-week-${weekNumber}-roster-snapshot`,
+    weekNumber,
+    weekLabel: `Week ${weekNumber}`,
+    signedRosterCount,
+    momentumLine,
+    fanResponseLine,
+    topSegmentLine,
+    deltaLine: `Roster Delta: ${signedRosterCount} signed, ${momentumLine}`,
+    displayLine: `Roster History: Week ${weekNumber} - ${signedRosterCount} signed, ${momentumLine}`,
   });
 }
 
@@ -392,6 +417,10 @@ export function runLocalWeeklyShow({
     setupState,
     weeklyState: currentWeeklyState,
   });
+  const rosterHistorySnapshot = createLocalRosterHistorySnapshot({
+    projection,
+    recap,
+  });
   const nextWeeklyState = freezeWeeklyLoopState({
     currentWeekNumber: currentWeeklyState.currentWeekNumber,
     lastShowRecap: recap,
@@ -400,6 +429,12 @@ export function runLocalWeeklyShow({
         (show) => show.weekNumber !== recap.weekNumber
       ),
       recap,
+    ],
+    rosterHistorySnapshots: [
+      ...currentWeeklyState.rosterHistorySnapshots.filter(
+        (snapshot) => snapshot.weekNumber !== recap.weekNumber
+      ),
+      rosterHistorySnapshot,
     ],
   });
 
@@ -436,6 +471,7 @@ export function advanceLocalWeek({ weeklyState } = {}) {
     currentWeekNumber: nextWeekNumber,
     lastShowRecap,
     completedShowRecaps: currentWeeklyState.completedShowRecaps,
+    rosterHistorySnapshots: currentWeeklyState.rosterHistorySnapshots,
   });
 
   return Object.freeze({
@@ -1316,6 +1352,11 @@ function normalizeWeeklyLoopState(weeklyState) {
     currentWeekNumber,
     lastShowRecap,
     completedShowRecaps,
+    rosterHistorySnapshots: Array.isArray(weeklyState.rosterHistorySnapshots)
+      ? weeklyState.rosterHistorySnapshots
+          .map(normalizeRosterHistorySnapshot)
+          .filter(Boolean)
+      : [],
   });
 }
 
@@ -1327,6 +1368,11 @@ function freezeWeeklyLoopState(state) {
       : undefined,
     completedShowRecaps: Object.freeze(
       state.completedShowRecaps.map((recap) => freezeShowRecap(recap))
+    ),
+    rosterHistorySnapshots: Object.freeze(
+      state.rosterHistorySnapshots.map((snapshot) =>
+        freezeRosterHistorySnapshot(snapshot)
+      )
     ),
   });
 }
@@ -1416,6 +1462,60 @@ function freezeShowRecap(recap) {
       recap.segmentResults.map((segment) => Object.freeze({ ...segment }))
     ),
   });
+}
+
+function normalizeRosterHistorySnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== "object") {
+    return undefined;
+  }
+
+  const weekNumber = readPositiveNumber(snapshot.weekNumber, 1);
+  const signedRosterCount = readPositiveNumber(snapshot.signedRosterCount, 0);
+  const momentumLine = readString(snapshot.momentumLine) || "Momentum: Steady";
+
+  return freezeRosterHistorySnapshot({
+    snapshotId:
+      readString(snapshot.snapshotId) || `local-week-${weekNumber}-roster-snapshot`,
+    weekNumber,
+    weekLabel: readString(snapshot.weekLabel) || `Week ${weekNumber}`,
+    signedRosterCount,
+    momentumLine,
+    fanResponseLine: readString(snapshot.fanResponseLine) || "Fan Response: Solid",
+    topSegmentLine: readString(snapshot.topSegmentLine) || "No standout segment",
+    deltaLine:
+      readString(snapshot.deltaLine) ||
+      `Roster Delta: ${signedRosterCount} signed, ${momentumLine}`,
+    displayLine:
+      readString(snapshot.displayLine) ||
+      `Roster History: Week ${weekNumber} - ${signedRosterCount} signed, ${momentumLine}`,
+  });
+}
+
+function freezeRosterHistorySnapshot(snapshot) {
+  return Object.freeze({
+    snapshotId: snapshot.snapshotId,
+    weekNumber: snapshot.weekNumber,
+    weekLabel: snapshot.weekLabel,
+    signedRosterCount: snapshot.signedRosterCount,
+    momentumLine: snapshot.momentumLine,
+    fanResponseLine: snapshot.fanResponseLine,
+    topSegmentLine: snapshot.topSegmentLine,
+    deltaLine: snapshot.deltaLine,
+    displayLine: snapshot.displayLine,
+  });
+}
+
+function getLatestRosterHistorySnapshot(weeklyState) {
+  return weeklyState.rosterHistorySnapshots
+    .slice()
+    .sort((first, second) => second.weekNumber - first.weekNumber)[0];
+}
+
+function createRosterHistoryDisplayLine(weeklyState) {
+  const latestSnapshot = getLatestRosterHistorySnapshot(weeklyState);
+  return latestSnapshot
+    ? latestSnapshot.displayLine
+    : "Roster History: No weekly snapshot yet";
 }
 
 function normalizeSegmentType(value) {
