@@ -79,26 +79,38 @@ export function createWeeklyHqProjection({
   const seasonCalendar = createLocalSeasonCalendarProjection({
     weeklyState: currentWeeklyState,
   });
+  const specialEventActive = seasonCalendar.weeksUntilSpecialEvent === 0;
+  const hqTitleLine = specialEventActive
+    ? `${seasonCalendar.specialEventLabel} HQ`
+    : `Week ${weekNumber} HQ`;
+  const bookingLine = specialEventActive
+    ? `Book ${seasonCalendar.specialEventLabel}`
+    : `Book Week ${weekNumber} Show`;
 
   return Object.freeze({
     ...hqProjection,
     weekNumber,
     seasonCalendar,
+    specialEventActive,
     lastShowRecap,
     latestRosterHistorySnapshot: getLatestRosterHistorySnapshot(currentWeeklyState),
     completedShowCount: currentWeeklyState.completedShowRecaps.length,
     displayLabels: Object.freeze({
       ...hqProjection.displayLabels,
-      titleLine: hqProjection.unlocked ? `Week ${weekNumber} HQ` : `Week ${weekNumber} HQ Locked`,
+      titleLine: hqProjection.unlocked ? hqTitleLine : `Week ${weekNumber} HQ Locked`,
       statusLine: hqProjection.unlocked
-        ? `Week ${weekNumber} HQ is open.`
+        ? specialEventActive
+          ? `${seasonCalendar.specialEventLabel} week is open.`
+          : `Week ${weekNumber} HQ is open.`
         : `Finish draft setup to unlock Week ${weekNumber} HQ.`,
-      bookingLine: hqProjection.unlocked ? `Book Week ${weekNumber} Show` : "Booking Locked",
+      bookingLine: hqProjection.unlocked ? bookingLine : "Booking Locked",
       lastShowLine: lastShowRecap
         ? `Last Show: ${lastShowRecap.showGrade} / ${lastShowRecap.bestSegmentLine}`
         : "No show run yet",
       bookingNoteLine: hqProjection.unlocked
-        ? `Build the Week ${weekNumber} show card.`
+        ? specialEventActive
+          ? `Build the ${seasonCalendar.specialEventLabel} card.`
+          : `Build the Week ${weekNumber} show card.`
         : "Complete setup first",
       calendarLine: seasonCalendar.displayLabels.calendarLine,
       titleDefenseLine: seasonCalendar.displayLabels.titleDefenseLine,
@@ -188,6 +200,10 @@ export function createWeeklyBookingProjection({
   const rosterOptions = createLocalSetupRosterOptions(miniDraftProgress, {
     selectedBrand,
   });
+  const seasonCalendar = createLocalSeasonCalendarProjection({
+    weeklyState: currentWeeklyState,
+  });
+  const specialEventActive = seasonCalendar.weeksUntilSpecialEvent === 0;
   const projectedSegments = currentState.segments.map((segment, index) =>
     createSegmentProjection({ segment, segmentNumber: index + 1, rosterOptions })
   );
@@ -202,6 +218,8 @@ export function createWeeklyBookingProjection({
   return Object.freeze({
     locked: !hqProjection.unlocked,
     weekNumber: currentWeeklyState.currentWeekNumber,
+    seasonCalendar,
+    specialEventActive,
     brandLabel: hqProjection.brandLabel,
     rosterOptions,
     signedRosterCount: hqProjection.signedRosterCount,
@@ -216,10 +234,14 @@ export function createWeeklyBookingProjection({
       readyToRunComingNext: readyToRun,
     }),
     displayLabels: Object.freeze({
-      titleLine: `Week ${currentWeeklyState.currentWeekNumber} Booking`,
+      titleLine: specialEventActive
+        ? `${seasonCalendar.specialEventLabel} Booking`
+        : `Week ${currentWeeklyState.currentWeekNumber} Booking`,
       localOnlyLine: "Local Session Only / Not Saved Yet",
       statusLine: hqProjection.unlocked
-        ? `Build the Week ${currentWeeklyState.currentWeekNumber} local show card.`
+        ? specialEventActive
+          ? `Build the ${seasonCalendar.specialEventLabel} local card.`
+          : `Build the Week ${currentWeeklyState.currentWeekNumber} local show card.`
         : `Complete draft setup before booking Week ${currentWeeklyState.currentWeekNumber}.`,
       segmentCountLine: `Segments ${segmentCount}`,
       mainEventLine: hasMainEvent ? "Main Event Set" : "Main Event Needed",

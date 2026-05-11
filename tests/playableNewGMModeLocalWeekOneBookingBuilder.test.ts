@@ -416,6 +416,35 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.equal(postEventCalendar.specialEventLabel, "Week 8 Special Event");
   });
 
+  it("labels special event weeks in HQ and booking surfaces", () => {
+    const { miniDraftProgress, setupState } = createCompletedWeekOneSetup();
+    const specialEventWeeklyState = {
+      currentWeekNumber: 4,
+      completedShowRecaps: [],
+      rosterHistorySnapshots: [],
+    };
+    const hqProjection = createWeeklyHqProjection({
+      selectedBrand,
+      miniDraftProgress,
+      setupState,
+      weeklyState: specialEventWeeklyState,
+    });
+    const bookingProjection = createWeekOneBookingProjection({
+      selectedBrand,
+      miniDraftProgress,
+      setupState,
+      weeklyState: specialEventWeeklyState,
+    });
+
+    assert.equal(hqProjection.specialEventActive, true);
+    assert.equal(hqProjection.displayLabels.titleLine, "Week 4 Special Event HQ");
+    assert.equal(hqProjection.displayLabels.bookingLine, "Book Week 4 Special Event");
+    assert.equal(hqProjection.displayLabels.bookingNoteLine, "Build the Week 4 Special Event card.");
+    assert.equal(bookingProjection.specialEventActive, true);
+    assert.equal(bookingProjection.displayLabels.titleLine, "Week 4 Special Event Booking");
+    assert.equal(bookingProjection.displayLabels.statusLine, "Build the Week 4 Special Event local card.");
+  });
+
   it("wires Run Show, Show Recap, and Week 2 advancement in the UI", () => {
     const html = readPlayableUiFile("index.html");
     const appSource = readPlayableUiFile("app.js");
