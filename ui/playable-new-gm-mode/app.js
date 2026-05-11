@@ -69,12 +69,15 @@
     });
   }
 
-  function showSection(targetId) {
+  function showSection(targetId, preferredNavSection) {
     const target = getSection(targetId);
 
     if (!target) {
       return;
     }
+
+    const activeNavSection = preferredNavSection || sectionNavMap[targetId];
+    const activeNavItem = navItems.find((item) => item.dataset.navSection === activeNavSection);
 
     sections.forEach((section) => {
       const isActive = section === target;
@@ -83,7 +86,7 @@
     });
 
     navItems.forEach((item) => {
-      const isActive = item.dataset.navSection === sectionNavMap[targetId];
+      const isActive = item.dataset.navSection === activeNavSection;
       item.classList.toggle("active", isActive);
       if (isActive) {
         item.setAttribute("aria-current", "page");
@@ -99,7 +102,7 @@
     }
 
     if (railActiveLabel) {
-      railActiveLabel.textContent = target.dataset.screenTitle;
+      railActiveLabel.textContent = activeNavItem?.dataset.navLabel || target.dataset.screenTitle;
     }
 
     if (phaseLabel) {
@@ -140,7 +143,7 @@
 
   navItems.forEach((item) => {
     item.addEventListener("click", () => {
-      showSection(item.dataset.navTarget);
+      showSection(item.dataset.navTarget, item.dataset.navSection);
     });
   });
 

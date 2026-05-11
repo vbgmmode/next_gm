@@ -24,11 +24,12 @@ Avoid SaaS dashboard tells: bubbly cards, soft blob decoration, oversized rounde
 
 ### App Shell And Navigation
 
-- Primary navigation is a compact top icon rail, not a side rail.
-- The rail should appear as a thin always-visible top strip.
-- Collapsed/default state shows small icons plus the active section label.
+- Primary navigation is a compact macOS Dock-inspired top dock, not a side rail.
+- The dock should appear as a thin always-visible top glass control surface, not a full-width website menu strip.
+- Collapsed/default state shows compact icons plus the active top-level section label.
 - Hover/focus state may expand to show icon plus section names only.
-- Expanded navigation should feel like a game overlay, with subtle blur or dim behind it.
+- Expanded navigation should overlay the screen with subtle blur or dim behind it and must not push content down.
+- Icons may lift, scale, or glow slightly on hover/focus, but the treatment should stay premium and restrained.
 - Navigation should adapt by screen size and must never clip labels.
 - Do not use breadcrumbs for the player-facing game flow.
 - Header/status shell should stay lightweight: brand logo/name plus current week/date.
@@ -223,6 +224,8 @@ The locked top-level sections are:
 Navigation should use a hover-revealed top navigation or compact hidden navigation pattern to preserve usable screen space. Main movement should also happen through dashboard cards and screen-specific actions.
 
 Do not use breadcrumbs. Use strong screen headers, tabs, and explicit back buttons instead. Navigation should feel like a game hub, not an enterprise admin app.
+
+Playable New GM Mode uses a top-positioned dock pattern: compact glass capsule, icon-first collapsed state, active section label, and hover/focus expansion to icon plus section name. The dock must not show budget, fan count, alerts, metrics, breadcrumbs, long descriptions, or notification copy. It should remain viewport-first on 11-13 inch laptop screens and should never become a side rail or full-width SaaS navbar.
 
 The global app header should stay lightweight and should always make only these basics visible:
 

@@ -11,7 +11,7 @@
 
 `docs/ui-ux-doctrine.md` establishes the first player-facing path:
 
-1. Compact top icon rail, not a side rail.
+1. Compact macOS Dock-inspired top dock, not a side rail or full-width website navbar.
 2. Save Selection as the first screen, not Dashboard.
 3. Multi-screen New Game setup: Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, Select Brand.
 4. Draft Dynamics / Initial Draft as the active draft broadcast surface.
@@ -39,6 +39,7 @@ The visual doctrine locks the prototype to a premium dark wrestling/sports-broad
 The safest first implementation slice is UI shell-only, static/mock-first:
 
 - Create a minimal viewport-first app shell with the compact top icon rail.
+- Refine the top rail into a compact glass top dock that keeps icons visible, shows the active section label, expands on hover/focus, and never pushes content down.
 - Add static Save Selection screen affordances using clearly fake save-card data.
 - Add static Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, and Select Brand placeholders.
 - Add a static Draft Dynamics / Initial Draft surface using mock talent, pick order, roster needs, and confirmation preview.

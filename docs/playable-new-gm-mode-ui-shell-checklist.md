@@ -62,13 +62,19 @@ Manual verification target:
 
 ## Navigation QA
 
-- Confirm the primary nav is a compact top icon rail, not a side rail.
-- Confirm the default rail shows small icons and the active section label.
-- Confirm hover/focus expands into a polished top overlay with readable section names.
+- Confirm the primary nav is a compact macOS Dock-inspired top dock, not a side rail.
+- Confirm the dock remains visible in collapsed/default state as a thin glass control surface.
+- Confirm collapsed/default state shows compact icons and the active top-level section label.
+- Confirm hover/focus expands the dock into icon plus section name only.
+- Confirm expanded labels do not overflow, wrap, or clip at laptop widths.
+- Confirm the expanded dock overlays the screen and does not push content down.
 - Confirm the top overlay subtly dims or blurs the app behind it.
-- Confirm collapsed/default nav labels are not clipped.
-- Confirm active nav state is obvious.
+- Confirm keyboard focus expands the dock and has a visible focus state.
+- Confirm active nav state is obvious without relying only on color.
+- Confirm the dock remains usable at smaller laptop width.
+- Confirm the top dock does not cover critical controls in a broken way.
 - Confirm nav actions switch between Save Selection, Contract Signing, Setup Basics, Assistant Setup, Choose GM, Select Brand, Initial Draft, Draft Recap, and Brand Dashboard without page reload.
+- Confirm the dock never shows budget, fan count, alerts, mini metrics, breadcrumbs, long descriptions, notification text, or status copy.
 - Confirm breadcrumbs are absent.
 
 ## Viewport And Overflow QA
@@ -76,12 +82,14 @@ Manual verification target:
 - Confirm the page itself does not vertically scroll at desktop/laptop sizes.
 - Confirm the app shell, header, and top nav remain stable.
 - Confirm each active screen fits inside the visible viewport at common laptop sizes, including roughly 1366x768 and 1280x720.
+- Confirm 1366x768, 1280x800, and 1440x900 do not introduce full-page scroll.
 - Confirm only contained panels scroll when needed.
 - Confirm the draft board and scouting feed use contained scrolling.
 - Confirm long save names, wrestler names, labels, pills, buttons, and metadata truncate or wrap safely inside their boxes.
 - Confirm no text spills outside cards, panels, buttons, pills, or board rows.
 - Confirm cards do not stretch endlessly to create a scrolling webpage feel.
 - Confirm long nav labels appear only in the expanded top overlay and do not clip in collapsed state.
+- Confirm nav label, card, hero, and button text does not overflow at 1366x768, 1280x800, or 1440x900.
 
 ## Static/Mock Boundary QA
 

@@ -146,6 +146,8 @@ Required shell qualities:
 - A compact top icon rail, not a side rail.
 - Collapsed/default nav shows small icons plus the active section label.
 - Hover/focus expands into a subtle overlay that shows icons and section names only.
+- The top nav should feel like a macOS Dock adapted into a premium wrestling GM control dock: compact, glassy, icon-first, and top-positioned.
+- Dock expansion must overlay the viewport with subtle blur/dim treatment and must not push screen content downward.
 - Current player goal visible within two seconds.
 - No stacked header/status/flow bands that consume the play area.
 - No "static demo shell" wording in player-facing UI.
@@ -174,9 +176,11 @@ Required nav behavior and appearance:
 - Primary navigation is a thin top icon rail.
 - Collapsed/default state is icon-first and shows the active section label.
 - Hover or focus reveals polished top-overlay labels with subtle blur/dim behind the nav.
+- Hover/focus may scale, lift, or glow icons slightly, similar to macOS Dock behavior, but the motion must stay subtle and premium.
 - Active section is unmistakable through color, glow, marker, or physical selection treatment.
 - Navigation should not look broken when narrow.
 - Labels must stay short and player-facing.
+- Expanded labels must not overflow, clip, wrap, or create page scroll at laptop widths.
 - Avoid status labels, numbers, metrics, alert text, budget, or fan counts inside expanded nav.
 - Avoid breadcrumbs and chunky side rails.
 
