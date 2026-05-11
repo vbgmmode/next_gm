@@ -3203,6 +3203,29 @@ dd {
   gap: 10px;
 }
 
+.show-recap-screen {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.show-recap-layout {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1fr) minmax(240px, 0.58fr);
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.show-recap-scoreboard {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .booking-builder-layout {
   display: grid;
   grid-template-columns: minmax(265px, 0.58fr) minmax(0, 1fr) minmax(250px, 0.54fr);
@@ -3274,6 +3297,14 @@ dd {
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.recap-notes {
+  align-content: start;
+}
+
+.recap-notes span {
+  white-space: normal;
 }
 
 .show-card-list,
@@ -3667,6 +3698,7 @@ dd {
   .roster-hub-layout,
   .dashboard-layout,
   .booking-builder-layout,
+  .show-recap-layout,
   .brand-dashboard-hero,
   .settings-layout {
     grid-template-columns: 1fr;

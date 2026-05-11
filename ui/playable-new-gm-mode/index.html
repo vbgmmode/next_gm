@@ -1247,13 +1247,84 @@
               <div class="booking-mini-list" id="booking-summary-rivalries" aria-label="Rivalries summary">
                 <span>Rivalries locked</span>
               </div>
-              <button class="hero-cta small" id="booking-run-show-action" type="button" disabled>Run Show - Coming Next</button>
+              <button class="hero-cta small" id="booking-run-show-action" type="button" disabled>Run Show Locked</button>
             </aside>
           </div>
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="brand-dashboard">Back to Week 1 HQ</button>
-            <button class="hero-cta small" type="button" id="booking-run-show-footer-action" disabled>Run Show - Coming Next</button>
+            <button class="hero-cta small" type="button" id="booking-run-show-footer-action" disabled>Run Show Locked</button>
+          </div>
+        </section>
+
+        <section
+          id="show-recap"
+          class="screen show-recap-screen"
+          data-screen-title="Show Recap"
+          data-flow-phase="Show Recap"
+          aria-labelledby="show-recap-title"
+          hidden
+        >
+          <div class="screen-header">
+            <div>
+              <p class="kicker">Local Show Results</p>
+              <h2 id="show-recap-title">Show Recap Locked</h2>
+            </div>
+            <span class="header-badge" id="show-recap-status">Run a show to unlock the recap.</span>
+          </div>
+
+          <div class="show-recap-layout">
+            <section class="show-recap-scoreboard" aria-label="Show result summary">
+              <article class="command-monitor healthy">
+                <span>Show Grade</span>
+                <strong id="show-recap-grade">Show Grade: --</strong>
+                <em id="show-recap-crowd">Crowd Read: --</em>
+              </article>
+              <article class="hq-tile feature">
+                <span class="portrait-frame roster-frame" aria-hidden="true">TV</span>
+                <div>
+                  <p class="kicker">Best Segment</p>
+                  <h3 id="show-recap-best">Best Segment: --</h3>
+                  <p id="show-recap-weak">Weak Segment: --</p>
+                </div>
+              </article>
+              <article class="hq-tile">
+                <strong id="show-recap-champion">Champion Spotlight: --</strong>
+                <span id="show-recap-rivalry">Rivalry Spotlight: --</span>
+              </article>
+            </section>
+
+            <section class="booking-card-panel" aria-labelledby="show-recap-card-title">
+              <div class="panel-title">
+                <p class="kicker">Segment Results</p>
+                <h3 id="show-recap-card-title">Show Card Fallout</h3>
+              </div>
+              <div class="show-card-list" id="show-recap-segments" aria-label="Local show recap segments">
+                <article class="show-card-segment empty">
+                  <span>01</span>
+                  <strong>No show has been run yet</strong>
+                  <em>Book and run a show to see local results.</em>
+                </article>
+              </div>
+            </section>
+
+            <aside class="booking-summary-panel" aria-label="Local consequences summary">
+              <div class="panel-title">
+                <p class="kicker">Local Consequences</p>
+                <h3>Week Fallout</h3>
+              </div>
+              <div class="booking-mini-list recap-notes">
+                <span id="show-recap-momentum">Momentum: --</span>
+                <span id="show-recap-fan">Fan Response: --</span>
+                <span id="show-recap-budget">Budget: --</span>
+                <span id="show-recap-local">Local Session Only / Not Saved Yet</span>
+              </div>
+            </aside>
+          </div>
+
+          <div class="screen-actions">
+            <button class="ghost-button" type="button" data-go-to="week-one-booking">Back to Booking</button>
+            <button class="hero-cta small" type="button" id="show-recap-advance-week" disabled>Advance to Week 2</button>
           </div>
         </section>
       </main>

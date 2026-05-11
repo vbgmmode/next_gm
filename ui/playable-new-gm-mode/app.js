@@ -28,9 +28,13 @@ import {
 import {
   LOCAL_WEEK_ONE_SEGMENT_TYPES,
   addLocalWeekOneBookingSegment,
+  advanceLocalWeek,
   createInitialLocalWeekOneBookingState,
+  createInitialLocalWeeklyLoopState,
+  createWeeklyHqProjection,
   createWeekOneBookingProjection,
   removeLocalWeekOneBookingSegment,
+  runLocalWeeklyShow,
 } from "./localWeekOneBookingController.js";
 import {
   createNewGMModeDraftPickCandidateObjects,
@@ -231,6 +235,22 @@ import {
     runShow: document.getElementById("booking-run-show-action"),
     runShowFooter: document.getElementById("booking-run-show-footer-action"),
   };
+  const showRecapTargets = {
+    title: document.getElementById("show-recap-title"),
+    status: document.getElementById("show-recap-status"),
+    grade: document.getElementById("show-recap-grade"),
+    crowd: document.getElementById("show-recap-crowd"),
+    best: document.getElementById("show-recap-best"),
+    weak: document.getElementById("show-recap-weak"),
+    champion: document.getElementById("show-recap-champion"),
+    rivalry: document.getElementById("show-recap-rivalry"),
+    momentum: document.getElementById("show-recap-momentum"),
+    fan: document.getElementById("show-recap-fan"),
+    budget: document.getElementById("show-recap-budget"),
+    local: document.getElementById("show-recap-local"),
+    segments: document.getElementById("show-recap-segments"),
+    advance: document.getElementById("show-recap-advance-week"),
+  };
   const talentDetail = {
     panel: document.querySelector(".selected-profile"),
     initials: document.getElementById("talent-detail-initials"),
@@ -266,6 +286,7 @@ import {
     "rivalry-setup",
     "brand-dashboard",
     "week-one-booking",
+    "show-recap",
   ];
 
   const sectionNavMap = {
@@ -284,6 +305,7 @@ import {
     "rivalry-setup": "roster",
     "brand-dashboard": "dashboard",
     "week-one-booking": "booking",
+    "show-recap": "booking",
   };
 
   const brandLabels = {
@@ -302,6 +324,7 @@ import {
     miniDraftProgress: createInitialMiniDraftProgress(),
     localPostDraftSetup: createInitialLocalPostDraftSetupState(),
     localWeekOneBooking: createInitialLocalWeekOneBookingState(),
+    localWeeklyLoop: createInitialLocalWeeklyLoopState(),
   };
   let dockCollapseTimer;
 
@@ -431,6 +454,10 @@ import {
 
     if (resolvedTargetId === "week-one-booking") {
       updateWeekOneBookingSurface();
+    }
+
+    if (resolvedTargetId === "show-recap") {
+      updateShowRecapSurface();
     }
   }
 
@@ -1082,10 +1109,11 @@ import {
   }
 
   function updateWeekOneHqSurface() {
-    const projection = createWeekOneHqProjection({
+    const projection = createWeeklyHqProjection({
       selectedBrand: getSelectedBrandDisplay(),
       miniDraftProgress: uiState.miniDraftProgress,
       setupState: uiState.localPostDraftSetup,
+      weeklyState: uiState.localWeeklyLoop,
     });
 
     setText(weekOneHqTargets.title, `${projection.brandLabel} ${projection.displayLabels.titleLine}`);
@@ -1111,7 +1139,7 @@ import {
     );
     setText(
       weekOneHqTargets.bookingTile,
-      projection.unlocked ? "Book Week 1 Show" : "Booking Locked"
+      projection.displayLabels.bookingLine
     );
     setText(
       weekOneHqTargets.bookingState,
@@ -1119,7 +1147,9 @@ import {
     );
     setText(
       weekOneHqTargets.bookingNote,
-      projection.unlocked ? "No show created" : "Complete setup first"
+      projection.unlocked
+        ? projection.displayLabels.lastShowLine
+        : projection.displayLabels.bookingNoteLine
     );
 
     if (weekOneHqTargets.bookingAction) {
@@ -1170,6 +1200,7 @@ import {
       miniDraftProgress: uiState.miniDraftProgress,
       setupState: uiState.localPostDraftSetup,
       bookingState: uiState.localWeekOneBooking,
+      weeklyState: uiState.localWeeklyLoop,
     });
 
     setText(bookingTargets.title, `${projection.brandLabel} ${projection.displayLabels.titleLine}`);
@@ -1196,12 +1227,62 @@ import {
     [bookingTargets.runShow, bookingTargets.runShowFooter]
       .filter(Boolean)
       .forEach((button) => {
-        button.disabled = true;
-        button.textContent = projection.status.readyToRunComingNext
-          ? "Ready to Run: Coming Next"
-          : projection.displayLabels.runShowLabel;
-        button.setAttribute("aria-disabled", "true");
+        button.disabled = !projection.status.readyToRun;
+        button.textContent = projection.displayLabels.runShowLabel;
+        button.classList.toggle("enabled", projection.status.readyToRun);
+        button.setAttribute("aria-disabled", String(!projection.status.readyToRun));
       });
+  }
+
+  function updateShowRecapSurface(statusLine) {
+    const recap = uiState.localWeeklyLoop.lastShowRecap;
+
+    if (!recap) {
+      setText(showRecapTargets.title, "Show Recap Locked");
+      setText(showRecapTargets.status, statusLine || "Run a show to unlock the recap.");
+      setText(showRecapTargets.grade, "Show Grade: --");
+      setText(showRecapTargets.crowd, "Crowd Read: --");
+      setText(showRecapTargets.best, "Best Segment: --");
+      setText(showRecapTargets.weak, "Weak Segment: --");
+      setText(showRecapTargets.champion, "Champion Spotlight: --");
+      setText(showRecapTargets.rivalry, "Rivalry Spotlight: --");
+      setText(showRecapTargets.momentum, "Momentum: --");
+      setText(showRecapTargets.fan, "Fan Response: --");
+      setText(showRecapTargets.budget, "Budget: --");
+      setText(showRecapTargets.local, "Local Session Only / Not Saved Yet");
+      showRecapTargets.segments?.replaceChildren(createTextSpan("No show has been run yet."));
+      if (showRecapTargets.advance) {
+        showRecapTargets.advance.disabled = true;
+        showRecapTargets.advance.setAttribute("aria-disabled", "true");
+      }
+      return;
+    }
+
+    setText(showRecapTargets.title, `${recap.brandLabel} ${recap.weekLabel} Show Recap`);
+    setText(showRecapTargets.status, statusLine || "Show complete. Review the fallout before advancing.");
+    setText(showRecapTargets.grade, `Show Grade: ${recap.showGrade}`);
+    setText(showRecapTargets.crowd, `Crowd Read: ${recap.crowdRead}`);
+    setText(showRecapTargets.best, `Best Segment: ${recap.bestSegmentLine}`);
+    setText(showRecapTargets.weak, `Weak Segment: ${recap.weakSegmentLine}`);
+    setText(showRecapTargets.champion, recap.championSpotlight);
+    setText(showRecapTargets.rivalry, recap.rivalrySpotlight);
+    setText(showRecapTargets.momentum, recap.momentumNote);
+    setText(showRecapTargets.fan, recap.fanResponseNote);
+    setText(showRecapTargets.budget, recap.budgetNote);
+    setText(showRecapTargets.local, recap.localOnlyLine);
+
+    if (showRecapTargets.segments) {
+      showRecapTargets.segments.replaceChildren(
+        ...recap.segmentResults.map((segment) => createRecapSegment(segment))
+      );
+    }
+
+    if (showRecapTargets.advance) {
+      showRecapTargets.advance.disabled = false;
+      showRecapTargets.advance.classList.add("enabled");
+      showRecapTargets.advance.setAttribute("aria-disabled", "false");
+      showRecapTargets.advance.textContent = `Advance to Week ${recap.weekNumber + 1}`;
+    }
   }
 
   function renderBookingRosterControls(projection) {
@@ -1326,6 +1407,28 @@ import {
     const note = document.createElement("em");
     note.textContent = "Add a match, promo, and main event from signed talent.";
     item.append(number, title, note);
+    return item;
+  }
+
+  function createRecapSegment(segment) {
+    const item = document.createElement("article");
+    item.className = segment.mainEvent
+      ? "show-card-segment main-event"
+      : "show-card-segment";
+
+    const number = document.createElement("span");
+    number.textContent = String(segment.segmentNumber).padStart(2, "0");
+    const content = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = segment.typeLabel;
+    const talent = document.createElement("em");
+    talent.textContent = segment.talentLine;
+    const result = document.createElement("small");
+    result.textContent = segment.resultLine;
+    content.append(title, talent, result);
+    const badge = document.createElement("small");
+    badge.textContent = segment.mainEvent ? "Main Event" : segment.qualityBand;
+    item.append(number, content, badge);
     return item;
   }
 
@@ -1833,6 +1936,7 @@ import {
       miniDraftProgress: uiState.miniDraftProgress,
       setupState: uiState.localPostDraftSetup,
       bookingState: uiState.localWeekOneBooking,
+      weeklyState: uiState.localWeeklyLoop,
       segmentInput: {
         segmentType,
         wrestlerAId: bookingTargets.wrestlerA?.value,
@@ -1855,7 +1959,50 @@ import {
       bookingState: uiState.localWeekOneBooking,
       segmentId: removeButton.dataset.removeBookingSegment,
     });
-    updateWeekOneBookingSurface("Segment removed from the Week 1 show card.");
+    updateWeekOneBookingSurface("Segment removed from the show card.");
+  });
+
+  [bookingTargets.runShow, bookingTargets.runShowFooter]
+    .filter(Boolean)
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        if (button.disabled) {
+          return;
+        }
+
+        const result = runLocalWeeklyShow({
+          selectedBrand: getSelectedBrandDisplay(),
+          miniDraftProgress: uiState.miniDraftProgress,
+          setupState: uiState.localPostDraftSetup,
+          bookingState: uiState.localWeekOneBooking,
+          weeklyState: uiState.localWeeklyLoop,
+        });
+        uiState.localWeeklyLoop = result.weeklyState;
+
+        if (result.actionStatus === "local-weekly-show-ran") {
+          showSection("show-recap");
+        } else {
+          updateWeekOneBookingSurface(result.displayLabels.statusLine);
+        }
+      });
+    });
+
+  showRecapTargets.advance?.addEventListener("click", () => {
+    if (showRecapTargets.advance.disabled) {
+      return;
+    }
+
+    const result = advanceLocalWeek({
+      weeklyState: uiState.localWeeklyLoop,
+    });
+    uiState.localWeeklyLoop = result.weeklyState;
+
+    if (result.actionStatus === "local-week-advanced") {
+      uiState.localWeekOneBooking = createInitialLocalWeekOneBookingState();
+      showSection("brand-dashboard");
+    } else {
+      updateShowRecapSurface(result.displayLabels.statusLine);
+    }
   });
 
   previewControls.forEach((control) => {
