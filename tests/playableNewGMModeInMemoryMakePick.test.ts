@@ -346,15 +346,15 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     const html = readPlayableUiFile("index.html");
     const appSource = readPlayableUiFile("app.js");
 
-    assert.match(html, /Budget 120/);
-    assert.match(html, /Remaining 120/);
-    assert.match(html, /Spent 0/);
+    assert.match(html, /Budget \$12,000,000/);
+    assert.match(html, /Remaining \$12,000,000/);
+    assert.match(html, /Spent \$0/);
     assert.match(html, /Signed 0\/16/);
     assert.match(html, /Min Roster 16/);
-    assert.match(html, /Reserve 20/);
+    assert.match(html, /Reserve \$2,000,000/);
     assert.match(html, /Signing Tier: Franchise/);
-    assert.match(html, /Signing Cost: 18/);
-    assert.match(html, /Budget After Signing: 102/);
+    assert.match(html, /Signing Cost: \$1,800,000/);
+    assert.match(html, /Budget After Signing: \$10,200,000/);
     assert.match(html, /updates the budget/);
     assert.match(appSource, /createNewGMModeDraftFinanceProjection/);
     assert.doesNotMatch(appSource, /budgetDeducted|mutateBudget/);

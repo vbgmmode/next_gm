@@ -41,6 +41,7 @@ Based on the current repo files and focused playable tests:
 - The playable preview host exposes a local save API and the UI can request Save Current Session / Continue Last Save with basic rehydration for brand, roster, champions, rivalries, week state, saved show summaries, and current show cards.
 - Local weekly show recaps now route booked match segments through the existing Show Engine shell, which in turn runs the Match Engine shell with seeded deterministic context, then passes structural handoffs into Fan Reaction and Social Discourse shells for player-facing fan-response and social-buzz labels without exposing hidden rolls, formulas, business engines, generated text, or backend diagnostics.
 - Week HQ now derives and displays a local season calendar from the current week, including road-to-special-event timing, special-event week labels, title defense window labels, rivalry payoff prompts, show history counts, and local roster history snapshots.
+- Draft and post-draft UI budget labels now display internal finance units as money-style amounts while preserving the existing finance math.
 - Current flow is mostly UI-local/page-lifetime.
 - Persistence and full gameplay loop are not finished yet.
 

@@ -591,11 +591,15 @@ import {
 
     setText(
       financePreviewTargets.startingBudget,
-      projection.displayLabels.startingBudgetLine
+      `Starting Budget: ${formatBudgetUnitsAsMoney(
+        NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER
+      )}`
     );
     setText(
       financePreviewTargets.remainingBudget,
-      `Remaining Budget: ${uiState.miniDraftProgress.remainingDraftBudget}`
+      `Remaining Budget: ${formatBudgetUnitsAsMoney(
+        uiState.miniDraftProgress.remainingDraftBudget
+      )}`
     );
     setText(
       financePreviewTargets.tier,
@@ -606,13 +610,15 @@ import {
     setText(
       financePreviewTargets.cost,
       candidateProjection
-        ? `Signing Cost: ${candidateProjection.projectedSigningCost}`
+        ? `Signing Cost: ${formatBudgetUnitsAsMoney(candidateProjection.projectedSigningCost)}`
         : "Signing Cost: Locked"
     );
     setText(
       financePreviewTargets.afterSigning,
       candidateProjection
-        ? `Budget After Signing: ${candidateProjection.budgetPreviewAfterSigning}`
+        ? `Budget After Signing: ${formatBudgetUnitsAsMoney(
+            candidateProjection.budgetPreviewAfterSigning
+          )}`
         : "Budget After Signing: Locked pending rules"
     );
     setText(
@@ -623,7 +629,9 @@ import {
     setText(
       financePreviewTargets.reserve,
       formatCandidateReserveLine(candidateProjection) ||
-        "Booking Reserve Target: 20"
+        `Booking Reserve Target: ${formatBudgetUnitsAsMoney(
+          NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER
+        )}`
     );
   }
 
@@ -640,12 +648,12 @@ import {
       progress.bookingReserveBudget ??
       NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER;
 
-    setText(draftBudgetTargets.starting, `Budget ${startingBudget}`);
-    setText(draftBudgetTargets.remaining, `Remaining ${progress.remainingDraftBudget}`);
-    setText(draftBudgetTargets.spent, `Spent ${progress.budgetSpent}`);
+    setText(draftBudgetTargets.starting, `Budget ${formatBudgetUnitsAsMoney(startingBudget)}`);
+    setText(draftBudgetTargets.remaining, `Remaining ${formatBudgetUnitsAsMoney(progress.remainingDraftBudget)}`);
+    setText(draftBudgetTargets.spent, `Spent ${formatBudgetUnitsAsMoney(progress.budgetSpent)}`);
     setText(draftBudgetTargets.signed, `Signed ${progress.signedTalentCount}/${minimumTarget}`);
     setText(draftBudgetTargets.minimumRosterTarget, `Min Roster ${minimumTarget}`);
-    setText(draftBudgetTargets.reserve, `Reserve ${reserveBudget}`);
+    setText(draftBudgetTargets.reserve, `Reserve ${formatBudgetUnitsAsMoney(reserveBudget)}`);
     setText(
       draftBudgetTargets.viability,
       progress.minimumRosterViable ? "Roster Ready" : "Roster Not Ready"
@@ -702,7 +710,7 @@ import {
     meta.textContent = [
       summary.pickSource === "auto-fill" ? "Auto-Filled" : "Manual",
       summary.signingTier,
-      `Cost ${summary.signingCost}`,
+      `Cost ${formatBudgetUnitsAsMoney(summary.signingCost)}`,
     ].filter(Boolean).join(" / ");
 
     item.append(pick, name, meta);
@@ -746,13 +754,15 @@ import {
                 ? "Reserve Warning"
                 : formatRowAffordability(candidateProjection),
           candidateProjection.projectedSigningTier,
-          `Cost ${candidateProjection.projectedSigningCost}`,
+          `Cost ${formatBudgetUnitsAsMoney(candidateProjection.projectedSigningCost)}`,
         ].join(" | ");
       }
 
       setText(
         row.querySelector(".talent-cost"),
-        `Cost ${candidateProjection?.projectedSigningCost ?? "--"}`
+        candidateProjection
+          ? `Cost ${formatBudgetUnitsAsMoney(candidateProjection.projectedSigningCost)}`
+          : "Cost --"
       );
       setText(
         row.querySelector(".talent-tier"),
@@ -799,7 +809,7 @@ import {
     setText(draftRecapTargets.brand, projection.displayLabels.brandLine);
     setText(draftRecapTargets.candidate, projection.displayLabels.candidateLine);
     setText(draftRecapTargets.pick, projection.displayLabels.pickLine);
-    setText(draftRecapTargets.budget, projection.displayLabels.budgetLine);
+    setText(draftRecapTargets.budget, formatDraftBudgetSummaryLine(projection.budgetSummary));
     setText(draftRecapTargets.status, projection.displayLabels.draftResultStatusLine);
     setText(draftRecapTargets.rosterStatus, projection.displayLabels.rosterStatusLine);
     setText(draftRecapTargets.roster, projection.displayLabels.rosterLine);
@@ -862,10 +872,10 @@ import {
     setText(targets.signedCount, projection.displayLabels.signedCountLine);
     setText(targets.minimumRoster, projection.displayLabels.minimumRosterLine);
     setText(targets.minimumStatus, projection.displayLabels.minimumRosterStatusLine);
-    setText(targets.startingBudget, projection.displayLabels.startingBudgetLine);
-    setText(targets.budgetSpent, projection.displayLabels.budgetSpentLine);
-    setText(targets.remainingBudget, projection.displayLabels.remainingBudgetLine);
-    setText(targets.bookingReserve, projection.displayLabels.bookingReserveLine);
+    setText(targets.startingBudget, `Starting Budget: ${formatBudgetUnitsAsMoney(projection.summary.startingDraftBudget)}`);
+    setText(targets.budgetSpent, `Budget Spent: ${formatBudgetUnitsAsMoney(projection.summary.budgetSpent)}`);
+    setText(targets.remainingBudget, `Remaining Budget: ${formatBudgetUnitsAsMoney(projection.summary.remainingDraftBudget)}`);
+    setText(targets.bookingReserve, `Booking Reserve Target: ${formatBudgetUnitsAsMoney(projection.summary.bookingReserveBudget)}`);
     setText(
       targets.bookingReserveStatus,
       projection.displayLabels.bookingReserveStatusLine
@@ -1130,7 +1140,7 @@ import {
     setText(weekOneHqTargets.title, `${projection.brandLabel} ${projection.displayLabels.titleLine}`);
     setText(weekOneHqTargets.note, projection.displayLabels.statusLine);
     setText(weekOneHqTargets.rosterCount, `${projection.signedRosterCount} Signed`);
-    setText(weekOneHqTargets.budget, `Remaining ${projection.remainingDraftBudget}`);
+    setText(weekOneHqTargets.budget, `Remaining ${formatBudgetUnitsAsMoney(projection.remainingDraftBudget)}`);
     setText(
       weekOneHqTargets.setupStatus,
       projection.unlocked ? "Setup Complete" : "Setup Locked"
@@ -1139,7 +1149,7 @@ import {
     setText(weekOneHqTargets.bookingAction, projection.displayLabels.bookingLine);
     setText(weekOneHqTargets.statusCard, projection.displayLabels.titleLine);
     setText(weekOneHqTargets.rosterTile, `${projection.signedRosterCount} superstars signed`);
-    setText(weekOneHqTargets.budgetTile, `${projection.remainingDraftBudget} remaining`);
+    setText(weekOneHqTargets.budgetTile, `${formatBudgetUnitsAsMoney(projection.remainingDraftBudget)} remaining`);
     setText(
       weekOneHqTargets.championTile,
       projection.unlocked ? "Setup Complete" : "Locked"
@@ -1227,7 +1237,7 @@ import {
     setText(bookingTargets.readyStatus, projection.displayLabels.readyLine);
     setText(bookingTargets.summaryBrand, projection.brandLabel);
     setText(bookingTargets.summaryRoster, `${projection.signedRosterCount} Signed`);
-    setText(bookingTargets.summaryBudget, `${projection.remainingDraftBudget} Remaining`);
+    setText(bookingTargets.summaryBudget, `${formatBudgetUnitsAsMoney(projection.remainingDraftBudget)} Remaining`);
 
     renderBookingRosterControls(projection);
     renderBookingSummary(projection);
@@ -2093,7 +2103,7 @@ import {
     [
       `Pick ${talent.pickNumber}`,
       talent.signingTier,
-      `Cost ${talent.signingCost}`,
+      `Cost ${formatBudgetUnitsAsMoney(talent.signingCost)}`,
       talent.divisionCategory,
       talent.draftedFromLine,
       talent.signedStatus,
@@ -2223,7 +2233,11 @@ import {
     }
 
     if (candidateProjection.affordabilityStatus === "not-affordable") {
-      return `Not enough draft budget. Need ${candidateProjection.projectedSigningCost} budget, you have ${uiState.miniDraftProgress.remainingDraftBudget}.`;
+      return `Not enough draft budget. Need ${formatBudgetUnitsAsMoney(
+        candidateProjection.projectedSigningCost
+      )}, you have ${formatBudgetUnitsAsMoney(
+        uiState.miniDraftProgress.remainingDraftBudget
+      )}.`;
     }
 
     if (candidateProjection.affordabilityStatus === "already-drafted-signed") {
@@ -2267,6 +2281,18 @@ import {
     }
 
     return "Affordable";
+  }
+
+  function formatDraftBudgetSummaryLine(summary) {
+    if (!summary) {
+      return "Budget: Not available";
+    }
+
+    return [
+      `Remaining ${formatBudgetUnitsAsMoney(summary.remainingDraftBudget)}`,
+      `Spent ${formatBudgetUnitsAsMoney(summary.budgetSpent)}`,
+      `Reserve ${formatBudgetUnitsAsMoney(summary.bookingReserveBudget)}`,
+    ].join(" / ");
   }
 
   function setMeter(target, value) {
@@ -2762,7 +2788,7 @@ function createTalentRow({ candidate, candidateProjection, draftRank }) {
   row.dataset.talentRole = `${projectedSigningTier} / ${formatDivisionCategory(
     divisionCategory
   )} / ${sourceRosterPool}`;
-  row.dataset.talentStyle = `Source Pool: ${sourceRosterPool} | Cost ${projectedSigningCost}`;
+  row.dataset.talentStyle = `Source Pool: ${sourceRosterPool} | Cost ${formatBudgetUnitsAsMoney(projectedSigningCost)}`;
   row.dataset.talentRead =
     "Draft board report. Signing cost reflects your current draft budget.";
   row.dataset.talentFit = `${formatDivisionCategory(
@@ -2790,7 +2816,7 @@ function createTalentRow({ candidate, candidateProjection, draftRank }) {
 
   const cost = document.createElement("span");
   cost.className = "talent-cost";
-  cost.textContent = `Cost ${projectedSigningCost}`;
+  cost.textContent = `Cost ${formatBudgetUnitsAsMoney(projectedSigningCost)}`;
 
   const tier = document.createElement("span");
   tier.className = "talent-tier";
@@ -2805,11 +2831,22 @@ function createTalentRow({ candidate, candidateProjection, draftRank }) {
     row.dataset.draftRank,
     sourceRosterPool,
     projectedSigningTier,
-    `Cost ${projectedSigningCost}`,
+    `Cost ${formatBudgetUnitsAsMoney(projectedSigningCost)}`,
   ].join(" | ");
 
   row.append(portrait, name, cost, tier, division, meta);
   return row;
+}
+
+function formatBudgetUnitsAsMoney(value) {
+  const budgetUnits = Number(value);
+  const normalizedUnits =
+    Number.isFinite(budgetUnits) && budgetUnits > 0
+      ? Math.floor(budgetUnits)
+      : 0;
+  const amount = normalizedUnits * 100000;
+
+  return `$${amount.toLocaleString("en-US")}`;
 }
 
 function createDisplayRatings(projectedSigningTier) {
