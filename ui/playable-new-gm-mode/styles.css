@@ -1868,6 +1868,10 @@ dd {
   border-left-color: var(--danger);
 }
 
+.talent-row.reserve-warning {
+  border-left-color: var(--warning);
+}
+
 .talent-row.drafted {
   border-left-color: var(--success);
   cursor: not-allowed;

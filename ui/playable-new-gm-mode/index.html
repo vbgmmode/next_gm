@@ -623,13 +623,16 @@
             <article class="on-clock">
               <p class="kicker">On the clock</p>
               <h2 id="draft-room-title" class="js-brand-name">Raw</h2>
-              <span class="pick-badge" id="mini-draft-pick-badge">Pick 1 of 3</span>
+              <span class="pick-badge" id="mini-draft-pick-badge">Pick 1</span>
               <div class="draft-budget-board" aria-label="Local draft budget">
-                <span id="draft-budget-starting">Starting Budget: 100</span>
-                <span id="draft-budget-remaining">Remaining Budget: 100</span>
+                <span id="draft-budget-starting">Starting Budget: 120</span>
+                <span id="draft-budget-remaining">Remaining Budget: 120</span>
                 <span id="draft-budget-spent">Spent Budget: 0</span>
-                <span id="draft-budget-signed">Signed Talent: 0</span>
-                <span id="draft-budget-minimum-roster">Minimum Roster Target: 16</span>
+                <span id="draft-budget-signed">Signed Superstars: 0</span>
+                <span id="draft-budget-minimum-roster">Minimum Viable Roster: 16</span>
+                <span id="draft-budget-booking-reserve">Booking Reserve Target: 20</span>
+                <span id="draft-budget-viability">Minimum roster not viable</span>
+                <span id="draft-budget-reserve-status">Booking reserve protected</span>
               </div>
               <div class="need-board">
                 <span>Men's division: main-event anchor needed</span>
@@ -639,7 +642,8 @@
               </div>
               <div class="draft-buttons">
                 <button class="panel-button" type="button" data-make-pick-action disabled aria-disabled="true">Make Pick Locked</button>
-                <button class="panel-button" type="button" disabled>Auto Draft Locked</button>
+                <button class="panel-button" type="button" data-auto-fill-minimum-roster disabled aria-disabled="true">Auto-Fill Locked</button>
+                <button class="panel-button" type="button" data-finish-local-draft disabled aria-disabled="true">Finish Locked</button>
               </div>
             </article>
 
@@ -786,12 +790,13 @@
                 <span id="intent-preview-brand">Raw local preview</span>
                 <span id="intent-preview-pick">Round 1 / Pick 1 placeholder</span>
                 <span id="intent-preview-status">Ready for in-memory Make Pick</span>
-                <span id="finance-preview-starting-budget">Starting Budget: 100</span>
-                <span id="finance-preview-remaining-budget">Remaining Budget: 100</span>
+                <span id="finance-preview-starting-budget">Starting Budget: 120</span>
+                <span id="finance-preview-remaining-budget">Remaining Budget: 120</span>
                 <span id="finance-preview-tier">Projected Cost Tier: Franchise</span>
                 <span id="finance-preview-cost">Projected Signing Cost: 18</span>
-                <span id="finance-preview-after-signing">Budget After Signing: 82</span>
+                <span id="finance-preview-after-signing">Budget After Signing: 102</span>
                 <span id="finance-preview-affordability">Expensive but affordable</span>
+                <span id="finance-preview-reserve">Booking reserve protected after signing</span>
               </div>
               <p class="quiet-note" id="intent-preview-note">Make Pick will run the approved Real Draft System v1 in memory only and spend local draft budget after success.</p>
             </article>
@@ -801,7 +806,7 @@
             <button class="ghost-button" type="button" data-go-to="select-brand">Back to Brand Select</button>
             <div class="draft-action-cluster">
               <button class="ghost-button qa-preview-button" type="button" data-preview-go-to="draft-recap">QA Preview: Mock Draft Recap</button>
-              <button class="hero-cta small" type="button" disabled>Draft Recap Locked</button>
+              <button class="hero-cta small" type="button" data-local-recap-action disabled aria-disabled="true">Draft Recap Locked</button>
             </div>
           </div>
         </section>
@@ -899,9 +904,9 @@
                 <em>No card or week started</em>
               </article>
               <article class="command-monitor healthy" id="dashboard-mini-draft-state">
-                <span>Mini Draft</span>
+                <span>Initial Draft</span>
                 <strong>Local Preview Locked</strong>
-                <em>Complete three manual picks first</em>
+                <em>Sign at least 16 before finishing</em>
               </article>
               <article class="command-monitor urgent">
                 <span>GM Alerts</span>

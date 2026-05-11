@@ -185,7 +185,7 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
     ]);
   });
 
-  it("keeps Make Pick controlled, Auto Draft locked, and direct Draft Recap locked in the static UI", () => {
+  it("keeps Make Pick, Auto-Fill, Finish Draft, and direct Draft Recap locked in the static UI", () => {
     const html = readPlayableUiFile("index.html");
 
     assert.match(
@@ -194,11 +194,15 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
     );
     assert.match(
       html,
-      /<button class="panel-button" type="button" disabled>Auto Draft Locked<\/button>/
+      /<button class="panel-button" type="button" data-auto-fill-minimum-roster disabled aria-disabled="true">Auto-Fill Locked<\/button>/
     );
     assert.match(
       html,
-      /<button class="hero-cta small" type="button" disabled>Draft Recap Locked<\/button>/
+      /<button class="panel-button" type="button" data-finish-local-draft disabled aria-disabled="true">Finish Locked<\/button>/
+    );
+    assert.match(
+      html,
+      /<button class="hero-cta small" type="button" data-local-recap-action disabled aria-disabled="true">Draft Recap Locked<\/button>/
     );
   });
 

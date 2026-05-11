@@ -6,6 +6,7 @@ import { describe, it } from "node:test";
 import {
   createInitialMiniDraftProgress,
   createMakePickReadiness,
+  executeLocalFinishDraft,
   executeInMemoryMakePick,
 } from "../ui/playable-new-gm-mode/inMemoryDraftActionController.js";
 import { DEFAULT_LOCAL_DRAFT_SLOT } from "../ui/playable-new-gm-mode/draftSelectionIntentAdapter.js";
@@ -38,6 +39,11 @@ const secondValidCandidate = Object.freeze({
 const thirdValidCandidate = Object.freeze({
   candidateId: "candidate-cassian-ryde",
   name: "Cassian Ryde",
+  availability: "Available",
+});
+const fourthValidCandidate = Object.freeze({
+  candidateId: "candidate-dante-cross",
+  name: "Dante Cross",
   availability: "Available",
 });
 const unavailableCandidate = Object.freeze({
@@ -122,14 +128,14 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(result.flowResult.capabilityFlags.canPersistGameplayPayload, false);
     assert.equal(result.miniDraftProgress.currentPickIndex, 1);
     assert.equal(result.miniDraftProgress.currentDraftSlot.pickNumber, 2);
-    assert.equal(result.miniDraftProgress.startingDraftBudget, 100);
-    assert.equal(result.miniDraftProgress.remainingDraftBudget, 82);
+    assert.equal(result.miniDraftProgress.startingDraftBudget, 120);
+    assert.equal(result.miniDraftProgress.remainingDraftBudget, 102);
     assert.equal(result.miniDraftProgress.budgetSpent, 18);
     assert.equal(result.miniDraftProgress.signedTalentCount, 1);
     assert.equal(result.currentPickSummary.signingTier, "Franchise");
     assert.equal(result.currentPickSummary.signingCost, 18);
-    assert.equal(result.currentPickSummary.budgetBeforeSigning, 100);
-    assert.equal(result.currentPickSummary.budgetAfterSigning, 82);
+    assert.equal(result.currentPickSummary.budgetBeforeSigning, 120);
+    assert.equal(result.currentPickSummary.budgetAfterSigning, 102);
     assert.deepEqual(result.miniDraftProgress.selectedBrandReference, {
       hasBrand: true,
       brandId: "raw",
@@ -184,7 +190,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(repeatPick.capabilityFlags.canAutoDraft, false);
   });
 
-  it("completes exactly three manual local picks and then locks Make Pick", () => {
+  it("keeps manual signing open after three picks while budget and candidates remain", () => {
     let flowCallCount = 0;
     const services = {
       createCandidateObjectSet: createNewGMModeDraftPickCandidateObjects,
@@ -214,18 +220,19 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       miniDraftProgress: secondPick.miniDraftProgress,
     }, services);
     const fourthPick = executeInMemoryMakePick({
-      selectedCandidate: unavailableCandidate,
+      selectedCandidate: fourthValidCandidate,
       selectedBrand,
       selectedGm,
       miniDraftProgress: thirdPick.miniDraftProgress,
-    });
+    }, services);
 
-    assert.equal(flowCallCount, 3);
+    assert.equal(flowCallCount, 4);
     assert.equal(thirdPick.actionStatus, "in-memory-make-pick-succeeded");
     assert.equal(thirdPick.miniDraftProgress.completedPickSummaries.length, 3);
     assert.equal(thirdPick.miniDraftProgress.currentPickIndex, 3);
-    assert.equal(thirdPick.miniDraftProgress.miniDraftComplete, true);
-    assert.equal(thirdPick.miniDraftProgress.remainingDraftBudget, 71);
+    assert.equal(thirdPick.miniDraftProgress.miniDraftComplete, false);
+    assert.equal(thirdPick.miniDraftProgress.localDraftFinished, false);
+    assert.equal(thirdPick.miniDraftProgress.remainingDraftBudget, 91);
     assert.equal(thirdPick.miniDraftProgress.budgetSpent, 29);
     assert.equal(thirdPick.miniDraftProgress.signedTalentCount, 3);
     assert.deepEqual(thirdPick.miniDraftProgress.draftedCandidateIds, [
@@ -233,11 +240,14 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       "candidate-bruno-vale",
       "candidate-cassian-ryde",
     ]);
-    assert.equal(fourthPick.actionStatus, "blocked-mini-draft-complete");
+    assert.equal(fourthPick.actionStatus, "in-memory-make-pick-succeeded");
+    assert.equal(fourthPick.miniDraftProgress.completedPickSummaries.length, 4);
+    assert.equal(fourthPick.miniDraftProgress.signedTalentCount, 4);
+    assert.equal(fourthPick.miniDraftProgress.remainingDraftBudget, 87);
     assert.equal(fourthPick.capabilityFlags.canCompleteFullDraft, false);
   });
 
-  it("produces local mini draft recap state that stays player-facing and unsaved", () => {
+  it("produces local finance-limited draft recap state that stays player-facing and unsaved", () => {
     const firstPick = executeInMemoryMakePick({
       selectedCandidate: validCandidate,
       selectedBrand,
@@ -260,27 +270,32 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(result.localOnly, true);
     assert.equal(result.inMemoryOnly, true);
     assert.equal(result.persisted, false);
-    assert.equal(result.projection.projectionKind, "local-mini-draft-recap-projection");
+    assert.equal(result.projection.projectionKind, "local-finance-limited-draft-recap-projection");
     assert.equal(result.projection.completedInMemory, true);
-    assert.equal(result.projection.miniDraftComplete, true);
+    assert.equal(result.projection.miniDraftComplete, false);
+    assert.equal(result.projection.localDraftFinished, false);
     assert.equal(result.projection.pickCount, 3);
-    assert.equal(result.projection.displayLabels.recapStatusLine, "Mini Draft Complete - local only");
+    assert.equal(result.projection.displayLabels.recapStatusLine, "Draft still open");
     assert.equal(
       result.projection.displayLabels.candidateLine,
       "Round 1 / Pick 1: Ace Mercer (Raw, Franchise, Cost 18) | Round 1 / Pick 2: Bruno Vale (Raw, Upper Card, Cost 8) | Round 1 / Pick 3: Cassian Ryde (Raw, Prospect, Cost 3)"
     );
-    assert.equal(result.projection.displayLabels.budgetLine, "Budget: 71 remaining / 29 spent");
+    assert.equal(result.projection.displayLabels.budgetLine, "Budget: 91 remaining / 29 spent / reserve 20");
     assert.deepEqual(result.projection.budgetSummary, {
-      startingDraftBudget: 100,
+      startingDraftBudget: 120,
       budgetSpent: 29,
-      remainingDraftBudget: 71,
+      remainingDraftBudget: 91,
       signedTalentCount: 3,
+      minimumViableRosterCount: 16,
       minimumRosterTarget: 16,
+      minimumRosterViable: false,
+      bookingReserveBudget: 20,
+      bookingReserveProtected: true,
     });
-    assert.equal(result.projection.displayLabels.pickLine, "Mini draft complete: 3 of 3");
+    assert.equal(result.projection.displayLabels.pickLine, "Draft still open: 3 signed");
     assert.equal(
       result.projection.displayLabels.noteLine,
-      "Local-only mini draft result. No save, persistence, full roster, Week 1 initialization, booking, or gameplay start occurred."
+      "Local-only draft result. No save, persistence, Week 1 initialization, booking, or gameplay start occurred."
     );
   });
 
@@ -302,13 +317,13 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(pickResult.actionStatus, "in-memory-make-pick-succeeded");
     assert.equal(
       beforePickFinanceProjection.remainingDraftBudgetPreview,
-      100
+      120
     );
     assert.equal(
       afterPickFinanceProjection.remainingDraftBudgetPreview,
-      82
+      102
     );
-    assert.equal(pickResult.miniDraftProgress.remainingDraftBudget, 82);
+    assert.equal(pickResult.miniDraftProgress.remainingDraftBudget, 102);
     assert.equal(pickResult.miniDraftProgress.budgetSpent, 18);
     assert.equal(pickResult.miniDraftProgress.signedTalentCount, 1);
     assert.equal(beforePickFinanceProjection.capabilityFlags.canDeductBudget, false);
@@ -322,22 +337,23 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
 
     assert.match(html, /Mock Draft Recap - no draft executed/);
     assert.match(html, /QA Preview: Mock Draft Recap/);
-    assert.match(controllerSource, /Mini Draft Complete - local only/);
-    assert.match(controllerSource, /local-mini-draft-recap-projection/);
+    assert.match(controllerSource, /Draft Finished Locally/);
+    assert.match(controllerSource, /local-finance-limited-draft-recap-projection/);
   });
 
   it("wires read-only finance projection labels into the draft preview UI", () => {
     const html = readPlayableUiFile("index.html");
     const appSource = readPlayableUiFile("app.js");
 
-    assert.match(html, /Starting Budget: 100/);
-    assert.match(html, /Remaining Budget: 100/);
+    assert.match(html, /Starting Budget: 120/);
+    assert.match(html, /Remaining Budget: 120/);
     assert.match(html, /Spent Budget: 0/);
-    assert.match(html, /Signed Talent: 0/);
-    assert.match(html, /Minimum Roster Target: 16/);
+    assert.match(html, /Signed Superstars: 0/);
+    assert.match(html, /Minimum Viable Roster: 16/);
+    assert.match(html, /Booking Reserve Target: 20/);
     assert.match(html, /Projected Cost Tier: Franchise/);
     assert.match(html, /Projected Signing Cost: 18/);
-    assert.match(html, /Budget After Signing: 82/);
+    assert.match(html, /Budget After Signing: 102/);
     assert.match(html, /spend local draft budget after success/);
     assert.match(appSource, /createNewGMModeDraftFinanceProjection/);
     assert.doesNotMatch(appSource, /budgetDeducted|mutateBudget/);

@@ -60,7 +60,7 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     }
   });
 
-  it("keeps Auto Draft locked and keeps a separate mock continuation CTA", () => {
+  it("keeps local draft actions locked and keeps a separate mock continuation CTA", () => {
     const html = readPlayableUiFile("index.html");
 
     assert.match(
@@ -69,11 +69,15 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     );
     assert.match(
       html,
-      /<button class="panel-button" type="button" disabled>Auto Draft Locked<\/button>/
+      /<button class="panel-button" type="button" data-auto-fill-minimum-roster disabled aria-disabled="true">Auto-Fill Locked<\/button>/
     );
     assert.match(
       html,
-      /<button class="hero-cta small" type="button" disabled>Draft Recap Locked<\/button>/
+      /<button class="panel-button" type="button" data-finish-local-draft disabled aria-disabled="true">Finish Locked<\/button>/
+    );
+    assert.match(
+      html,
+      /<button class="hero-cta small" type="button" data-local-recap-action disabled aria-disabled="true">Draft Recap Locked<\/button>/
     );
     assert.match(
       html,

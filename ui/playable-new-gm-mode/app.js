@@ -4,12 +4,17 @@ import {
 } from "./draftSelectionIntentAdapter.js";
 import { createMockDraftRecapPreviewState } from "./draftRecapPreviewState.js";
 import {
+  createAutoFillMinimumRosterReadiness,
+  createFinishDraftReadiness,
   createInitialMiniDraftProgress,
   createMakePickReadiness,
+  executeAutoFillMinimumRoster,
   executeInMemoryMakePick,
+  executeLocalFinishDraft,
 } from "./inMemoryDraftActionController.js";
 import {
   createNewGMModeDraftFinanceProjection,
+  NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
 } from "../../src/game/domain/index.ts";
@@ -26,6 +31,9 @@ import {
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
   const previewControls = Array.from(document.querySelectorAll("[data-preview-go-to]"));
   const makePickControl = document.querySelector("[data-make-pick-action]");
+  const autoFillControl = document.querySelector("[data-auto-fill-minimum-roster]");
+  const finishDraftControl = document.querySelector("[data-finish-local-draft]");
+  const recapControl = document.querySelector("[data-local-recap-action]");
   const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
   const gmCards = Array.from(document.querySelectorAll("[data-gm-id]"));
   const brandControls = Array.from(document.querySelectorAll("[data-brand]"));
@@ -40,6 +48,9 @@ import {
     spent: document.getElementById("draft-budget-spent"),
     signed: document.getElementById("draft-budget-signed"),
     minimumRosterTarget: document.getElementById("draft-budget-minimum-roster"),
+    reserve: document.getElementById("draft-budget-booking-reserve"),
+    viability: document.getElementById("draft-budget-viability"),
+    reserveStatus: document.getElementById("draft-budget-reserve-status"),
   };
   const brandNameTargets = Array.from(document.querySelectorAll(".js-brand-name"));
   const intentPreviewTargets = {
@@ -56,6 +67,7 @@ import {
     cost: document.getElementById("finance-preview-cost"),
     afterSigning: document.getElementById("finance-preview-after-signing"),
     affordability: document.getElementById("finance-preview-affordability"),
+    reserve: document.getElementById("finance-preview-reserve"),
   };
   const draftRecapTargets = {
     badge: document.getElementById("draft-recap-badge"),
@@ -386,6 +398,11 @@ import {
       formatCandidateAffordabilityLine(candidateProjection) ||
         "Locked pending finance rules"
     );
+    setText(
+      financePreviewTargets.reserve,
+      formatCandidateReserveLine(candidateProjection) ||
+        "Booking Reserve Target: 20"
+    );
   }
 
   function updateDraftBudgetPanel() {
@@ -397,10 +414,22 @@ import {
     );
     setText(draftBudgetTargets.remaining, `Remaining Budget: ${progress.remainingDraftBudget}`);
     setText(draftBudgetTargets.spent, `Spent Budget: ${progress.budgetSpent}`);
-    setText(draftBudgetTargets.signed, `Signed Talent: ${progress.signedTalentCount}`);
+    setText(draftBudgetTargets.signed, `Signed Superstars: ${progress.signedTalentCount}`);
     setText(
       draftBudgetTargets.minimumRosterTarget,
-      `Minimum Roster Target: ${progress.minimumRosterTarget ?? NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER}`
+      `Minimum Viable Roster: ${progress.minimumViableRosterCount ?? progress.minimumRosterTarget ?? NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER}`
+    );
+    setText(
+      draftBudgetTargets.reserve,
+      `Booking Reserve Target: ${progress.bookingReserveBudget ?? NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER}`
+    );
+    setText(
+      draftBudgetTargets.viability,
+      progress.minimumRosterViable ? "Minimum roster viable" : "Minimum roster not viable"
+    );
+    setText(
+      draftBudgetTargets.reserveStatus,
+      progress.bookingReserveProtected ? "Booking reserve protected" : "Booking reserve dipped"
     );
   }
 
@@ -418,14 +447,28 @@ import {
         candidateProjection?.affordabilityStatus === "not-affordable" &&
         !drafted &&
         !unavailable;
+      const reserveWarning =
+        candidateProjection &&
+        candidateProjection.budgetPreviewAfterSigning <
+          uiState.miniDraftProgress.bookingReserveBudget &&
+        !drafted &&
+        !unavailable &&
+        !unaffordable;
       const meta = row.querySelector("small");
 
       row.classList.toggle("budget-blocked", unaffordable);
+      row.classList.toggle("reserve-warning", Boolean(reserveWarning));
 
       if (meta && candidateProjection) {
         meta.textContent = [
           row.dataset.draftRank,
-          drafted ? "Already Drafted" : unavailable ? "Unavailable" : formatRowAffordability(candidateProjection),
+          drafted
+            ? "Already Signed"
+            : unavailable
+              ? "Unavailable"
+              : reserveWarning
+                ? "Reserve Warning"
+                : formatRowAffordability(candidateProjection),
           candidateProjection.projectedSigningTier,
           `Cost ${candidateProjection.projectedSigningCost}`,
         ].join(" | ");
@@ -486,23 +529,29 @@ import {
       return;
     }
 
-    setText(stateCard.querySelector("span"), "Mini Draft");
+    setText(stateCard.querySelector("span"), "Initial Draft");
     setText(
       stateCard.querySelector("strong"),
-      projection.miniDraftComplete ? "Local Preview Complete" : "Local Preview In Progress"
+      projection.localDraftFinished
+        ? "Draft Finished Locally"
+        : projection.minimumRosterViable
+          ? "Minimum Viable, Still Open"
+          : "Draft Still Open"
     );
     setText(
       stateCard.querySelector("em"),
-      projection.miniDraftComplete
-        ? "Full draft, roster setup, Week 1, and booking remain locked"
-        : "Finish three manual local picks before reviewing the recap"
+      projection.localDraftFinished
+        ? "Week 1 setup, booking, and saving remain locked"
+        : projection.minimumRosterViable
+          ? "Finish Draft locally when ready"
+          : "Sign at least 16 before finishing"
     );
   }
 
   function updateMiniDraftPickBadge() {
     if (miniDraftPickBadge) {
-      miniDraftPickBadge.textContent = uiState.miniDraftProgress.miniDraftComplete
-        ? "Mini Draft Complete"
+      miniDraftPickBadge.textContent = uiState.miniDraftProgress.localDraftFinished
+        ? "Draft Finished Locally"
         : uiState.miniDraftProgress.displayLabels.progressLine;
     }
   }
@@ -548,6 +597,57 @@ import {
     updateMiniDraftPickBadge();
     updateDraftBudgetPanel();
     updateFinanceCandidateRows();
+    updateAutoFillControl();
+    updateFinishDraftControl();
+    updateRecapControl();
+  }
+
+  function updateAutoFillControl() {
+    if (!autoFillControl) {
+      return;
+    }
+
+    const readiness = createAutoFillMinimumRosterReadiness({
+      selectedBrand: getSelectedBrandDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+    });
+
+    autoFillControl.disabled = !readiness.canAutoFill;
+    autoFillControl.textContent = readiness.displayLabels.buttonLabel;
+    autoFillControl.setAttribute("aria-disabled", String(!readiness.canAutoFill));
+    autoFillControl.classList.toggle("enabled", readiness.canAutoFill);
+  }
+
+  function updateFinishDraftControl() {
+    if (!finishDraftControl) {
+      return;
+    }
+
+    const readiness = createFinishDraftReadiness({
+      selectedBrand: getSelectedBrandDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+    });
+
+    finishDraftControl.disabled = !readiness.canFinishDraft;
+    finishDraftControl.textContent = readiness.displayLabels.buttonLabel;
+    finishDraftControl.setAttribute("aria-disabled", String(!readiness.canFinishDraft));
+    finishDraftControl.classList.toggle("enabled", readiness.canFinishDraft);
+  }
+
+  function updateRecapControl() {
+    if (!recapControl) {
+      return;
+    }
+
+    recapControl.disabled = !uiState.miniDraftProgress.localDraftFinished;
+    recapControl.textContent = uiState.miniDraftProgress.localDraftFinished
+      ? "Open Draft Recap"
+      : "Draft Recap Locked";
+    recapControl.setAttribute(
+      "aria-disabled",
+      String(!uiState.miniDraftProgress.localDraftFinished)
+    );
+    recapControl.classList.toggle("enabled", uiState.miniDraftProgress.localDraftFinished);
   }
 
   function setText(target, value) {
@@ -574,6 +674,22 @@ import {
     }
 
     return "Affordable";
+  }
+
+  function formatCandidateReserveLine(candidateProjection) {
+    if (!candidateProjection) {
+      return undefined;
+    }
+
+    const reserveBudget =
+      uiState.miniDraftProgress.bookingReserveBudget ??
+      NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER;
+
+    if (candidateProjection.budgetPreviewAfterSigning < reserveBudget) {
+      return "This signing dips into your booking reserve.";
+    }
+
+    return "Booking reserve protected after signing";
   }
 
   function formatRowAffordability(candidateProjection) {
@@ -660,12 +776,12 @@ import {
 
     setText(talentDetail.initials, "--");
     setText(talentDetail.name, "Select next prospect");
-    setText(talentDetail.role, "Mini draft in progress");
+    setText(talentDetail.role, "Finance-limited draft in progress");
     setText(talentDetail.availability, result.miniDraftProgress.displayLabels.progressLine);
     talentDetail.availability?.classList.remove("blocked");
-    setText(talentDetail.read, result.miniDraftProgress.miniDraftComplete
-      ? "Mini Draft Complete. Review the local recap."
-      : "Choose another available candidate to continue the local mini draft.");
+    setText(talentDetail.read, result.miniDraftProgress.localDraftFinished
+      ? "Draft Finished Locally. Review the local recap."
+      : "Choose another available candidate to continue the local draft.");
     setText(talentDetail.fit, "Local-only draft preview. Reload resets progress.");
     setText(talentDetail.previewStatus, result.miniDraftProgress.displayLabels.statusLine);
     setText(talentDetail.starPower, "--");
@@ -780,10 +896,63 @@ import {
 
     updateMakePickControl();
 
-    if (
-      result.actionStatus === "in-memory-make-pick-succeeded" &&
-      result.miniDraftProgress.miniDraftComplete
-    ) {
+  });
+
+  autoFillControl?.addEventListener("click", () => {
+    if (autoFillControl.disabled) {
+      return;
+    }
+
+    const result = executeAutoFillMinimumRoster({
+      selectedBrand: getSelectedBrandDisplay(),
+      selectedGm: getSelectedGmDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+    });
+
+    if (result.miniDraftProgress) {
+      uiState.miniDraftProgress = result.miniDraftProgress;
+      updateDraftedCandidateRows();
+      updateDraftBudgetPanel();
+      clearSelectedCandidateAfterPick(result);
+    }
+
+    if (result.projection) {
+      updateInMemoryDraftRecapProjection(result.projection);
+    }
+
+    setText(intentPreviewTargets.status, result.displayLabels?.statusLine);
+    setText(intentPreviewTargets.note, result.displayLabels?.noteLine);
+    updateMakePickControl();
+  });
+
+  finishDraftControl?.addEventListener("click", () => {
+    const result = executeLocalFinishDraft({
+      selectedBrand: getSelectedBrandDisplay(),
+      selectedGm: getSelectedGmDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+    });
+
+    if (result.miniDraftProgress) {
+      uiState.miniDraftProgress = result.miniDraftProgress;
+      updateDraftedCandidateRows();
+      updateDraftBudgetPanel();
+    }
+
+    if (result.projection) {
+      updateInMemoryDraftRecapProjection(result.projection);
+    }
+
+    setText(intentPreviewTargets.status, result.displayLabels?.statusLine);
+    setText(intentPreviewTargets.note, result.displayLabels?.noteLine);
+    updateMakePickControl();
+
+    if (result.actionStatus === "local-draft-finished") {
+      showSection("draft-recap");
+    }
+  });
+
+  recapControl?.addEventListener("click", () => {
+    if (!recapControl.disabled) {
       showSection("draft-recap");
     }
   });

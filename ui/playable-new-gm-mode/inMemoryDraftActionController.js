@@ -3,6 +3,7 @@ import {
   createNewGMModeDraftFinanceProjection,
   createNewGMModeDraftSelectionIntentObject,
   createNewGMModeInMemoryDraftFlow,
+  NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
 } from "../../src/game/domain/index.ts";
@@ -15,13 +16,36 @@ export const IN_MEMORY_MAKE_PICK_STATUS = Object.freeze({
   BLOCKED_MISSING_DRAFT_SLOT: "blocked-missing-draft-slot",
   BLOCKED_ALREADY_DRAFTED: "blocked-candidate-already-drafted",
   BLOCKED_UNAFFORDABLE_CANDIDATE: "blocked-candidate-unaffordable",
-  BLOCKED_MINI_DRAFT_COMPLETE: "blocked-mini-draft-complete",
+  BLOCKED_LOCAL_DRAFT_FINISHED: "blocked-local-draft-finished",
+  BLOCKED_NO_DRAFT_CONTINUATION: "blocked-no-draft-continuation",
   BLOCKED_DOMAIN_CANDIDATE_MISSING: "blocked-domain-candidate-missing",
   SUCCEEDED: "in-memory-make-pick-succeeded",
   DOMAIN_BLOCKED: "in-memory-make-pick-domain-blocked",
 });
 
-export const MINI_DRAFT_MAX_PICKS = 3;
+export const LOCAL_DRAFT_MINIMUM_VIABLE_ROSTER_COUNT =
+  NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER;
+export const LOCAL_DRAFT_BOOKING_RESERVE_BUDGET =
+  NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER;
+
+export const AUTO_FILL_MINIMUM_ROSTER_STATUS = Object.freeze({
+  READY: "ready-for-auto-fill-minimum-roster",
+  SUCCEEDED: "auto-fill-minimum-roster-succeeded",
+  STOPPED_MINIMUM_NOT_REACHED: "auto-fill-stopped-minimum-not-reached",
+  BLOCKED_MISSING_BRAND: "blocked-auto-fill-missing-brand",
+  BLOCKED_LOCAL_DRAFT_FINISHED: "blocked-auto-fill-local-draft-finished",
+  BLOCKED_MINIMUM_ALREADY_VIABLE: "blocked-auto-fill-minimum-roster-viable",
+  BLOCKED_NO_RESERVE_SAFE_CANDIDATES:
+    "blocked-auto-fill-no-reserve-safe-candidates",
+});
+
+export const LOCAL_FINISH_DRAFT_STATUS = Object.freeze({
+  READY: "ready-to-finish-local-draft",
+  SUCCEEDED: "local-draft-finished",
+  BLOCKED_MISSING_BRAND: "blocked-finish-draft-missing-brand",
+  BLOCKED_MINIMUM_NOT_VIABLE: "blocked-finish-draft-minimum-not-viable",
+  BLOCKED_ALREADY_FINISHED: "blocked-finish-draft-already-finished",
+});
 
 const DEFAULT_SERVICES = Object.freeze({
   createCandidateObjectSet: createNewGMModeDraftPickCandidateObjects,
@@ -43,8 +67,12 @@ export function createMakePickReadiness({
     miniDraftProgress: progress,
   });
 
-  if (progress.miniDraftComplete) {
-    blockedReasonIds.push("mini-draft-complete");
+  if (progress.localDraftFinished) {
+    blockedReasonIds.push("local-draft-finished");
+  }
+
+  if (!progress.draftCanContinue && !progress.localDraftFinished) {
+    blockedReasonIds.push("draft-cannot-continue");
   }
 
   if (!selectedCandidateId) {
@@ -91,11 +119,10 @@ export function createMakePickReadiness({
 }
 
 export function createInitialMiniDraftProgress({
-  maxPicks = MINI_DRAFT_MAX_PICKS,
   selectedBrand,
 } = {}) {
   return Object.freeze({
-    progressKind: "playable-new-gm-mode-local-mini-draft-progress",
+    progressKind: "playable-new-gm-mode-local-finance-limited-draft-progress",
     version: "0.1",
     localOnly: true,
     inMemoryOnly: true,
@@ -104,19 +131,27 @@ export function createInitialMiniDraftProgress({
     remainingDraftBudget: NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
     budgetSpent: 0,
     signedTalentCount: 0,
+    minimumViableRosterCount:
+      NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
     minimumRosterTarget:
       NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
+    bookingReserveBudget: NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
+    minimumRosterViable: false,
+    bookingReserveProtected: true,
+    draftCanContinue: true,
+    localDraftFinished: false,
     currentPickIndex: 0,
-    maxPicks,
     selectedBrandReference: createSelectedBrandReference(selectedBrand),
     currentDraftSlot: createDraftSlotForIndex(0),
     completedPickSummaries: Object.freeze([]),
     draftedCandidateIds: Object.freeze([]),
     miniDraftComplete: false,
     displayLabels: Object.freeze({
-      progressLine: `Pick 1 of ${maxPicks}`,
-      statusLine: "Mini draft ready",
-      budgetLine: "Budget remaining: 100",
+      progressLine: "Pick 1",
+      statusLine: "Finance-limited draft ready",
+      budgetLine: "Budget remaining: 120",
+      viabilityLine: "Minimum roster not viable: 0 of 16",
+      reserveLine: "Booking reserve protected",
       noteLine: "Local preview only. Reload resets draft progress.",
     }),
   });
@@ -183,6 +218,8 @@ export function executeInMemoryMakePick(input = {}, services = DEFAULT_SERVICES)
     pickNumber: miniDraftProgress.completedPickSummaries.length + 1,
     financeProjection: candidateFinanceProjection,
     budgetBeforeSigning: miniDraftProgress.remainingDraftBudget,
+    bookingReserveBudget: miniDraftProgress.bookingReserveBudget,
+    pickSource: input.pickSource,
   });
   const succeeded = currentPickSummary.completedInMemory;
   const nextMiniDraftProgress = succeeded
@@ -223,6 +260,221 @@ export function executeInMemoryMakePick(input = {}, services = DEFAULT_SERVICES)
   });
 }
 
+export function createAutoFillMinimumRosterReadiness(
+  { selectedBrand, miniDraftProgress } = {},
+  services = DEFAULT_SERVICES
+) {
+  const progress = normalizeMiniDraftProgress(miniDraftProgress);
+  const blockedReasonIds = [];
+
+  if (!readString(selectedBrand?.brandId)) {
+    blockedReasonIds.push("brand-selection-missing");
+  }
+
+  if (progress.localDraftFinished) {
+    blockedReasonIds.push("local-draft-finished");
+  }
+
+  if (progress.minimumRosterViable) {
+    blockedReasonIds.push("minimum-roster-already-viable");
+  }
+
+  const candidateObjectSet = services.createCandidateObjectSet();
+  const autoFillOptions = collectAutoFillCandidateOptions({
+    progress,
+    candidateObjectSet,
+    preserveBookingReserve: true,
+  });
+
+  if (!autoFillOptions.length) {
+    blockedReasonIds.push("no-reserve-safe-affordable-candidates");
+  }
+
+  const actionStatus = createAutoFillReadinessStatus(blockedReasonIds);
+
+  return Object.freeze({
+    actionStatus,
+    canAutoFill: actionStatus === AUTO_FILL_MINIMUM_ROSTER_STATUS.READY,
+    blocked: actionStatus !== AUTO_FILL_MINIMUM_ROSTER_STATUS.READY,
+    blockedReasonIds: Object.freeze(blockedReasonIds),
+    displayLabels: Object.freeze({
+      buttonLabel:
+        actionStatus === AUTO_FILL_MINIMUM_ROSTER_STATUS.READY
+          ? "Auto-Fill Toward 16"
+          : "Auto-Fill Locked",
+      statusLine: createAutoFillStatusLine(actionStatus),
+      noteLine: createAutoFillNoteLine(actionStatus, progress),
+    }),
+  });
+}
+
+export function executeAutoFillMinimumRoster(
+  input = {},
+  services = DEFAULT_SERVICES
+) {
+  const initialProgress = normalizeMiniDraftProgress(input.miniDraftProgress);
+  const readiness = createAutoFillMinimumRosterReadiness(
+    {
+      selectedBrand: input.selectedBrand,
+      miniDraftProgress: initialProgress,
+    },
+    services
+  );
+
+  if (!readiness.canAutoFill) {
+    return createBlockedAutoFillResult(readiness, initialProgress, input);
+  }
+
+  let currentProgress = initialProgress;
+  const autoFilledPickSummaries = [];
+
+  while (!currentProgress.minimumRosterViable) {
+    const candidateObjectSet = services.createCandidateObjectSet();
+    const [nextCandidate] = collectAutoFillCandidateOptions({
+      progress: currentProgress,
+      candidateObjectSet,
+      preserveBookingReserve: true,
+    });
+
+    if (!nextCandidate) {
+      break;
+    }
+
+    const pickResult = executeInMemoryMakePick(
+      {
+        selectedCandidate: nextCandidate.selectedCandidate,
+        selectedBrand: input.selectedBrand,
+        selectedGm: input.selectedGm,
+        miniDraftProgress: currentProgress,
+        pickSource: "auto-fill",
+      },
+      services
+    );
+
+    if (pickResult.actionStatus !== IN_MEMORY_MAKE_PICK_STATUS.SUCCEEDED) {
+      break;
+    }
+
+    currentProgress = pickResult.miniDraftProgress;
+    autoFilledPickSummaries.push(pickResult.currentPickSummary);
+  }
+
+  const projection = createDraftRecapProjection({
+    miniDraftProgress: currentProgress,
+    selectedBrand: input.selectedBrand,
+    selectedGm: input.selectedGm,
+  });
+  const reachedMinimum = currentProgress.minimumRosterViable;
+
+  return Object.freeze({
+    actionStatus: reachedMinimum
+      ? AUTO_FILL_MINIMUM_ROSTER_STATUS.SUCCEEDED
+      : AUTO_FILL_MINIMUM_ROSTER_STATUS.STOPPED_MINIMUM_NOT_REACHED,
+    localOnly: true,
+    inMemoryOnly: true,
+    persisted: false,
+    autoFilledCount: autoFilledPickSummaries.length,
+    autoFilledPickSummaries: Object.freeze(autoFilledPickSummaries),
+    miniDraftProgress: currentProgress,
+    projection,
+    blockedReasonIds: reachedMinimum
+      ? Object.freeze([])
+      : Object.freeze(["minimum-roster-not-reached-with-reserve-protected"]),
+    displayLabels: Object.freeze({
+      statusLine: reachedMinimum
+        ? "Auto-Fill reached minimum roster viability"
+        : "Auto-Fill stopped before minimum roster viability",
+      noteLine: reachedMinimum
+        ? "Auto-Fill stopped at 16 and preserved the local-only draft boundary."
+        : "Auto-Fill stopped rather than dipping into booking reserve or signing unavailable talent.",
+    }),
+    capabilityFlags: createBlockedCapabilityFlags(),
+  });
+}
+
+export function createFinishDraftReadiness({
+  selectedBrand,
+  miniDraftProgress,
+} = {}) {
+  const progress = normalizeMiniDraftProgress(miniDraftProgress);
+  const blockedReasonIds = [];
+
+  if (!readString(selectedBrand?.brandId)) {
+    blockedReasonIds.push("brand-selection-missing");
+  }
+
+  if (progress.localDraftFinished) {
+    blockedReasonIds.push("local-draft-already-finished");
+  }
+
+  if (!progress.minimumRosterViable) {
+    blockedReasonIds.push("minimum-roster-not-viable");
+  }
+
+  const actionStatus = createFinishDraftReadinessStatus(blockedReasonIds);
+
+  return Object.freeze({
+    actionStatus,
+    canFinishDraft: actionStatus === LOCAL_FINISH_DRAFT_STATUS.READY,
+    blocked: actionStatus !== LOCAL_FINISH_DRAFT_STATUS.READY,
+    blockedReasonIds: Object.freeze(blockedReasonIds),
+    displayLabels: Object.freeze({
+      buttonLabel:
+        actionStatus === LOCAL_FINISH_DRAFT_STATUS.READY
+          ? "Finish Draft"
+          : "Finish Locked",
+      statusLine: createFinishDraftStatusLine(actionStatus),
+      noteLine: createFinishDraftNoteLine(actionStatus, progress),
+    }),
+  });
+}
+
+export function executeLocalFinishDraft(input = {}) {
+  const progress = normalizeMiniDraftProgress(input.miniDraftProgress);
+  const readiness = createFinishDraftReadiness({
+    selectedBrand: input.selectedBrand,
+    miniDraftProgress: progress,
+  });
+
+  if (!readiness.canFinishDraft) {
+    return Object.freeze({
+      actionStatus: readiness.actionStatus,
+      localOnly: true,
+      inMemoryOnly: true,
+      persisted: false,
+      blocked: true,
+      blockedReasonIds: readiness.blockedReasonIds,
+      displayLabels: readiness.displayLabels,
+      capabilityFlags: createBlockedCapabilityFlags(),
+    });
+  }
+
+  const nextProgress = normalizeMiniDraftProgress({
+    ...progress,
+    localDraftFinished: true,
+    miniDraftComplete: true,
+  });
+  const projection = createDraftRecapProjection({
+    miniDraftProgress: nextProgress,
+    selectedBrand: input.selectedBrand,
+    selectedGm: input.selectedGm,
+  });
+
+  return Object.freeze({
+    actionStatus: LOCAL_FINISH_DRAFT_STATUS.SUCCEEDED,
+    localOnly: true,
+    inMemoryOnly: true,
+    persisted: false,
+    miniDraftProgress: nextProgress,
+    projection,
+    displayLabels: Object.freeze({
+      statusLine: "Draft Finished Locally",
+      noteLine: "This draft is not saved yet. Week 1 setup remains locked.",
+    }),
+    capabilityFlags: createBlockedCapabilityFlags(),
+  });
+}
+
 function createDraftRecapProjection({
   selectedBrand,
   selectedGm,
@@ -234,64 +486,75 @@ function createDraftRecapProjection({
   const pickCount = progress.completedPickSummaries.length;
   const pickList = createPickListLabel(progress.completedPickSummaries);
   const completedInMemory = pickCount > 0;
-  const miniDraftComplete = progress.miniDraftComplete;
+  const localDraftFinished = progress.localDraftFinished;
   const budgetSummary = Object.freeze({
     startingDraftBudget: progress.startingDraftBudget,
     budgetSpent: progress.budgetSpent,
     remainingDraftBudget: progress.remainingDraftBudget,
     signedTalentCount: progress.signedTalentCount,
-    minimumRosterTarget: progress.minimumRosterTarget,
+    minimumViableRosterCount: progress.minimumViableRosterCount,
+    minimumRosterTarget: progress.minimumViableRosterCount,
+    minimumRosterViable: progress.minimumRosterViable,
+    bookingReserveBudget: progress.bookingReserveBudget,
+    bookingReserveProtected: progress.bookingReserveProtected,
   });
 
   return Object.freeze({
-    projectionKind: "local-mini-draft-recap-projection",
+    projectionKind: "local-finance-limited-draft-recap-projection",
     version: "0.1",
     localOnly: true,
     inMemoryOnly: true,
     persisted: false,
     completedInMemory,
-    miniDraftComplete,
+    miniDraftComplete: localDraftFinished,
+    localDraftFinished,
+    minimumRosterViable: progress.minimumRosterViable,
+    bookingReserveProtected: progress.bookingReserveProtected,
     pickCount,
     selectedBrandLabel: brandLabel,
     selectedGmLabel: gmName,
     draftedCandidateLabel: pickList,
     budgetSummary,
-    pickSlotLabel: miniDraftComplete
-      ? `3 of ${progress.maxPicks} local picks`
-      : `${pickCount} of ${progress.maxPicks} local picks`,
+    pickSlotLabel: `${pickCount} local signing${pickCount === 1 ? "" : "s"}`,
     rosterMembershipCount: pickCount,
     displayLabels: Object.freeze({
-      recapStatusLine: miniDraftComplete
-        ? "Mini Draft Complete - local only"
-        : "Local In-Memory Draft Preview - not saved",
+      recapStatusLine: localDraftFinished
+        ? "Draft Finished Locally"
+        : "Draft still open",
       pathLine: "Real in-memory draft path",
-      titleLine: `${brandLabel} mini draft recap`,
+      titleLine: `${brandLabel} finance-limited draft recap`,
       rosterLine: completedInMemory
-        ? `${pickCount} local pick${pickCount === 1 ? "" : "s"} recorded`
+        ? `${pickCount} local superstar${pickCount === 1 ? "" : "s"} signed`
         : `${brandLabel} local draft preview empty`,
       copyLine: completedInMemory
-        ? "This recap is backed by approved Real Draft System v1 in-memory Make Pick results. It is not saved, not a full roster, and resets on reload."
+        ? "This recap is backed by approved Real Draft System v1 in-memory signing results. It is not saved, not a persisted roster, and resets on reload."
         : "No local in-memory picks have been made yet. The mock QA recap remains available for shell checks.",
       gmLine: gmName,
       brandLine: `${brandLabel} local in-memory result`,
       candidateLine: pickList,
-      budgetLine: `Budget: ${budgetSummary.remainingDraftBudget} remaining / ${budgetSummary.budgetSpent} spent`,
-      pickLine: miniDraftComplete
-        ? `Mini draft complete: ${pickCount} of ${progress.maxPicks}`
-        : `Mini draft in progress: ${pickCount} of ${progress.maxPicks}`,
-      draftResultStatusLine: miniDraftComplete
-        ? "Draft preview complete"
-        : "Draft preview still local",
-      rosterStatusLine: "No full roster created",
+      budgetLine: `Budget: ${budgetSummary.remainingDraftBudget} remaining / ${budgetSummary.budgetSpent} spent / reserve ${budgetSummary.bookingReserveBudget}`,
+      pickLine: localDraftFinished
+        ? `Draft finished locally: ${pickCount} signed`
+        : `Draft still open: ${pickCount} signed`,
+      draftResultStatusLine: localDraftFinished
+        ? "Draft Finished Locally"
+        : "Draft still open",
+      rosterStatusLine: progress.minimumRosterViable
+        ? `Minimum roster viable: ${pickCount} of ${progress.minimumViableRosterCount}`
+        : `Sign at least ${progress.minimumViableRosterCount} superstars before finishing the draft`,
+      reserveStatusLine: progress.bookingReserveProtected
+        ? "Booking reserve protected"
+        : "Booking reserve dipped",
       noteLine:
-        "Local-only mini draft result. No save, persistence, full roster, Week 1 initialization, booking, or gameplay start occurred.",
-      dashboardLine: miniDraftComplete
-        ? "Mini Draft Complete locally. Full draft, roster setup, Week 1 gameplay, booking, and saving remain locked."
-        : "Local mini draft in progress. Week 1 gameplay and saving remain locked.",
+        "Local-only draft result. No save, persistence, Week 1 initialization, booking, or gameplay start occurred.",
+      dashboardLine: localDraftFinished
+        ? "Draft Finished Locally. Week 1 setup, booking, gameplay, and saving remain locked."
+        : progress.minimumRosterViable
+          ? "Draft is minimum viable but still open. Finish Draft locally when ready."
+          : "Finance-limited draft in progress. Week 1 gameplay and saving remain locked.",
     }),
     blockedCapabilityLabels: Object.freeze([
-      "Auto Draft remains locked",
-      "No full roster draft",
+      "Auto-Fill stops at 16 in v0.1",
       "No save payload",
       "No SQLite write",
       "No Week 1 initialization",
@@ -313,22 +576,49 @@ function createBlockedActionResult(readiness) {
     displayLabels: readiness.displayLabels,
     selectedCandidateFinanceProjection:
       readiness.selectedCandidateFinanceProjection,
-    capabilityFlags: Object.freeze({
-      canAutoDraft: false,
-      canCompleteFullDraft: false,
-      canPersistGameplayPayload: false,
-      canWriteDatabase: false,
-      canInitializeWeekOne: false,
-      canStartGameplay: false,
-      canCreateGeneratedText: false,
-      canUseGenAI: false,
+    capabilityFlags: createBlockedCapabilityFlags(),
+  });
+}
+
+function createBlockedAutoFillResult(readiness, progress, input) {
+  return Object.freeze({
+    actionStatus: readiness.actionStatus,
+    localOnly: true,
+    inMemoryOnly: true,
+    persisted: false,
+    blocked: true,
+    blockedReasonIds: readiness.blockedReasonIds,
+    displayLabels: readiness.displayLabels,
+    miniDraftProgress: progress,
+    projection: createDraftRecapProjection({
+      miniDraftProgress: progress,
+      selectedBrand: input.selectedBrand,
+      selectedGm: input.selectedGm,
     }),
+    capabilityFlags: createBlockedCapabilityFlags(),
+  });
+}
+
+function createBlockedCapabilityFlags() {
+  return Object.freeze({
+    canAutoDraft: false,
+    canCompleteFullDraft: false,
+    canPersistGameplayPayload: false,
+    canWriteDatabase: false,
+    canInitializeWeekOne: false,
+    canStartGameplay: false,
+    canCreateGeneratedText: false,
+    canUseGenAI: false,
   });
 }
 
 function createReadinessStatus(blockedReasonIds) {
-  if (blockedReasonIds.includes("mini-draft-complete")) {
-    return IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_MINI_DRAFT_COMPLETE;
+  if (blockedReasonIds.includes("local-draft-finished")) {
+    return IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_LOCAL_DRAFT_FINISHED;
+  }
+
+  if (blockedReasonIds.includes("draft-cannot-continue")) {
+    return IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_NO_DRAFT_CONTINUATION;
   }
 
   if (blockedReasonIds.includes("candidate-already-drafted")) {
@@ -358,9 +648,137 @@ function createReadinessStatus(blockedReasonIds) {
   return IN_MEMORY_MAKE_PICK_STATUS.READY;
 }
 
+function createAutoFillReadinessStatus(blockedReasonIds) {
+  if (blockedReasonIds.includes("brand-selection-missing")) {
+    return AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_MISSING_BRAND;
+  }
+
+  if (blockedReasonIds.includes("local-draft-finished")) {
+    return AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_LOCAL_DRAFT_FINISHED;
+  }
+
+  if (blockedReasonIds.includes("minimum-roster-already-viable")) {
+    return AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_MINIMUM_ALREADY_VIABLE;
+  }
+
+  if (blockedReasonIds.includes("no-reserve-safe-affordable-candidates")) {
+    return AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_NO_RESERVE_SAFE_CANDIDATES;
+  }
+
+  return AUTO_FILL_MINIMUM_ROSTER_STATUS.READY;
+}
+
+function createAutoFillStatusLine(actionStatus) {
+  if (actionStatus === AUTO_FILL_MINIMUM_ROSTER_STATUS.READY) {
+    return "Auto-Fill can sign toward minimum roster viability";
+  }
+
+  if (
+    actionStatus ===
+    AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_MINIMUM_ALREADY_VIABLE
+  ) {
+    return "Minimum roster already viable";
+  }
+
+  if (
+    actionStatus ===
+    AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_NO_RESERVE_SAFE_CANDIDATES
+  ) {
+    return "Auto-Fill blocked - no reserve-safe affordable candidates";
+  }
+
+  if (
+    actionStatus === AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_LOCAL_DRAFT_FINISHED
+  ) {
+    return "Auto-Fill blocked - draft finished locally";
+  }
+
+  return "Auto-Fill blocked";
+}
+
+function createAutoFillNoteLine(actionStatus, progress) {
+  if (actionStatus === AUTO_FILL_MINIMUM_ROSTER_STATUS.READY) {
+    return "Auto-Fill signs lowest-cost available talent until 16 or until reserve-safe options run out.";
+  }
+
+  if (
+    actionStatus ===
+    AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_MINIMUM_ALREADY_VIABLE
+  ) {
+    return "You can keep signing manually if budget and candidates remain.";
+  }
+
+  if (
+    actionStatus ===
+    AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_NO_RESERVE_SAFE_CANDIDATES
+  ) {
+    return `Auto-Fill will not dip below the ${progress.bookingReserveBudget} booking reserve target.`;
+  }
+
+  if (
+    actionStatus === AUTO_FILL_MINIMUM_ROSTER_STATUS.BLOCKED_LOCAL_DRAFT_FINISHED
+  ) {
+    return "This local draft is finished. Reload resets the page-lifetime draft.";
+  }
+
+  return "Select a brand before auto-filling toward the minimum roster.";
+}
+
+function createFinishDraftReadinessStatus(blockedReasonIds) {
+  if (blockedReasonIds.includes("brand-selection-missing")) {
+    return LOCAL_FINISH_DRAFT_STATUS.BLOCKED_MISSING_BRAND;
+  }
+
+  if (blockedReasonIds.includes("local-draft-already-finished")) {
+    return LOCAL_FINISH_DRAFT_STATUS.BLOCKED_ALREADY_FINISHED;
+  }
+
+  if (blockedReasonIds.includes("minimum-roster-not-viable")) {
+    return LOCAL_FINISH_DRAFT_STATUS.BLOCKED_MINIMUM_NOT_VIABLE;
+  }
+
+  return LOCAL_FINISH_DRAFT_STATUS.READY;
+}
+
+function createFinishDraftStatusLine(actionStatus) {
+  if (actionStatus === LOCAL_FINISH_DRAFT_STATUS.READY) {
+    return "Ready to finish local draft";
+  }
+
+  if (actionStatus === LOCAL_FINISH_DRAFT_STATUS.BLOCKED_ALREADY_FINISHED) {
+    return "Draft already finished locally";
+  }
+
+  if (actionStatus === LOCAL_FINISH_DRAFT_STATUS.BLOCKED_MINIMUM_NOT_VIABLE) {
+    return "Finish Draft blocked - minimum roster not viable";
+  }
+
+  return "Finish Draft blocked";
+}
+
+function createFinishDraftNoteLine(actionStatus, progress) {
+  if (actionStatus === LOCAL_FINISH_DRAFT_STATUS.READY) {
+    return "Finish Draft will unlock the local recap only. Week 1 setup remains locked.";
+  }
+
+  if (actionStatus === LOCAL_FINISH_DRAFT_STATUS.BLOCKED_MINIMUM_NOT_VIABLE) {
+    return `Sign at least ${progress.minimumViableRosterCount} superstars before finishing the draft.`;
+  }
+
+  if (actionStatus === LOCAL_FINISH_DRAFT_STATUS.BLOCKED_ALREADY_FINISHED) {
+    return "This draft is not saved yet. Reload resets local draft progress.";
+  }
+
+  return "Select a brand before finishing the draft.";
+}
+
 function createBlockedButtonLabel(actionStatus) {
-  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_MINI_DRAFT_COMPLETE) {
-    return "Mini Draft Complete";
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_LOCAL_DRAFT_FINISHED) {
+    return "Draft Finished";
+  }
+
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_NO_DRAFT_CONTINUATION) {
+    return "Draft Paused";
   }
 
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_DRAFTED) {
@@ -395,8 +813,12 @@ function createReadinessStatusLine(actionStatus) {
     return "Make Pick blocked - not enough draft budget";
   }
 
-  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_MINI_DRAFT_COMPLETE) {
-    return "Mini draft complete";
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_LOCAL_DRAFT_FINISHED) {
+    return "Draft finished locally";
+  }
+
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_NO_DRAFT_CONTINUATION) {
+    return "Draft cannot continue - no affordable available candidates";
   }
 
   return "Make Pick blocked - selection incomplete";
@@ -408,6 +830,14 @@ function createReadinessNoteLine(
   miniDraftProgress
 ) {
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.READY) {
+    if (
+      candidateFinanceProjection &&
+      candidateFinanceProjection.budgetPreviewAfterSigning <
+        miniDraftProgress.bookingReserveBudget
+    ) {
+      return "This signing dips into your booking reserve. You can still sign, but Week 1 booking funds may be tight.";
+    }
+
     return "Make Pick will run the approved Real Draft System v1 in memory only and spend local draft budget after success.";
   }
 
@@ -432,8 +862,12 @@ function createReadinessNoteLine(
     return `Not enough draft budget. Need ${neededBudget} budget, you have ${remainingBudget}.`;
   }
 
-  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_MINI_DRAFT_COMPLETE) {
-    return "Reload resets this local-only mini draft.";
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_LOCAL_DRAFT_FINISHED) {
+    return "Draft Finished Locally. This draft is not saved yet, and Week 1 setup remains locked.";
+  }
+
+  if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_NO_DRAFT_CONTINUATION) {
+    return "No available affordable candidates remain in this local draft board.";
   }
 
   return "Select an available candidate and brand before making a pick.";
@@ -485,18 +919,17 @@ function normalizeMiniDraftProgress(progress) {
     return createInitialMiniDraftProgress();
   }
 
-  const maxPicks = readPositiveNumber(progress.maxPicks, MINI_DRAFT_MAX_PICKS);
   const completedPickSummaries = Array.isArray(progress.completedPickSummaries)
-    ? progress.completedPickSummaries.slice(0, maxPicks)
+    ? progress.completedPickSummaries.slice()
     : [];
   const draftedCandidateIds = Array.isArray(progress.draftedCandidateIds)
     ? progress.draftedCandidateIds.filter((candidateId) => readString(candidateId))
     : completedPickSummaries
         .map((summary) => readString(summary?.candidateId))
         .filter(Boolean);
-  const currentPickIndex = Math.min(
-    maxPicks,
-    readPositiveOrZeroNumber(progress.currentPickIndex, completedPickSummaries.length)
+  const currentPickIndex = readPositiveOrZeroNumber(
+    progress.currentPickIndex,
+    completedPickSummaries.length
   );
   const signedTalentCount = readPositiveOrZeroNumber(
     progress.signedTalentCount,
@@ -518,20 +951,28 @@ function normalizeMiniDraftProgress(progress) {
     progress.remainingDraftBudget,
     Math.max(0, startingDraftBudget - budgetSpent)
   );
-  const minimumRosterTarget = readPositiveNumber(
-    progress.minimumRosterTarget,
+  const minimumViableRosterCount = readPositiveNumber(
+    progress.minimumViableRosterCount ?? progress.minimumRosterTarget,
     NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER
   );
-  const miniDraftComplete =
-    Boolean(progress.miniDraftComplete) ||
-    completedPickSummaries.length >= maxPicks ||
-    currentPickIndex >= maxPicks;
-  const currentDraftSlot = miniDraftComplete
-    ? createDraftSlotForIndex(maxPicks - 1)
-    : createDraftSlotForIndex(currentPickIndex);
+  const bookingReserveBudget = readPositiveOrZeroNumber(
+    progress.bookingReserveBudget,
+    NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER
+  );
+  const localDraftFinished =
+    Boolean(progress.localDraftFinished) || Boolean(progress.miniDraftComplete);
+  const minimumRosterViable = signedTalentCount >= minimumViableRosterCount;
+  const bookingReserveProtected = remainingDraftBudget >= bookingReserveBudget;
+  const draftCanContinue =
+    !localDraftFinished &&
+    hasAvailableAffordableCandidate({
+      draftedCandidateIds,
+      remainingDraftBudget,
+    });
+  const currentDraftSlot = createDraftSlotForIndex(currentPickIndex);
 
   return Object.freeze({
-    progressKind: "playable-new-gm-mode-local-mini-draft-progress",
+    progressKind: "playable-new-gm-mode-local-finance-limited-draft-progress",
     version: "0.1",
     localOnly: true,
     inMemoryOnly: true,
@@ -540,22 +981,37 @@ function normalizeMiniDraftProgress(progress) {
     remainingDraftBudget,
     budgetSpent,
     signedTalentCount,
-    minimumRosterTarget,
+    minimumViableRosterCount,
+    minimumRosterTarget: minimumViableRosterCount,
+    bookingReserveBudget,
+    minimumRosterViable,
+    bookingReserveProtected,
+    draftCanContinue,
+    localDraftFinished,
     currentPickIndex,
-    maxPicks,
     selectedBrandReference: createSelectedBrandReference(
       progress.selectedBrandReference || progress.selectedBrand
     ),
     currentDraftSlot,
     completedPickSummaries: Object.freeze(completedPickSummaries),
     draftedCandidateIds: Object.freeze(draftedCandidateIds),
-    miniDraftComplete,
+    miniDraftComplete: localDraftFinished,
     displayLabels: Object.freeze({
-      progressLine: miniDraftComplete
-        ? `Mini draft complete: ${completedPickSummaries.length} of ${maxPicks}`
-        : `Pick ${currentPickIndex + 1} of ${maxPicks}`,
-      statusLine: miniDraftComplete ? "Mini draft complete" : "Mini draft in progress",
+      progressLine: localDraftFinished
+        ? `Draft finished locally: ${signedTalentCount} signed`
+        : `Pick ${currentPickIndex + 1}`,
+      statusLine: localDraftFinished
+        ? "Draft Finished Locally"
+        : minimumRosterViable
+          ? "Minimum roster viable - draft still open"
+          : "Finance-limited draft in progress",
       budgetLine: `Budget remaining: ${remainingDraftBudget}`,
+      viabilityLine: minimumRosterViable
+        ? `Minimum roster viable: ${signedTalentCount} of ${minimumViableRosterCount}`
+        : `Minimum roster not viable: ${signedTalentCount} of ${minimumViableRosterCount}`,
+      reserveLine: bookingReserveProtected
+        ? "Booking reserve protected"
+        : "Booking reserve dipped",
       noteLine: "Local preview only. Reload resets draft progress.",
     }),
   });
@@ -566,7 +1022,7 @@ function appendPickSummaryToProgress({ progress, pickSummary, selectedBrand }) {
   const completedPickSummaries = [
     ...normalizedProgress.completedPickSummaries,
     pickSummary,
-  ].slice(0, normalizedProgress.maxPicks);
+  ];
   const draftedCandidateIds = [
     ...normalizedProgress.draftedCandidateIds,
     pickSummary.candidateId,
@@ -577,25 +1033,20 @@ function appendPickSummaryToProgress({ progress, pickSummary, selectedBrand }) {
     0,
     normalizedProgress.remainingDraftBudget - signingCost
   );
-  const currentPickIndex = Math.min(
-    completedPickSummaries.length,
-    normalizedProgress.maxPicks
-  );
-  const miniDraftComplete = currentPickIndex >= normalizedProgress.maxPicks;
+  const currentPickIndex = completedPickSummaries.length;
 
   return normalizeMiniDraftProgress({
     ...normalizedProgress,
     currentPickIndex,
     selectedBrandReference: createSelectedBrandReference(selectedBrand),
-    currentDraftSlot: miniDraftComplete
-      ? normalizedProgress.currentDraftSlot
-      : createDraftSlotForIndex(currentPickIndex),
+    currentDraftSlot: createDraftSlotForIndex(currentPickIndex),
     completedPickSummaries,
     draftedCandidateIds,
     remainingDraftBudget,
     budgetSpent,
     signedTalentCount: normalizedProgress.signedTalentCount + 1,
-    miniDraftComplete,
+    localDraftFinished: false,
+    miniDraftComplete: false,
   });
 }
 
@@ -620,6 +1071,8 @@ function createPickSummary({
   pickNumber,
   financeProjection,
   budgetBeforeSigning,
+  bookingReserveBudget,
+  pickSource,
 }) {
   const completedInMemory =
     flowResult?.draftCompletionSummary?.draftCompletionPhase ===
@@ -639,6 +1092,9 @@ function createPickSummary({
     financeProjection?.remainingDraftBudgetPreview ?? 0
   );
   const budgetAfterSigning = budgetBefore - signingCost;
+  const source = pickSource === "auto-fill" ? "auto-fill" : "manual";
+  const bookingReserveAfterSigning = budgetAfterSigning >=
+    readPositiveOrZeroNumber(bookingReserveBudget, 0);
 
   return Object.freeze({
     summaryKind: "local-mini-draft-pick-summary",
@@ -655,11 +1111,16 @@ function createPickSummary({
     pickNumber,
     signingTier,
     signingCost,
+    pickSource: source,
     budgetBeforeSigning: budgetBefore,
     budgetAfterSigning,
+    bookingReserveAfterSigning,
+    reserveWarningLine: bookingReserveAfterSigning
+      ? "Booking reserve protected"
+      : "This signing dips into your booking reserve",
     affordabilityStatus:
       financeProjection?.affordabilityStatus || "locked-pending-rules",
-    displayLabel: `${pickLabel}: ${candidateName} (${brandLabel}, ${signingTier}, Cost ${signingCost})`,
+    displayLabel: `${pickLabel}: ${candidateName} (${brandLabel}, ${source === "auto-fill" ? "Auto-Fill, " : ""}${signingTier}, Cost ${signingCost})`,
     displayStatusLine: completedInMemory
       ? "Pick recorded locally"
       : "Pick blocked locally",
@@ -672,6 +1133,100 @@ function createPickListLabel(pickSummaries) {
   }
 
   return pickSummaries.map((summary) => summary.displayLabel).join(" | ");
+}
+
+function hasAvailableAffordableCandidate({
+  draftedCandidateIds,
+  remainingDraftBudget,
+}) {
+  const candidateObjectSet = createNewGMModeDraftPickCandidateObjects();
+  return collectAutoFillCandidateOptions({
+    progress: {
+      draftedCandidateIds,
+      remainingDraftBudget,
+      bookingReserveBudget: 0,
+    },
+    candidateObjectSet,
+    preserveBookingReserve: false,
+  }).length > 0;
+}
+
+function collectAutoFillCandidateOptions({
+  progress,
+  candidateObjectSet,
+  preserveBookingReserve,
+}) {
+  const normalizedDraftedIds = Array.isArray(progress.draftedCandidateIds)
+    ? progress.draftedCandidateIds
+    : [];
+  const remainingDraftBudget = readPositiveOrZeroNumber(
+    progress.remainingDraftBudget,
+    NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER
+  );
+  const bookingReserveBudget = preserveBookingReserve
+    ? readPositiveOrZeroNumber(progress.bookingReserveBudget, 0)
+    : 0;
+  const projection = createNewGMModeDraftFinanceProjection({
+    candidateObjectSet,
+    remainingDraftBudgetPreview: remainingDraftBudget,
+    alreadyDraftedCandidateIds: normalizedDraftedIds,
+  });
+
+  return candidateObjectSet.candidates
+    .map((candidate) => {
+      const candidateProjection = projection.candidateProjections.find(
+        (projectedCandidate) =>
+          projectedCandidate.candidateObjectId === candidate.candidateId
+      );
+
+      return Object.freeze({
+        domainCandidate: candidate,
+        candidateProjection,
+        selectedCandidate: Object.freeze({
+          candidateId: createUiCandidateIdFromDomainCandidate(candidate),
+          name:
+            candidateProjection?.displayName ||
+            candidate.wrestlerIdentityReference.slug,
+          availability:
+            candidate.eligibilityStatus === "eligible" ? "Available" : "Unavailable",
+        }),
+      });
+    })
+    .filter((option) => {
+      const candidateId = option.selectedCandidate.candidateId;
+      const cost = readPositiveOrZeroNumber(
+        option.candidateProjection?.projectedSigningCost,
+        0
+      );
+      const budgetAfterSigning = remainingDraftBudget - cost;
+
+      return (
+        option.domainCandidate.eligibilityStatus === "eligible" &&
+        !normalizedDraftedIds.includes(candidateId) &&
+        !normalizedDraftedIds.includes(option.domainCandidate.candidateId) &&
+        cost <= remainingDraftBudget &&
+        budgetAfterSigning >= bookingReserveBudget
+      );
+    })
+    .sort((left, right) => {
+      const leftCost = readPositiveOrZeroNumber(
+        left.candidateProjection?.projectedSigningCost,
+        0
+      );
+      const rightCost = readPositiveOrZeroNumber(
+        right.candidateProjection?.projectedSigningCost,
+        0
+      );
+
+      if (leftCost !== rightCost) {
+        return leftCost - rightCost;
+      }
+
+      return (
+        left.domainCandidate.sourceFixtureReference.fixtureIndex -
+        right.domainCandidate.sourceFixtureReference.fixtureIndex
+      );
+    });
 }
 
 function createFinanceProjectionForCandidate({ selectedCandidate, miniDraftProgress }) {
@@ -689,6 +1244,13 @@ function createFinanceProjectionForCandidate({ selectedCandidate, miniDraftProgr
   });
 
   return projection.selectedCandidateProjection;
+}
+
+function createUiCandidateIdFromDomainCandidate(candidate) {
+  return `candidate-${candidate.sourceFixtureReference.fixtureSlug.replace(
+    /^fixture-wrestler-\d+-/,
+    ""
+  )}`;
 }
 
 function isValidDraftSlot(draftSlot) {

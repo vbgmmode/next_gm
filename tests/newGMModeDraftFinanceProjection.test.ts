@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+  NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_PLACEHOLDER_TIER_COSTS,
   NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
@@ -12,12 +13,15 @@ describe("New GM Mode Draft Finance Projection v0.1", () => {
   it("keeps the placeholder starting budget and minimum roster target stable", () => {
     const projection = createNewGMModeDraftFinanceProjection();
 
-    assert.equal(NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER, 100);
+    assert.equal(NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER, 120);
     assert.equal(NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER, 16);
-    assert.equal(projection.placeholderTuning.startingDraftBudget, 100);
-    assert.equal(projection.placeholderTuning.minimumRosterTarget, 16);
-    assert.equal(projection.displayLabels.startingBudgetLine, "Starting Budget: 100");
-    assert.equal(projection.displayLabels.remainingBudgetLine, "Remaining Budget Preview: 100");
+    assert.equal(NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER, 20);
+    assert.equal(projection.placeholderTuning.startingDraftBudget, 120);
+    assert.equal(projection.placeholderTuning.minimumViableRosterCount, 16);
+    assert.equal(projection.placeholderTuning.bookingReserveBudget, 20);
+    assert.equal(projection.displayLabels.startingBudgetLine, "Starting Budget: 120");
+    assert.equal(projection.displayLabels.remainingBudgetLine, "Remaining Budget Preview: 120");
+    assert.equal(projection.displayLabels.bookingReserveLine, "Booking Reserve Target: 20");
   });
 
   it("keeps placeholder tier costs stable and ordered for draft projection", () => {
@@ -66,14 +70,14 @@ describe("New GM Mode Draft Finance Projection v0.1", () => {
     assert.equal(candidate.displayName, "Ace Mercer");
     assert.equal(candidate.projectedSigningTier, "Franchise");
     assert.equal(candidate.projectedSigningCost, 18);
-    assert.equal(candidate.remainingDraftBudgetPreview, 100);
-    assert.equal(candidate.budgetPreviewAfterSigning, 82);
+    assert.equal(candidate.remainingDraftBudgetPreview, 120);
+    assert.equal(candidate.budgetPreviewAfterSigning, 102);
     assert.equal(candidate.affordabilityStatus, "expensive-but-affordable");
     assert.equal(candidate.displayLabels.tierLine, "Projected Cost Tier: Franchise");
     assert.equal(candidate.displayLabels.costLine, "Projected Signing Cost: 18");
     assert.equal(
       candidate.displayLabels.afterSigningLine,
-      "Budget Preview After Signing: 82"
+      "Budget Preview After Signing: 102"
     );
   });
 
@@ -101,8 +105,8 @@ describe("New GM Mode Draft Finance Projection v0.1", () => {
     assert.deepEqual(alreadyDraftedCandidateIds, ["candidate-ace-mercer"]);
     assert.ok(candidate);
     assert.equal(candidate.affordabilityStatus, "already-drafted-signed");
-    assert.equal(candidate.remainingDraftBudgetPreview, 100);
-    assert.equal(candidate.budgetPreviewAfterSigning, 82);
+    assert.equal(candidate.remainingDraftBudgetPreview, 120);
+    assert.equal(candidate.budgetPreviewAfterSigning, 102);
     assert.equal(candidate.budgetMutated, false);
     assert.equal(candidate.persisted, false);
   });
@@ -110,13 +114,20 @@ describe("New GM Mode Draft Finance Projection v0.1", () => {
   it("represents the 16-superstar affordability principle without final economy balance", () => {
     const projection = createNewGMModeDraftFinanceProjection();
 
-    assert.equal(projection.rosterAffordabilityPrinciple.minimumRosterTarget, 16);
-    assert.equal(projection.rosterAffordabilityPrinciple.startingDraftBudget, 100);
+    assert.equal(projection.rosterAffordabilityPrinciple.minimumViableRosterCount, 16);
+    assert.equal(projection.rosterAffordabilityPrinciple.startingDraftBudget, 120);
+    assert.equal(projection.rosterAffordabilityPrinciple.bookingReserveBudget, 20);
     assert.equal(projection.rosterAffordabilityPrinciple.baselineViableTier, "Mid Card");
     assert.equal(projection.rosterAffordabilityPrinciple.baselineRosterCostPreview, 80);
+    assert.equal(projection.rosterAffordabilityPrinciple.baselineRemainingBudgetPreview, 40);
     assert.equal(
       projection.rosterAffordabilityPrinciple.baselineRosterCostPreview <=
         projection.rosterAffordabilityPrinciple.startingDraftBudget,
+      true
+    );
+    assert.equal(
+      projection.rosterAffordabilityPrinciple.baselineRemainingBudgetPreview >=
+        projection.rosterAffordabilityPrinciple.bookingReserveBudget,
       true
     );
     assert.equal(

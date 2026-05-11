@@ -6,13 +6,14 @@ This contract defines the future product rules for turning the initial draft int
 
 This document is planning and contract only. It does not implement pricing, budget deduction, persistence, save payloads, gameplay finance, roster mutation, Week 1 setup, booking, or any runtime behavior.
 
-The current 3-pick mini draft remains the proof-of-play flow. Finance-aware drafting should expand from that proof only after the product rules, budget concepts, cost tier language, and staged guardrails are approved.
+The 3-pick mini draft was the proof-of-play flow. The next playable direction is a finance-limited local draft where budget and candidate availability decide how long signing can continue. Sixteen superstars is a minimum roster viability and budget calibration principle, not a hard draft completion cap.
 
 ## 2. Approved Product Direction
 
 - Drafting a superstar means signing them against the player's starting budget.
 - If the player has enough budget, they can sign the superstar.
-- The game should start with enough budget to sign at least 16 superstars.
+- The game should start with enough budget to sign at least 16 superstars plus leave money for the beginning of booking.
+- The signed superstar count should be decided by finance and availability, not by a hard roster cap.
 - Superstar cost should vary by star power and value.
 - Example only: Roman Reigns should cost significantly more than Grayson Waller.
 - Exact pricing formulas, salary tiers, contract rules, and budget numbers are deferred.
@@ -25,7 +26,7 @@ These are future product concepts, not implemented fields or runtime requirement
 
 ### Starting Draft Budget
 
-The budget available at the start of the initial draft/signing flow. It should be large enough to let the player sign at least 16 superstars when following reasonable roster-building choices.
+The budget available at the start of the initial draft/signing flow. It should be large enough to let the player sign at least 16 superstars when following reasonable roster-building choices and still preserve early booking flexibility.
 
 ### Remaining Draft Budget
 
@@ -39,13 +40,13 @@ The future cost assigned to a superstar for draft/signing purposes. Cost should 
 
 The player-facing status that tells whether a superstar can be signed with the current remaining draft budget. This should be expressed as clear states, not raw calculations.
 
-### Roster Target
+### Minimum Viable Roster Count
 
-The future target number of superstars the player is expected to build toward during the initial draft/signing flow. The target must be approved before a full draft or roster-fill implementation.
+The minimum number of superstars required before the player can finish the local draft. This is not a hard cap. Reaching it should mark the roster as viable while still allowing more manual signings if budget and available affordable candidates remain.
 
 ### Minimum Viable Roster Principle
 
-The starting budget must support signing at least 16 superstars. This principle protects the player from a budget setup that makes a basic roster impossible.
+The starting budget must support signing at least 16 superstars and leave an approved booking reserve target. This principle protects the player from a budget setup that makes a basic roster impossible or leaves the first booking step starved by default.
 
 ### Overspend Prevention
 
@@ -53,7 +54,7 @@ The future Make Pick or Sign action should block unaffordable signings. This sho
 
 ### Optional Future Reserve Budget
 
-A later design may reserve some money for post-draft signings, free agents, emergency depth, or early-season adjustments. This reserve is optional and must be approved separately before implementation.
+The amount the draft experience tries to leave available for early booking and post-draft flexibility. Reserve awareness can warn the player when a signing dips below the target. Auto-fill should preserve this reserve in v0.1 instead of silently spending it.
 
 ## 4. Cost Tier Language
 
@@ -103,7 +104,9 @@ The future finance-aware draft board should eventually show:
 - Cost tier or estimated cost.
 - Affordability status.
 - Warning when signing a superstar would limit roster flexibility.
+- Warning when signing a superstar would dip into the booking reserve target.
 - Clear blocked state for unaffordable talent.
+- Minimum roster viability status, separate from draft completion.
 
 The future finance-aware draft board should not show:
 
@@ -127,19 +130,19 @@ Each stage requires separate approval before implementation. The listed files ar
 | Stage B: UI-only budget preview | Tier 2 | `ui/playable-new-gm-mode/app.js`, preview state helpers, styles, docs | Shows mock or local-only budget preview language to test layout and comprehension. | Real finance rules, real deduction, domain budget state, persistence. |
 | Stage C: Controlled in-memory affordability check | Tier 3 | UI draft adapter/controller plus existing Real Draft System path or approved narrow domain helper | Checks whether a selected talent is affordable inside the page lifetime. | Budget deduction, save payloads, SQLite writes, Week 1, gameplay start. |
 | Stage D: Controlled in-memory budget deduction on Make Pick | Tier 3 | UI controller, draft action controller, focused tests, approved domain composition path | Deducts local in-memory draft budget after a successful approved pick/sign action. | Persistence, full finance system, full roster draft, booking, gameplay finance. |
-| Stage E: Draft recap budget summary | Tier 2 if recap-only from existing local state, Tier 3 if domain projection changes | Draft recap preview/state helpers, app shell surfaces, tests if behavior changes | Shows local draft spending summary and remaining budget in Draft Recap. | Saved finance history, roster payroll, contracts, Week 1 activation. |
-| Stage F: Roster target/composition rules | Tier 3 or Tier 4 depending on whether it remains draft-only or crosses gameplay roster validation | Draft rules docs, possible domain contract helpers, UI warning states | Defines target roster count and safe composition guidance for draft completion. | Championship setup, divisions, booking, calendar, gameplay roster persistence. |
+| Stage E: Finance-limited local draft with minimum viability | Tier 4 | Existing playable UI controller, draft action controller, finance projection helper, focused tests, docs | Replaces the 3-pick proof cap with budget-limited local signing, minimum viability status, reserve warnings, optional deterministic Auto-Fill toward 16, and local Finish Draft. | Persistence, saved roster state, Week 1, booking, gameplay finance, full roster fill beyond approved local draft. |
+| Stage F: Roster target/composition rules | Tier 3 or Tier 4 depending on whether it remains draft-only or crosses gameplay roster validation | Draft rules docs, possible domain contract helpers, UI warning states | Defines composition guidance and future roster quality checks without treating 16 as a hard cap. | Championship setup, divisions, booking, calendar, gameplay roster persistence. |
 | Stage G: Decision point before full draft or hybrid roster fill | Tier 1 for docs, Tier 3 or Tier 4 for implementation depending on selected path | Decision docs, roadmap, future UI/domain contracts | Chooses whether to expand into full draft or hybrid key-pick plus controlled fill. | Any implementation until product path is approved. |
 | Stage H: Persistence/save payloads only after explicit approval | Tier 4 | Future persistence contracts, save payload docs, SQLite gameplay schema, tests | Persists approved draft/signing results only after gameplay persistence is approved. | Any persistence before explicit approval, browser storage shortcuts, partial save payloads. |
 
-The recommended path is to complete Stages A and B as comprehension work before adding controlled affordability behavior. Stage H is explicitly out of scope until gameplay persistence is approved.
+The recommended path is staged local-only expansion before any durable gameplay: prove finance projection, then in-memory spend, then finance-limited continuation, and only later decide whether to expand into a full draft, hybrid roster fill, or persistence. Stage H is explicitly out of scope until gameplay persistence is approved.
 
 ## 8. Non-Negotiable Boundaries
 
-- No runtime finance logic in this slice.
-- No budget deduction in this slice.
-- No prices in this slice.
-- No salary formulas in this slice.
+- No durable gameplay finance logic without explicit approval.
+- No persistent budget deduction or saved payroll without explicit approval.
+- No final prices in the v0.1 placeholder economy.
+- No salary formulas in the v0.1 placeholder economy.
 - No persistence or save payloads.
 - No browser storage.
 - No SQLite gameplay writes.

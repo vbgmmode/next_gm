@@ -40,11 +40,15 @@ describe("Playable New GM Mode local draft budget spend", () => {
   it("initializes local-only budget state without storage-backed progress", () => {
     const progress = createInitialMiniDraftProgress();
 
-    assert.equal(progress.startingDraftBudget, 100);
-    assert.equal(progress.remainingDraftBudget, 100);
+    assert.equal(progress.startingDraftBudget, 120);
+    assert.equal(progress.remainingDraftBudget, 120);
     assert.equal(progress.budgetSpent, 0);
     assert.equal(progress.signedTalentCount, 0);
     assert.equal(progress.minimumRosterTarget, 16);
+    assert.equal(progress.minimumViableRosterCount, 16);
+    assert.equal(progress.bookingReserveBudget, 20);
+    assert.equal(progress.minimumRosterViable, false);
+    assert.equal(progress.localDraftFinished, false);
     assert.equal(progress.localOnly, true);
     assert.equal(progress.inMemoryOnly, true);
     assert.equal(progress.persisted, false);
@@ -119,13 +123,13 @@ describe("Playable New GM Mode local draft budget spend", () => {
 
     assert.equal(result.actionStatus, "in-memory-make-pick-domain-blocked");
     assert.equal(result.currentPickSummary.completedInMemory, false);
-    assert.equal(result.miniDraftProgress.remainingDraftBudget, 100);
+    assert.equal(result.miniDraftProgress.remainingDraftBudget, 120);
     assert.equal(result.miniDraftProgress.budgetSpent, 0);
     assert.equal(result.miniDraftProgress.signedTalentCount, 0);
     assert.deepEqual(result.miniDraftProgress.draftedCandidateIds, []);
   });
 
-  it("deducts each successful signing cost and preserves the three-pick cap", () => {
+  it("deducts each successful signing cost without a three-pick completion cap", () => {
     const firstPick = executeInMemoryMakePick({
       selectedCandidate: aceMercer,
       selectedBrand,
@@ -145,19 +149,26 @@ describe("Playable New GM Mode local draft budget spend", () => {
       miniDraftProgress: secondPick.miniDraftProgress,
     });
     const fourthPick = executeInMemoryMakePick({
-      selectedCandidate: brunoVale,
+      selectedCandidate: {
+        candidateId: "candidate-dante-cross",
+        name: "Dante Cross",
+        availability: "Available",
+      },
       selectedBrand,
       selectedGm,
       miniDraftProgress: thirdPick.miniDraftProgress,
     });
 
-    assert.equal(firstPick.miniDraftProgress.remainingDraftBudget, 82);
-    assert.equal(secondPick.miniDraftProgress.remainingDraftBudget, 74);
-    assert.equal(thirdPick.miniDraftProgress.remainingDraftBudget, 71);
+    assert.equal(firstPick.miniDraftProgress.remainingDraftBudget, 102);
+    assert.equal(secondPick.miniDraftProgress.remainingDraftBudget, 94);
+    assert.equal(thirdPick.miniDraftProgress.remainingDraftBudget, 91);
     assert.equal(thirdPick.miniDraftProgress.budgetSpent, 29);
     assert.equal(thirdPick.miniDraftProgress.signedTalentCount, 3);
-    assert.equal(thirdPick.miniDraftProgress.miniDraftComplete, true);
-    assert.equal(fourthPick.actionStatus, "blocked-mini-draft-complete");
+    assert.equal(thirdPick.miniDraftProgress.miniDraftComplete, false);
+    assert.equal(thirdPick.miniDraftProgress.localDraftFinished, false);
+    assert.equal(fourthPick.actionStatus, "in-memory-make-pick-succeeded");
+    assert.equal(fourthPick.miniDraftProgress.signedTalentCount, 4);
+    assert.equal(fourthPick.miniDraftProgress.minimumRosterViable, false);
   });
 
   it("passes signing tier, cost, and budget summary into Draft Recap output", () => {
@@ -174,12 +185,14 @@ describe("Playable New GM Mode local draft budget spend", () => {
 
     assert.equal(result.currentPickSummary.signingTier, "Franchise");
     assert.equal(result.currentPickSummary.signingCost, 18);
-    assert.equal(result.projection.budgetSummary.startingDraftBudget, 100);
+    assert.equal(result.projection.budgetSummary.startingDraftBudget, 120);
     assert.equal(result.projection.budgetSummary.budgetSpent, 18);
-    assert.equal(result.projection.budgetSummary.remainingDraftBudget, 82);
+    assert.equal(result.projection.budgetSummary.remainingDraftBudget, 102);
     assert.equal(result.projection.budgetSummary.signedTalentCount, 1);
+    assert.equal(result.projection.budgetSummary.minimumViableRosterCount, 16);
+    assert.equal(result.projection.budgetSummary.bookingReserveBudget, 20);
     assert.match(result.projection.displayLabels.candidateLine, /Franchise, Cost 18/);
-    assert.match(result.projection.displayLabels.budgetLine, /82 remaining \/ 18 spent/);
+    assert.match(result.projection.displayLabels.budgetLine, /102 remaining \/ 18 spent/);
     for (const forbiddenSnippet of ["formula", "diagnostic"]) {
       assert.equal(
         budgetAndSigningLabels.toLowerCase().includes(forbiddenSnippet),
@@ -197,8 +210,8 @@ describe("Playable New GM Mode local draft budget spend", () => {
     }).miniDraftProgress;
     const resetProgress = createInitialMiniDraftProgress();
 
-    assert.equal(spentProgress.remainingDraftBudget, 82);
-    assert.equal(resetProgress.remainingDraftBudget, 100);
+    assert.equal(spentProgress.remainingDraftBudget, 102);
+    assert.equal(resetProgress.remainingDraftBudget, 120);
     assert.equal(resetProgress.budgetSpent, 0);
     assert.equal(resetProgress.signedTalentCount, 0);
     assert.deepEqual(resetProgress.draftedCandidateIds, []);

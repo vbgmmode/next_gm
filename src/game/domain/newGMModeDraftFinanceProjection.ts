@@ -28,7 +28,7 @@ export interface NewGMModeDraftFinanceProjectionCandidate {
   readonly displayName: string;
   readonly projectedSigningTier: NewGMModeDraftFinanceProjectionTier;
   readonly projectedSigningCost: number;
-  readonly startingDraftBudget: 100;
+  readonly startingDraftBudget: 120;
   readonly remainingDraftBudgetPreview: number;
   readonly budgetPreviewAfterSigning: number;
   readonly affordabilityStatus: NewGMModeDraftFinanceProjectionAffordabilityStatus;
@@ -67,18 +67,21 @@ export interface NewGMModeDraftFinanceProjection {
     readonly tuningId: "finance-aware-draft-v0.1-placeholder-tuning";
     readonly placeholderOnly: true;
     readonly finalEconomyBalance: false;
-    readonly startingDraftBudget: 100;
-    readonly minimumRosterTarget: 16;
+    readonly startingDraftBudget: 120;
+    readonly minimumViableRosterCount: 16;
+    readonly bookingReserveBudget: 20;
     readonly tierCosts: Readonly<Record<NewGMModeDraftFinanceProjectionTier, number>>;
   };
   readonly rosterAffordabilityPrinciple: {
-    readonly minimumRosterTarget: 16;
-    readonly startingDraftBudget: 100;
+    readonly minimumViableRosterCount: 16;
+    readonly startingDraftBudget: 120;
+    readonly bookingReserveBudget: 20;
     readonly baselineViableTier: "Mid Card";
     readonly baselineCostPerSigning: 5;
     readonly baselineRosterCostPreview: 80;
+    readonly baselineRemainingBudgetPreview: 40;
     readonly canMeetMinimumRosterTargetWithMixedLowerMidTiers: true;
-    readonly displayLabel: "Starting budget supports at least 16 superstars when the player mixes lower and mid tiers wisely.";
+    readonly displayLabel: "Starting budget supports at least 16 superstars plus a booking reserve when the player mixes lower and mid tiers wisely.";
   };
   readonly remainingDraftBudgetPreview: number;
   readonly selectedCandidateProjection: NewGMModeDraftFinanceProjectionCandidate | undefined;
@@ -97,9 +100,10 @@ export interface NewGMModeDraftFinanceProjection {
     readonly canUseGenAI: false;
   };
   readonly displayLabels: {
-    readonly startingBudgetLine: "Starting Budget: 100";
+    readonly startingBudgetLine: "Starting Budget: 120";
     readonly remainingBudgetLine: string;
-    readonly financePreviewOnlyLine: "Finance preview only. Budget spend is not active yet.";
+    readonly bookingReserveLine: "Booking Reserve Target: 20";
+    readonly financePreviewOnlyLine: "Finance preview only. Local budget spend remains in-memory.";
   };
 }
 
@@ -110,8 +114,9 @@ export interface NewGMModeDraftFinanceProjectionInput {
   readonly alreadyDraftedCandidateIds?: readonly string[];
 }
 
-export const NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER = 100;
+export const NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER = 120;
 export const NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER = 16;
+export const NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER = 20;
 
 export const NEW_GM_MODE_DRAFT_FINANCE_PLACEHOLDER_TIER_COSTS: Readonly<
   Record<NewGMModeDraftFinanceProjectionTier, number>
@@ -184,23 +189,29 @@ export function createNewGMModeDraftFinanceProjection(
       placeholderOnly: true,
       finalEconomyBalance: false,
       startingDraftBudget: NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
-      minimumRosterTarget:
+      minimumViableRosterCount:
         NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
+      bookingReserveBudget: NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
       tierCosts: NEW_GM_MODE_DRAFT_FINANCE_PLACEHOLDER_TIER_COSTS
     }),
     rosterAffordabilityPrinciple: Object.freeze({
-      minimumRosterTarget:
+      minimumViableRosterCount:
         NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
       startingDraftBudget: NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
+      bookingReserveBudget: NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
       baselineViableTier: "Mid Card",
       baselineCostPerSigning:
         NEW_GM_MODE_DRAFT_FINANCE_PLACEHOLDER_TIER_COSTS["Mid Card"],
       baselineRosterCostPreview:
         NEW_GM_MODE_DRAFT_FINANCE_PLACEHOLDER_TIER_COSTS["Mid Card"] *
         NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
+      baselineRemainingBudgetPreview:
+        NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER -
+        NEW_GM_MODE_DRAFT_FINANCE_PLACEHOLDER_TIER_COSTS["Mid Card"] *
+          NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
       canMeetMinimumRosterTargetWithMixedLowerMidTiers: true,
       displayLabel:
-        "Starting budget supports at least 16 superstars when the player mixes lower and mid tiers wisely."
+        "Starting budget supports at least 16 superstars plus a booking reserve when the player mixes lower and mid tiers wisely."
     }),
     remainingDraftBudgetPreview,
     selectedCandidateProjection,
@@ -219,10 +230,11 @@ export function createNewGMModeDraftFinanceProjection(
       canUseGenAI: false
     }),
     displayLabels: Object.freeze({
-      startingBudgetLine: "Starting Budget: 100",
+      startingBudgetLine: "Starting Budget: 120",
       remainingBudgetLine: `Remaining Budget Preview: ${remainingDraftBudgetPreview}`,
+      bookingReserveLine: "Booking Reserve Target: 20",
       financePreviewOnlyLine:
-        "Finance preview only. Budget spend is not active yet."
+        "Finance preview only. Local budget spend remains in-memory."
     })
   });
 }
@@ -279,7 +291,7 @@ function createCandidateProjection(input: {
       costLine: `Projected Signing Cost: ${projectedSigningCost}`,
       afterSigningLine: `Budget Preview After Signing: ${budgetPreviewAfterSigning}`,
       affordabilityLine: formatAffordabilityStatus(affordabilityStatus),
-      noteLine: "Finance preview only. Budget spend is not active yet."
+      noteLine: "Finance preview only. Local budget spend happens only after Make Pick succeeds."
     })
   });
 }

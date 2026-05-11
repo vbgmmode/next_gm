@@ -113,7 +113,7 @@ describe("Playable New GM Mode dock visibility", () => {
     assert.match(source, /item\.removeAttribute\("aria-current"\);/);
   });
 
-  it("keeps Auto Draft locked and preserves draft intent preview behavior", () => {
+  it("keeps local draft actions locked and preserves draft intent preview behavior", () => {
     const html = readPlayableUiFile("index.html");
     const preview = createDraftSelectionIntentPreview({
       selectedCandidate: createCandidateDisplayFromDataset({
@@ -134,7 +134,11 @@ describe("Playable New GM Mode dock visibility", () => {
     );
     assert.match(
       html,
-      /<button class="panel-button" type="button" disabled>Auto Draft Locked<\/button>/
+      /<button class="panel-button" type="button" data-auto-fill-minimum-roster disabled aria-disabled="true">Auto-Fill Locked<\/button>/
+    );
+    assert.match(
+      html,
+      /<button class="panel-button" type="button" data-finish-local-draft disabled aria-disabled="true">Finish Locked<\/button>/
     );
     assert.equal(preview.status, "ready-preview-selection-intent-locked");
     assert.equal(preview.displayLabels.statusLine, "Ready for in-memory Make Pick");
