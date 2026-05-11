@@ -3,7 +3,10 @@ import {
   createDraftSelectionIntentPreview,
 } from "./draftSelectionIntentAdapter.js";
 import { createMockDraftRecapPreviewState } from "./draftRecapPreviewState.js";
-import { createLocalGameSetupProjection } from "./localGameSetupController.js";
+import {
+  createLocalDraftOrderPreviewProjection,
+  createLocalGameSetupProjection,
+} from "./localGameSetupController.js";
 import {
   createAutoFillMinimumRosterReadiness,
   createFinishDraftReadiness,
@@ -85,6 +88,9 @@ import {
     reserve: document.getElementById("draft-budget-booking-reserve"),
     viability: document.getElementById("draft-budget-viability"),
     reserveStatus: document.getElementById("draft-budget-reserve-status"),
+  };
+  const draftPickOrderTargets = {
+    board: document.getElementById("draft-pick-order-board"),
   };
   const draftSignedRosterTargets = {
     count: document.getElementById("draft-signed-roster-count"),
@@ -460,6 +466,10 @@ import {
       updateSetupBasicsSurface();
     }
 
+    if (resolvedTargetId === "draft-room") {
+      updateDraftPickOrderSurface();
+    }
+
     if (resolvedTargetId === "roster-hub") {
       updatePostDraftRosterHub();
     }
@@ -728,6 +738,25 @@ import {
       progress.bookingReserveProtected ? "Reserve Protected" : "Reserve Dipped"
     );
     updateDraftSignedRosterPanel();
+    updateDraftPickOrderSurface();
+  }
+
+  function updateDraftPickOrderSurface() {
+    if (!draftPickOrderTargets.board) {
+      return;
+    }
+
+    const projection = createLocalDraftOrderPreviewProjection({
+      selectedDifficulty: uiState.selectedDifficulty,
+      activeBrandCount: uiState.activeBrandCount,
+      selectedBrandId: uiState.selectedBrandId,
+      selectedGm: getSelectedGmDisplay(),
+    });
+
+    draftPickOrderTargets.board.replaceChildren(
+      createDraftOrderHeaderRow(),
+      ...projection.rows.map((row) => createDraftOrderRow(row))
+    );
   }
 
   function updateDraftSignedRosterPanel() {
@@ -780,6 +809,35 @@ import {
 
     item.append(pick, name, meta);
     return item;
+  }
+
+  function createDraftOrderHeaderRow() {
+    const row = document.createElement("div");
+    row.className = "board-row board-head";
+    ["Pick", "Brand", "Status"].forEach((label) => {
+      const span = document.createElement("span");
+      span.textContent = label;
+      row.append(span);
+    });
+
+    return row;
+  }
+
+  function createDraftOrderRow(orderRow) {
+    const row = document.createElement("div");
+    row.className = orderRow.pickNumber === 1 ? "board-row current" : "board-row";
+
+    const pick = document.createElement("span");
+    pick.textContent = String(orderRow.pickNumber).padStart(2, "0");
+
+    const brand = document.createElement("strong");
+    brand.textContent = orderRow.brandLabel;
+
+    const status = document.createElement("em");
+    status.textContent = orderRow.statusLabel;
+
+    row.append(pick, brand, status);
+    return row;
   }
 
   function updateFinanceCandidateRows() {

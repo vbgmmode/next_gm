@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 
 import {
+  createLocalDraftOrderPreviewProjection,
   createLocalGameSetupProjection,
   LOCAL_GAME_SETUP_BRANDS,
   LOCAL_GAME_SETUP_DIFFICULTIES,
@@ -378,11 +379,33 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.match(html, /data-active-brand-count="4"/);
     assert.match(html, /id="setup-active-brand-list"/);
     assert.match(html, /id="setup-competing-gm-list"/);
+    assert.match(html, /id="draft-pick-order-board"/);
     assert.match(html, /Other brands visible, CPU drafting not active yet/);
     assert.match(appSource, /createLocalGameSetupProjection/);
+    assert.match(appSource, /createLocalDraftOrderPreviewProjection/);
     assert.match(appSource, /selectedDifficulty: "normal"/);
     assert.match(appSource, /activeBrandCount: 4/);
     assert.doesNotMatch(appSource, /cpuDraft|runCpu|otherBrandPick/);
+  });
+
+  it("projects local draft order from active brands without rival pick execution", () => {
+    const projection = createLocalDraftOrderPreviewProjection({
+      activeBrandCount: 3,
+      selectedBrandId: "nxt",
+      selectedGm,
+      rounds: 2,
+    });
+
+    assert.equal(projection.displayLabels.titleLine, "3-brand draft order");
+    assert.deepEqual(
+      projection.rows.map((row) => row.brandId),
+      ["nxt", "raw", "smackdown", "nxt", "raw", "smackdown"]
+    );
+    assert.equal(projection.rows[0]?.statusLabel, "On Clock");
+    assert.equal(projection.rows[1]?.statusLabel, "Rival Pick Preview");
+    assert.equal(projection.rows[3]?.statusLabel, "Next Turn");
+    assert.equal(projection.capabilityFlags.canExecuteRivalPicks, false);
+    assert.equal(projection.capabilityFlags.canRunCpuDraft, false);
   });
 
   it("projects selected active brands and competing GMs without simulation", () => {

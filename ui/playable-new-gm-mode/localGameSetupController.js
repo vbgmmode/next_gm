@@ -96,6 +96,68 @@ export function createLocalGameSetupProjection({
   });
 }
 
+export function createLocalDraftOrderPreviewProjection({
+  selectedDifficulty = "normal",
+  activeBrandCount = 4,
+  selectedBrandId = "raw",
+  selectedGm,
+  rounds = 2,
+} = {}) {
+  const setupProjection = createLocalGameSetupProjection({
+    selectedDifficulty,
+    activeBrandCount,
+    selectedBrandId,
+    selectedGm,
+  });
+  const orderedBrands = [
+    ...setupProjection.activeBrands.filter((brand) => brand.playerControlled),
+    ...setupProjection.activeBrands.filter((brand) => !brand.playerControlled),
+  ];
+  const roundCount = readPositiveInteger(rounds, 2);
+  const rows = [];
+
+  for (let roundIndex = 0; roundIndex < roundCount; roundIndex += 1) {
+    orderedBrands.forEach((brand) => {
+      const pickNumber = rows.length + 1;
+      rows.push(
+        Object.freeze({
+          pickNumber,
+          roundNumber: roundIndex + 1,
+          brandId: brand.brandId,
+          brandLabel: brand.brandLabel,
+          gmLabel: brand.gmLabel,
+          playerControlled: brand.playerControlled,
+          statusLabel:
+            pickNumber === 1
+              ? "On Clock"
+              : brand.playerControlled
+                ? "Next Turn"
+                : "Rival Pick Preview",
+        })
+      );
+    });
+  }
+
+  return Object.freeze({
+    projectionKind: "playable-new-gm-mode-local-draft-order-preview-projection",
+    version: "0.1",
+    localOnly: true,
+    persisted: false,
+    setupProjection,
+    rows: Object.freeze(rows),
+    capabilityFlags: Object.freeze({
+      canExecuteRivalPicks: false,
+      canRunCpuDraft: false,
+      canPersistDraftOrder: false,
+    }),
+    displayLabels: Object.freeze({
+      titleLine: `${setupProjection.activeBrandCount}-brand draft order`,
+      noteLine:
+        "Rival turns are visible for draft-night context. CPU picks are not active yet.",
+    }),
+  });
+}
+
 function findDifficulty(selectedDifficulty) {
   return (
     LOCAL_GAME_SETUP_DIFFICULTIES.find(
@@ -162,4 +224,10 @@ function readString(value) {
   return typeof value === "string" && value.trim().length > 0
     ? value.trim()
     : undefined;
+}
+
+function readPositiveInteger(value, fallback) {
+  return typeof value === "number" && Number.isFinite(value) && value > 0
+    ? Math.floor(value)
+    : fallback;
 }
