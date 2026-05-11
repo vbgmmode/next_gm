@@ -3,8 +3,9 @@ import {
   createWeekOneHqProjection,
 } from "./localPostDraftSetupController.js";
 import {
+  createProductionEngineRegistry,
   createSimulationEngineContext,
-  showEngine,
+  runShowFanReactionSmokePipeline,
 } from "../../src/game/engines/index.ts";
 
 export const LOCAL_WEEK_ONE_SEGMENT_TYPES = Object.freeze([
@@ -485,7 +486,7 @@ function createLocalShowRecap({ projection, setupState, weeklyState }) {
       showGrade === "A" || showGrade === "B"
         ? "Momentum: Up"
         : "Momentum: Steady",
-    fanResponseNote: `Fan Response: ${crowdRead}`,
+    fanResponseNote: createFanResponseNote({ crowdRead, engineRun }),
     budgetNote: "Budget: No major change in this local session",
     localOnlyLine: "Local Session Only / Not Saved Yet",
     cardReadinessLine: createCardReadinessLine(engineRun),
@@ -785,7 +786,8 @@ function runLocalShowEngineShell({ projection, rivalries, weeklyState }) {
     )
     .filter(Boolean);
 
-  const result = showEngine.run(
+  const pipelineResult = runShowFanReactionSmokePipeline(
+    createProductionEngineRegistry(),
     {
       show,
       bookedMatches,
@@ -799,11 +801,14 @@ function runLocalShowEngineShell({ projection, rivalries, weeklyState }) {
       week: weekNumber,
     })
   );
+  const result = pipelineResult.showResult;
 
   return Object.freeze({
-    showEngineId: showEngine.metadata.id,
-    showEngineVersion: showEngine.metadata.version,
+    showEngineId: "show-engine-v0",
+    showEngineVersion: "0.8.0",
+    fanReactionBacked: true,
     showReadinessStatus: result.hiddenState.showReadinessStatus,
+    fanSignalLabels: readEngineSignalLabels(pipelineResult.fanReactionResult),
     completedMatchEngineRuns: result.hiddenState.completedMatchEngineRuns,
     failedMatchEngineRuns: result.hiddenState.failedMatchEngineRuns,
     matchResultsBySegmentId: new Map(
@@ -1077,6 +1082,28 @@ function createCardReadinessLine(engineRun) {
   }
 
   return "Card Status: Partially processed";
+}
+
+function createFanResponseNote({ crowdRead, engineRun }) {
+  const fanSignalLabels = engineRun?.fanSignalLabels || new Set();
+
+  if (fanSignalLabels.has("crowd was engaged")) {
+    return "Fan Response: Crowd was engaged";
+  }
+
+  if (fanSignalLabels.has("casual fans interested")) {
+    return "Fan Response: Casual fans interested";
+  }
+
+  if (fanSignalLabels.has("hardcore fans skeptical")) {
+    return "Fan Response: Hardcore fans skeptical";
+  }
+
+  if (fanSignalLabels.has("audience is cooling")) {
+    return "Fan Response: Audience is cooling";
+  }
+
+  return `Fan Response: ${crowdRead}`;
 }
 
 function createSegmentProjection({ segment, segmentNumber, rosterOptions }) {

@@ -39,7 +39,7 @@ Based on the current repo files and focused playable tests:
 - A backend SQLite durable payload write/read shell exists for the serialized gameplay payload, scoped to controlled local save files.
 - A backend durable save orchestration shell exists for creating a new save slot from the gameplay state model and continuing a save by reading the stored payload summary.
 - The playable preview host exposes a local save API and the UI can request Save Current Session / Continue Last Save with basic rehydration for brand, roster, champions, rivalries, week state, saved show summaries, and current show cards.
-- Local weekly show recaps now route booked match segments through the existing Show Engine shell, which in turn runs the Match Engine shell with seeded deterministic context, and surfaces player-facing match rating, crowd response, and momentum labels without exposing hidden rolls, formulas, fan/social/business engines, or backend diagnostics.
+- Local weekly show recaps now route booked match segments through the existing Show Engine shell, which in turn runs the Match Engine shell with seeded deterministic context, then passes the structural show handoff into the Fan Reaction shell for player-facing fan-response labels without exposing hidden rolls, formulas, business engines, generated text, or backend diagnostics.
 - Current flow is mostly UI-local/page-lifetime.
 - Persistence and full gameplay loop are not finished yet.
 

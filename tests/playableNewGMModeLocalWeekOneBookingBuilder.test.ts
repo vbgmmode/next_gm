@@ -282,6 +282,8 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
 
     assert.equal(firstResult.recap.simulationBacked, true);
     assert.equal(firstResult.recap.cardReadinessLine, "Card Status: Processed");
+    assert.match(firstResult.recap.fanResponseNote, /^Fan Response: /);
+    assert.notEqual(firstResult.recap.fanResponseNote, "Fan Response: Strong");
     assert.deepEqual(secondResult.recap, firstResult.recap);
     assert.equal(
       firstResult.recap.segmentResults.some((segment) =>
@@ -367,7 +369,7 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.equal(shouldShowDock("show-recap"), true);
   });
 
-  it("uses only the scoped Show Engine path without forbidden storage, randomness, or adjacent engine calls", () => {
+  it("uses only the scoped Show to Fan Reaction path without forbidden storage, randomness, or adjacent engine calls", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -398,7 +400,9 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
       ["Math", "random"].join("."),
     ];
 
-    assert.match(changedUiSource, /showEngine\.run/);
+    assert.match(changedUiSource, /runShowFanReactionSmokePipeline/);
+    assert.doesNotMatch(changedUiSource, /fanReactionEngine\.run/);
+    assert.doesNotMatch(changedUiSource, /socialDiscourseEngine\.run/);
 
     for (const snippet of forbiddenSnippets) {
       assert.equal(changedUiSource.includes(snippet), false, snippet);
