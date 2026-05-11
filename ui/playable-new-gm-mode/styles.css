@@ -27,13 +27,17 @@
 }
 
 html {
+  height: 100%;
   scroll-behavior: smooth;
+  overflow: hidden;
 }
 
 body {
   margin: 0;
   min-width: 320px;
+  height: 100%;
   min-height: 100vh;
+  overflow: hidden;
   background:
     linear-gradient(90deg, rgba(216, 180, 93, 0.05), transparent 22%),
     radial-gradient(circle at top right, rgba(79, 139, 217, 0.1), transparent 28%),
@@ -53,7 +57,9 @@ a {
 .app-shell {
   display: grid;
   grid-template-columns: 88px minmax(0, 1fr);
+  height: 100vh;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 .nav-rail {
@@ -148,16 +154,23 @@ a {
 
 .command-center {
   display: grid;
-  gap: 24px;
-  align-content: start;
-  padding: 24px;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 12px;
+  align-content: stretch;
+  height: 100vh;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 14px;
 }
 
 .top-command {
+  order: 1;
   display: grid;
   grid-template-columns: minmax(260px, 1fr) minmax(360px, 1.8fr);
-  gap: 20px;
+  gap: 12px;
   align-items: stretch;
+  min-height: 0;
 }
 
 .top-title-lockup {
@@ -167,7 +180,8 @@ a {
     linear-gradient(135deg, rgba(216, 180, 93, 0.12), transparent 42%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent),
     var(--panel-soft);
-  padding: 18px;
+  min-width: 0;
+  padding: 12px 14px;
 }
 
 .eyebrow,
@@ -189,32 +203,35 @@ p {
 
 h1 {
   margin-bottom: 0;
-  font-size: clamp(2.4rem, 5vw, 5.5rem);
+  font-size: clamp(1.8rem, 3.2vw, 3.7rem);
   line-height: 0.95;
   text-transform: uppercase;
 }
 
 .active-screen-label {
-  margin: 12px 0 0;
+  overflow: hidden;
+  margin: 8px 0 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 h2 {
-  margin-bottom: 10px;
-  font-size: clamp(1.45rem, 2.6vw, 2.4rem);
+  margin-bottom: 8px;
+  font-size: clamp(1.25rem, 2vw, 2rem);
   line-height: 1.05;
 }
 
 h3 {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   font-size: 1.08rem;
 }
 
 p {
   color: var(--muted);
-  line-height: 1.55;
+  line-height: 1.38;
 }
 
 .status-strip {
@@ -233,7 +250,7 @@ p {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
     var(--panel);
-  padding: 16px;
+  padding: 11px 12px;
 }
 
 dt {
@@ -244,9 +261,12 @@ dt {
 }
 
 dd {
+  overflow: hidden;
   margin: 4px 0 0;
   color: var(--text);
   font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .hero-panel,
@@ -259,9 +279,13 @@ dd {
 }
 
 .dashboard-hub {
+  order: 3;
   display: grid;
-  gap: 18px;
-  padding: 22px;
+  grid-template-rows: minmax(118px, 0.66fr) minmax(72px, auto) minmax(0, 1.34fr);
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 12px;
   background:
     linear-gradient(135deg, rgba(216, 87, 87, 0.1), transparent 32%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
@@ -270,9 +294,11 @@ dd {
 
 .show-identity-panel {
   display: grid;
-  grid-template-columns: 128px minmax(0, 1fr) minmax(220px, 0.38fr);
-  gap: 18px;
+  grid-template-columns: 96px minmax(0, 1fr) minmax(190px, 0.34fr);
+  gap: 10px;
   align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .show-brand-bug {
@@ -285,7 +311,8 @@ dd {
     linear-gradient(330deg, rgba(216, 87, 87, 0.22), transparent 48%),
     #220d12;
   color: #f7d778;
-  font-size: 3rem;
+  min-height: 0;
+  font-size: 2.35rem;
   font-weight: 950;
   text-transform: uppercase;
   box-shadow: inset 0 0 40px rgba(216, 180, 93, 0.08);
@@ -308,10 +335,38 @@ dd {
   padding: 18px;
 }
 
+.show-identity-copy,
+.next-event-card,
+.metric-card,
+.broadcast-card,
+.gm-alert-panel,
+.title-panel,
+.road-card,
+.analytics-tile,
+.social-preview-panel,
+.placeholder-card,
+.empty-command-panel,
+.review-card,
+.draft-board-panel,
+.talent-pool-panel,
+.pick-order-panel,
+.readiness-panel,
+.current-pick-panel,
+.talent-detail-panel,
+.contract-card,
+.blocked-panel {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .show-identity-copy h2 {
+  overflow: hidden;
   max-width: 880px;
-  font-size: clamp(2.2rem, 4.4vw, 4.7rem);
+  font-size: clamp(1.45rem, 3vw, 3.15rem);
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .next-event-card {
@@ -323,22 +378,27 @@ dd {
 
 .next-event-card strong {
   display: block;
-  margin: 10px 0;
+  margin: 6px 0;
   color: var(--gold);
-  font-size: 1.6rem;
+  font-size: 1.25rem;
   text-transform: uppercase;
 }
 
 .gm-metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .metric-card strong {
   display: block;
-  margin: 8px 0 3px;
-  font-size: 1.45rem;
+  overflow: hidden;
+  margin: 5px 0 2px;
+  font-size: 1.2rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .budget-card {
@@ -360,7 +420,10 @@ dd {
 .dashboard-board-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 14px;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .gm-alert-panel,
@@ -383,7 +446,7 @@ dd {
 .alert-list,
 .title-chip-list {
   display: grid;
-  gap: 10px;
+  gap: 7px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -395,7 +458,7 @@ dd {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.025);
-  padding: 12px;
+  padding: 8px;
 }
 
 .alert-list span,
@@ -404,14 +467,16 @@ dd {
 .mock-feed-row,
 .analytics-tile span {
   color: var(--muted);
+  overflow: hidden;
   font-size: 0.82rem;
   font-weight: 850;
+  text-overflow: ellipsis;
 }
 
 .mini-draft-board {
   display: grid;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .mini-draft-board div,
@@ -423,7 +488,7 @@ dd {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.025);
-  padding: 10px;
+  padding: 8px;
 }
 
 .mini-draft-board span {
@@ -467,7 +532,7 @@ dd {
   border: 1px solid rgba(216, 180, 93, 0.3);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.045);
-  margin: 12px 0;
+  margin: 8px 0;
 }
 
 .heat-meter span {
@@ -567,9 +632,12 @@ dd {
 }
 
 .flow-strip {
+  order: 2;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .flow-step {
@@ -581,7 +649,7 @@ dd {
   color: var(--text);
   cursor: pointer;
   text-align: left;
-  padding: 16px;
+  padding: 9px 12px;
 }
 
 .flow-step:hover,
@@ -605,8 +673,8 @@ dd {
 
 .flow-step span {
   display: inline-grid;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   place-items: center;
   border: 1px solid var(--line-strong);
   border-radius: 8px;
@@ -617,22 +685,31 @@ dd {
 
 .flow-step strong {
   display: block;
-  margin-top: 14px;
+  overflow: hidden;
+  margin-top: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .flow-step p {
-  margin: 5px 0 0;
-  font-size: 0.9rem;
+  overflow: hidden;
+  margin: 3px 0 0;
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .flow-step small,
 .setup-step small {
   display: inline-flex;
-  margin-top: 10px;
+  overflow: hidden;
+  margin-top: 6px;
   color: var(--subtle);
   font-size: 0.76rem;
   font-weight: 850;
   text-transform: uppercase;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .flow-step:not(:last-child)::after {
@@ -649,7 +726,13 @@ dd {
 }
 
 .section-block {
-  padding: 24px;
+  order: 3;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 14px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 30%),
     var(--panel-soft);
@@ -660,20 +743,27 @@ dd {
 }
 
 .active-section {
+  min-height: 0;
   outline: 1px solid rgba(216, 180, 93, 0.12);
 }
 
 .section-heading {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: start;
   justify-content: space-between;
-  margin-bottom: 18px;
+  min-width: 0;
+  min-height: 0;
+  margin-bottom: 0;
 }
 
 .section-note {
+  overflow: hidden;
   max-width: 760px;
   margin-bottom: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .badge {
@@ -698,12 +788,14 @@ dd {
 .save-grid {
   display: grid;
   grid-template-columns: 1.2fr repeat(2, minmax(220px, 0.9fr));
-  gap: 16px;
+  gap: 12px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .save-card {
   display: grid;
-  grid-template-rows: 150px minmax(0, 1fr);
+  grid-template-rows: minmax(84px, 0.42fr) minmax(0, 1fr);
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -751,8 +843,10 @@ dd {
 .card-body {
   display: grid;
   align-content: start;
-  gap: 13px;
-  padding: 18px;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 12px;
 }
 
 .state-row {
@@ -763,6 +857,7 @@ dd {
 
 .state-pill {
   display: inline-flex;
+  max-width: 100%;
   min-height: 26px;
   align-items: center;
   border: 1px solid var(--line-strong);
@@ -771,6 +866,9 @@ dd {
   color: var(--muted);
   font-size: 0.75rem;
   font-weight: 850;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .state-pill.ready {
@@ -793,7 +891,9 @@ dd {
 
 .compact-list {
   display: grid;
-  gap: 9px;
+  gap: 6px;
+  min-height: 0;
+  overflow: hidden;
   margin: 0;
 }
 
@@ -802,7 +902,7 @@ dd {
   gap: 12px;
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  padding-bottom: 8px;
+  padding-bottom: 5px;
 }
 
 .compact-list dt,
@@ -816,7 +916,8 @@ dd {
 
 .primary-action,
 .secondary-action {
-  min-height: 42px;
+  min-height: 36px;
+  overflow: hidden;
   border: 1px solid var(--line-strong);
   border-radius: 8px;
   margin-top: 4px;
@@ -824,6 +925,9 @@ dd {
   cursor: not-allowed;
   font-weight: 850;
   opacity: 0.82;
+  padding: 0 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .enabled-action {
@@ -834,8 +938,9 @@ dd {
 .section-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 20px;
+  gap: 8px;
+  min-height: 0;
+  margin-top: 0;
 }
 
 .primary-action {
@@ -849,12 +954,16 @@ dd {
 .setup-layout {
   display: grid;
   grid-template-columns: minmax(260px, 0.95fr) minmax(320px, 1.05fr);
-  gap: 18px;
+  gap: 12px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .setup-steps {
   display: grid;
-  gap: 10px;
+  gap: 8px;
+  min-height: 0;
+  overflow: hidden auto;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -867,7 +976,7 @@ dd {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
-  padding: 14px;
+  padding: 10px;
 }
 
 .setup-step.active {
@@ -898,7 +1007,9 @@ dd {
 
 .setup-preview {
   display: grid;
-  gap: 16px;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .contract-card,
@@ -906,7 +1017,7 @@ dd {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
-  padding: 18px;
+  padding: 12px;
 }
 
 .blocked-panel {
@@ -928,7 +1039,9 @@ dd {
 .review-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .review-card,
@@ -940,7 +1053,7 @@ dd {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--panel);
-  padding: 18px;
+  padding: 12px;
 }
 
 .review-card,
@@ -950,7 +1063,7 @@ dd {
 .readiness-panel {
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: 7px;
 }
 
 .brand-review {
@@ -961,8 +1074,9 @@ dd {
 .blocked-state-strip {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 8px;
+  min-height: 0;
+  margin-top: 0;
 }
 
 .blocked-state-strip span {
@@ -982,12 +1096,15 @@ dd {
 .draft-command-grid {
   display: grid;
   grid-template-columns: minmax(320px, 1.1fr) minmax(260px, 0.9fr);
-  gap: 16px;
+  gap: 10px;
 }
 
 .draft-command-grid {
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  align-items: start;
+  grid-template-columns: minmax(240px, 0.9fr) minmax(290px, 1.15fr) minmax(260px, 0.95fr);
+  grid-template-rows: minmax(128px, 0.68fr) minmax(0, 1.32fr);
+  align-items: stretch;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .draft-room-banner {
@@ -997,7 +1114,8 @@ dd {
   overflow: hidden;
   border: 1px solid rgba(216, 180, 93, 0.3);
   border-radius: 8px;
-  margin-bottom: 16px;
+  min-height: 0;
+  margin-bottom: 0;
   background: rgba(216, 180, 93, 0.18);
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
 }
@@ -1007,7 +1125,7 @@ dd {
   background:
     linear-gradient(180deg, rgba(216, 180, 93, 0.08), transparent),
     var(--panel);
-  padding: 14px;
+  padding: 10px;
 }
 
 .draft-board-panel,
@@ -1019,13 +1137,43 @@ dd {
 .current-pick-panel,
 .readiness-panel,
 .pick-order-panel {
-  grid-column: span 4;
+  grid-column: auto;
 }
 
 .draft-board-panel,
 .talent-pool-panel,
 .talent-detail-panel {
-  grid-column: span 4;
+  grid-column: auto;
+}
+
+.current-pick-panel {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.draft-board-panel {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.readiness-panel {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.pick-order-panel {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.talent-pool-panel {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.talent-detail-panel {
+  grid-column: 3;
+  grid-row: 2;
 }
 
 .current-pick-panel {
@@ -1048,8 +1196,16 @@ dd {
 .pick-order-list,
 .readiness-list {
   display: grid;
-  gap: 10px;
+  gap: 7px;
+  min-height: 0;
   margin: 0;
+}
+
+.talent-card-list,
+.pick-order-list,
+.draft-board-table,
+.readiness-list {
+  overflow: hidden auto;
 }
 
 .draft-board-list div,
@@ -1061,13 +1217,13 @@ dd {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.025);
-  padding: 12px;
+  padding: 8px;
 }
 
 .draft-board-row {
   display: grid;
-  grid-template-columns: 52px minmax(100px, 0.8fr) minmax(110px, 0.8fr) minmax(140px, 1fr);
-  gap: 12px;
+  grid-template-columns: 38px minmax(72px, 0.8fr) minmax(80px, 0.75fr) minmax(90px, 1fr);
+  gap: 8px;
   align-items: center;
 }
 
@@ -1121,6 +1277,27 @@ dd {
   text-align: left;
 }
 
+.talent-card strong,
+.talent-card span,
+.talent-card small,
+.pick-order-list span,
+.pick-order-list strong,
+.draft-board-row span,
+.draft-board-row strong,
+.draft-board-row em,
+.readiness-list dt,
+.readiness-list dd,
+.placeholder-card strong,
+.placeholder-card p,
+.title-panel strong,
+.road-card strong,
+.analytics-tile strong,
+.analytics-tile p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .talent-card:hover,
 .talent-card:focus,
 .talent-card.selected {
@@ -1158,15 +1335,19 @@ dd {
 .draft-action-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .integration-note {
   border: 1px solid rgba(216, 180, 93, 0.3);
   border-radius: 8px;
   background: rgba(216, 180, 93, 0.07);
-  padding: 12px;
-  font-size: 0.88rem;
+  overflow: hidden;
+  padding: 10px;
+  font-size: 0.82rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 .locked-section {
@@ -1176,13 +1357,17 @@ dd {
 .placeholder-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .roster-command-grid {
   display: grid;
   grid-template-columns: minmax(280px, 1.2fr) repeat(2, minmax(220px, 0.9fr));
-  gap: 16px;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden auto;
 }
 
 .roster-empty-card {
@@ -1197,7 +1382,7 @@ dd {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent),
     var(--panel);
-  padding: 18px;
+  padding: 12px;
 }
 
 .roster-hero-card,
@@ -1211,7 +1396,9 @@ dd {
 .analytics-preview-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 10px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .analytics-preview-grid {
@@ -1219,7 +1406,7 @@ dd {
 }
 
 .title-panel {
-  min-height: 180px;
+  min-height: 0;
   background:
     linear-gradient(150deg, rgba(216, 180, 93, 0.12), transparent 48%),
     var(--panel);
@@ -1242,7 +1429,7 @@ dd {
 .analytics-tile strong,
 .social-preview-panel strong {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   font-size: 1.2rem;
 }
 
@@ -1260,7 +1447,7 @@ dd {
 
 .road-card {
   position: relative;
-  min-height: 150px;
+  min-height: 0;
 }
 
 .road-card::after {
@@ -1286,11 +1473,12 @@ dd {
 
 .social-preview-panel {
   display: grid;
-  gap: 10px;
+  gap: 8px;
+  overflow: hidden auto;
 }
 
 .analytics-tile {
-  min-height: 160px;
+  min-height: 0;
 }
 
 .placeholder-card strong,
@@ -1337,6 +1525,23 @@ dd {
     grid-template-columns: 1fr;
   }
 
+  .command-center {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .top-command {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .status-strip {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .dashboard-hub {
+    overflow: hidden auto;
+  }
+
   .gm-alert-panel,
   .draft-feature-card,
   .roster-spotlight-card,
@@ -1354,10 +1559,7 @@ dd {
   .talent-pool-panel,
   .talent-detail-panel {
     grid-column: auto;
-  }
-
-  .status-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-row: auto;
   }
 
   .flow-strip {
@@ -1374,6 +1576,14 @@ dd {
 }
 
 @media (max-width: 760px) {
+  html,
+  body,
+  .app-shell {
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
   .app-shell {
     grid-template-columns: 1fr;
   }
@@ -1402,6 +1612,9 @@ dd {
   }
 
   .command-center {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
     padding: 16px;
   }
 
@@ -1417,5 +1630,87 @@ dd {
   .mini-draft-board div,
   .mock-feed-row {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-height: 820px) and (min-width: 761px) {
+  .command-center {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .top-title-lockup,
+  .status-strip div {
+    padding: 8px 10px;
+  }
+
+  .eyebrow,
+  .card-kicker {
+    margin-bottom: 4px;
+    font-size: 0.68rem;
+  }
+
+  h1 {
+    font-size: clamp(1.55rem, 2.5vw, 2.7rem);
+  }
+
+  h2 {
+    font-size: clamp(1.12rem, 1.8vw, 1.55rem);
+  }
+
+  h3 {
+    font-size: 0.98rem;
+  }
+
+  p {
+    font-size: 0.86rem;
+  }
+
+  .flow-step {
+    padding: 7px 9px;
+  }
+
+  .flow-step p,
+  .flow-step small {
+    display: none;
+  }
+
+  .dashboard-hub,
+  .section-block {
+    padding: 10px;
+  }
+
+  .show-identity-panel {
+    grid-template-columns: 78px minmax(0, 1fr) minmax(170px, 0.32fr);
+  }
+
+  .show-brand-bug {
+    font-size: 2rem;
+  }
+
+  .gm-metrics-grid,
+  .dashboard-board-grid,
+  .draft-command-grid,
+  .review-grid,
+  .save-grid {
+    gap: 8px;
+  }
+
+  .metric-card,
+  .broadcast-card,
+  .gm-alert-panel,
+  .placeholder-card,
+  .title-panel,
+  .road-card,
+  .analytics-tile,
+  .social-preview-panel,
+  .review-card,
+  .draft-board-panel,
+  .talent-pool-panel,
+  .pick-order-panel,
+  .readiness-panel,
+  .current-pick-panel,
+  .talent-detail-panel {
+    padding: 9px;
   }
 }

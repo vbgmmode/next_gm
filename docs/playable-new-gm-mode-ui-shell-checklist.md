@@ -6,11 +6,14 @@ Manual verification for the static shell:
 - Confirm the left navigation lists Dashboard, Save Selection, New GM Setup, Draft Room, Roster, Rivalries, Championships, Calendar, IWC, Analytics, and Settings.
 - Confirm the Dashboard reads like a wrestling GM hub/front office cockpit, not a generic admin dashboard.
 - Confirm the visual direction uses premium dark sports broadcast/game-panel energy with clear show identity.
+- Confirm the app behaves as a viewport-first cockpit with no full-page scrolling on laptop-sized viewports.
+- Confirm the header, nav, and flow strip remain visually stable while section content changes.
 - Confirm Save Selection shows Continue Save, New GM Mode, and Empty Slot as mock-only cards.
 - Confirm New GM Setup shows Choose Brand, Choose GM Identity, Difficulty / Experience, Draft Setup, and Review Setup as static sections.
 - Confirm Setup Review shows selected brand, GM identity, difficulty / experience, draft setup, and blocked-state labels.
 - Confirm Draft Room feels like a premium draft-night command screen, not a plain table.
 - Confirm Draft Room shows the broadcast strip, read-only current pick panel, draft board, brand pick order, mock talent pool, selected talent preview, and readiness/status panel.
+- Confirm Draft Room keeps the talent pool, draft board, pick order, and readiness reads inside contained panels instead of expanding the page.
 - Confirm the locked Make Pick and Auto Draft actions remain disabled.
 - Confirm clicking a mock talent updates only the selected talent preview panel.
 - Confirm the selected talent card has an obvious selected state.
@@ -22,6 +25,7 @@ Manual verification for the static shell:
 - Confirm Roster shows an empty post-draft placeholder state with roster assignment and gameplay start locked.
 - Confirm Roster, Rivalries, and Championships feel visually connected as future roster-adjacent hubs.
 - Confirm IWC, Analytics, and Calendar read as game systems with presentation value, not blank placeholders.
+- Confirm long labels, buttons, wrestler names, and status pills truncate or compress instead of spilling outside cards.
 - Confirm blocked labels remain visible for draft execution, roster assignment, gameplay start, persistence, SQLite writes, and GenAI.
 - Confirm future draft integration notes say to consume existing Real Draft System v1.0 services instead of rebuilding draft services.
 - Confirm the read-only draft integration boundary projects existing candidate/readiness data only.
@@ -55,6 +59,9 @@ Screens and sections to inspect:
 Expected visual behavior:
 
 - The screen should keep a premium dark command-center feel.
+- The page itself should not vertically scroll at normal laptop sizes; scrolling should be contained inside approved panels only.
+- The active major section should fit within the visible app viewport.
+- Header, nav, and player-flow controls should remain stable and should not drift offscreen during section switching.
 - Dashboard should feel like a playable wrestling management game hub with show identity, GM alerts, status cards, and next-event pressure.
 - Draft Room should feel like a draft-night broadcast command desk rather than a plain admin table.
 - Roster should feel like the future locker-room command hub, with Rivalries and Championships visually nearby.
@@ -70,6 +77,8 @@ Expected visual behavior:
 - Mock/locked labels should feel like intentional preview-state badges, not raw developer diagnostics.
 - Player-facing lock language should prefer Preview Mode, Locked for this build, Draft execution not enabled, and Coming after draft confirmation over raw technical phrasing.
 - Cards should have readable spacing at common laptop widths.
+- Cards should compress responsively and preserve hierarchy without stretching into long-page layouts.
+- Text must not spill outside cards, buttons, status strips, pills, or table rows.
 
 Expected mock/blocked behavior:
 
@@ -87,12 +96,16 @@ Expected mock/blocked behavior:
 
 Responsive/laptop-width checks:
 
+- At roughly 1366px x 768px, the Dashboard should fit as a cockpit with no full-page vertical scrolling.
+- At roughly 1366px x 768px, Draft Room should fit in the viewport with internal panel scrolling only.
+- At roughly 1280px x 720px, the header, nav, flow strip, and active section should remain usable without overlap.
 - At roughly 1366px width, Save Selection should fit as a polished command surface.
 - At roughly 1366px width, Draft Room should keep the current pick, readiness, order, board, talent pool, and detail panel readable without feeling like a plain admin table.
 - At roughly 1120px width, major card grids should collapse cleanly.
 - At narrow widths, the nav should become usable without hiding text or overlapping content.
 - Long disabled button labels should not overflow their cards.
 - Section switching should not create layout jumps that hide the active section header.
+- If content exceeds the viewport, only the relevant internal panel should scroll.
 
 Boundary checks:
 
