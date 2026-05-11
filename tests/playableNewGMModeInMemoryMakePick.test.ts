@@ -7,6 +7,7 @@ import {
   createLocalGameSetupProjection,
   LOCAL_GAME_SETUP_BRANDS,
   LOCAL_GAME_SETUP_DIFFICULTIES,
+  LOCAL_GAME_SETUP_STARTING_BUDGET_UNITS,
 } from "../ui/playable-new-gm-mode/localGameSetupController.js";
 import {
   createInitialMiniDraftProgress,
@@ -394,6 +395,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
 
     assert.equal(LOCAL_GAME_SETUP_DIFFICULTIES.length, 3);
     assert.equal(LOCAL_GAME_SETUP_BRANDS.length, 4);
+    assert.equal(LOCAL_GAME_SETUP_STARTING_BUDGET_UNITS, 120);
     assert.equal(projection.selectedDifficulty, "hard");
     assert.equal(projection.activeBrandCount, 2);
     assert.deepEqual(

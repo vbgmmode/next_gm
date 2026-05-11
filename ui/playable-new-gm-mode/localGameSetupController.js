@@ -1,7 +1,3 @@
-import {
-  NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
-} from "../../src/game/domain/index.ts";
-
 export const LOCAL_GAME_SETUP_DIFFICULTIES = Object.freeze([
   Object.freeze({
     difficultyId: "easy",
@@ -19,6 +15,8 @@ export const LOCAL_GAME_SETUP_DIFFICULTIES = Object.freeze([
     pressureLabel: "Tight owner pressure",
   }),
 ]);
+
+export const LOCAL_GAME_SETUP_STARTING_BUDGET_UNITS = 120;
 
 export const LOCAL_GAME_SETUP_BRANDS = Object.freeze([
   Object.freeze({
@@ -81,7 +79,7 @@ export function createLocalGameSetupProjection({
       difficultyLine: difficulty.label,
       activeBrandsLine: `${activeBrands.length} brands`,
       startingBudgetLine: formatBudgetUnitsAsMoney(
-        NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER
+        LOCAL_GAME_SETUP_STARTING_BUDGET_UNITS
       ),
       activeBrandLine: activeBrands
         .map((brand) => `${brand.brandLabel}: ${brand.gmLabel}`)
