@@ -33,15 +33,27 @@ Expected local URL style:
 ## Flow QA
 
 - Confirm the first screen is Game Landing / Title Screen, not Save Selection, Dashboard, or Brand HQ.
+- Confirm first-load labels all agree with Game Landing / Title Screen:
+  - `active-screen-label` reads Game Landing.
+  - `phase-label` reads Title Screen.
+  - Dock active label reads Game Landing while the dock is hidden/minimal on Landing.
+  - No dock tab is active or marked `aria-current` before the player leaves Landing.
+  - Only `#game-landing` is visible and all other screens are hidden.
 - Confirm Landing shows the Next GM game identity/logo text prominently.
 - Confirm Landing feels like a premium wrestling GM title screen, not a SaaS/admin dashboard.
 - Confirm Start New Game goes directly to Contract Signing.
 - Confirm Select Save / Continue goes to Save Selection.
 - Confirm Settings goes to the Settings screen/section.
+- Confirm title-screen branching updates labels consistently:
+  - Start New Game updates the active label to Contract Signing and phase to New Game Setup.
+  - Select Save / Continue updates the active label to Save Selection and phase to Pre-Draft.
+  - Settings updates the active label to Settings, phase to Title Options, and marks only the Settings dock item active.
 - Confirm a player can start a new game without an existing save file.
 - Confirm Save Selection feels like a save-management screen with large campaign/save-slot panels.
 - Confirm the visible early flow is Game Landing / Title Screen -> Select Save / Continue -> Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard.
 - Confirm choosing static controls only switches visible mock sections.
+- Confirm choosing a GM card updates the highlighted GM card in memory only.
+- Confirm choosing a brand updates the selected brand, brand bug, and brand-name display in memory only.
 - Confirm Contract Signing feels like a league office / GM office launch moment.
 - Confirm Setup Basics includes difficulty, save name, and optional assistant setup without saving anything.
 - Confirm Assistant Setup is skippable and clearly optional.
@@ -51,6 +63,11 @@ Expected local URL style:
 - Confirm Initial Draft feels like the active draft broadcast surface.
 - Confirm Initial Draft visibly communicates the read-only draft projection boundary.
 - Confirm Initial Draft candidate names match the project-backed read-only projection contract.
+- Confirm clicking a draft candidate updates the selected candidate card and a UI-only selection intent preview.
+- Confirm the selection intent preview shows selected candidate, selected brand, Round 1 / Pick 1 placeholder, and preview-only locked status.
+- Confirm selecting Ivan North reports preview-only unavailable status and still does not create a pick.
+- Confirm Make Pick and Auto Draft stay disabled after selecting any candidate.
+- Confirm Draft Recap does not unlock from the candidate preview.
 - Confirm Draft Recap appears as the first post-draft state.
 - Confirm Brand Dashboard becomes the primary Week 1 / post-draft surface.
 - Confirm Draft Preview is not presented as the primary surface after Draft Recap.
@@ -128,6 +145,7 @@ Expected local URL style:
 - Confirm keyboard focus expands the dock and has a visible focus state.
 - Confirm selecting a dock item by pointer switches sections and immediately collapses the dock.
 - Confirm activating a dock item by keyboard Enter or Space switches sections and immediately collapses the dock.
+- Confirm selecting any dock item clears expanded dock presentation state and leaves only the target dock item active when a dock section exists.
 - Confirm Escape collapses the expanded dock without trapping focus.
 - Confirm pointer leave collapses the expanded dock after a short tasteful delay.
 - Confirm clicking the main screen can collapse the dock, but is not required after selecting a dock item.
@@ -166,6 +184,8 @@ Expected local URL style:
 - Confirm assistant setup does not save keys, make calls, or activate live AI.
 - Confirm Draft Room controls remain disabled, including Make Pick and Auto Draft.
 - Confirm clicking a talent row only updates the selected talent card in the DOM.
+- Confirm clicking a talent row only updates local JS memory and the UI-only selection intent preview.
+- Confirm reload resets current screen, selected GM, selected brand, selected candidate, and selection intent preview to the static defaults.
 - Confirm Draft Recap and Brand Dashboard are preview states only.
 - Confirm no save payloads are created.
 - Confirm no database writes are triggered.

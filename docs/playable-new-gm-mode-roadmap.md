@@ -6,6 +6,7 @@
 - Real Draft System v1.0 is snapshotted and stable at 100/100.
 - Playable New GM Mode now has a visually stable static/mock shell.
 - The current branch includes the landing/title screen flow, expanded GM archetypes, dashboard command hero, bottom dock shell, and dark broadcast typography pass.
+- A narrow local-only flow correctness and selection intent preview prep slice is in place: initial labels now start on Game Landing / Title Screen, setup/draft choices live only in JS memory, and Draft Room can preview a selected candidate without creating or executing a pick.
 - The next work must move through controlled read-only and local-only draft wiring before any player-triggered in-memory draft action is approved.
 
 ## Source Doctrine
@@ -140,14 +141,16 @@ The slice should not call `createNewGMModeInMemoryDraftFlow()` yet. That belongs
 
 ### Recommended Next Slice
 
-The next slice after the read-only projection boundary should be selection intent preview.
+The selection intent preview prep slice now exists as a UI-only presentation preview. It does not import draft services, validate eligibility, create draft pick objects, execute picks, assign roster, create roster state, complete the draft, or call `createNewGMModeInMemoryDraftFlow()`.
 
-That slice should:
+This preview boundary now proves:
 
 - Convert a focused candidate row into a local-only selection intent preview object.
 - Keep Make Pick and Auto Draft locked.
 - Display validation/readiness messaging without creating a pick.
 - Avoid roster assignment, roster mutation, draft completion, persistence, backend calls, browser storage, and GenAI.
+
+The next slice after this preview boundary should harden the preview contract or add an approved read-only adapter, not pick execution.
 
 Pick execution must not be the next step unless it is explicitly approved in a separate prompt.
 

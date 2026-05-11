@@ -935,6 +935,7 @@ p {
 .save-slot:hover,
 .mode-tile:hover,
 .gm-card:hover,
+.gm-card:focus-visible,
 .brand-plate:hover,
 .hq-tile:hover,
 .talent-row:hover,
@@ -1336,6 +1337,7 @@ dd {
   padding: 9px;
   min-width: 0;
   min-height: 0;
+  cursor: pointer;
 }
 
 .gm-card.selected {

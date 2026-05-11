@@ -10,7 +10,7 @@
   <body class="brand-raw">
     <div class="app-shell">
       <nav class="bottom-nav-dock dock-collapsed" aria-label="Playable New GM Mode primary dock">
-        <span class="dock-active-label" id="rail-active-label">Settings</span>
+        <span class="dock-active-label" id="rail-active-label">Game Landing</span>
         <div class="nav-items">
           <button class="nav-tab" type="button" data-nav-target="brand-dashboard" data-nav-section="dashboard" data-nav-label="Dashboard" aria-label="Dashboard section">
             <span class="nav-icon">DB</span>
@@ -36,7 +36,7 @@
             <span class="nav-icon">MG</span>
             <span class="nav-label">Management</span>
           </button>
-          <button class="nav-tab active" type="button" data-nav-target="settings-screen" data-nav-section="settings" data-nav-label="Settings" aria-label="Settings section" aria-current="page">
+          <button class="nav-tab" type="button" data-nav-target="settings-screen" data-nav-section="settings" data-nav-label="Settings" aria-label="Settings section">
             <span class="nav-icon">ST</span>
             <span class="nav-label">Settings</span>
           </button>
@@ -49,12 +49,12 @@
             <span class="brand-bug" id="brand-bug">RAW</span>
             <div>
               <p class="kicker">Playable New GM Mode</p>
-              <h1 id="active-screen-label">Save Selection</h1>
+              <h1 id="active-screen-label">Game Landing</h1>
             </div>
           </div>
           <div class="date-chip">
             <span>Week 0</span>
-            <strong id="phase-label">Pre-Draft</strong>
+            <strong id="phase-label">Title Screen</strong>
             <em>Static Flow Preview</em>
           </div>
         </header>
@@ -365,7 +365,7 @@
           </div>
 
           <div class="gm-card-grid">
-            <article class="gm-card selected">
+            <article class="gm-card selected" data-gm-id="maren-vale" tabindex="0" role="button" aria-pressed="true">
               <span class="portrait-frame gm-frame" aria-hidden="true">RG</span>
               <div>
                 <p class="kicker">Ring General</p>
@@ -379,7 +379,7 @@
                 <div class="gm-stat"><span>Fan Pulse</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 76"></span></span><strong>76</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="jett-monroe" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">CB</span>
               <div>
                 <p class="kicker">Chaos Booker</p>
@@ -393,7 +393,7 @@
                 <div class="gm-stat"><span>Business</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 61"></span></span><strong>61</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="talia-quinn" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">ID</span>
               <div>
                 <p class="kicker">IWC Darling</p>
@@ -407,7 +407,7 @@
                 <div class="gm-stat"><span>Production</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 73"></span></span><strong>73</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="soren-drake" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">RS</span>
               <div>
                 <p class="kicker">Ratings Shark</p>
@@ -421,7 +421,7 @@
                 <div class="gm-stat"><span>Fan Pulse</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 84"></span></span><strong>84</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="maya-blaze" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">TD</span>
               <div>
                 <p class="kicker">Talent Developer</p>
@@ -435,7 +435,7 @@
                 <div class="gm-stat"><span>Creativity</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 72"></span></span><strong>72</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="silas-bright" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">LD</span>
               <div>
                 <p class="kicker">Locker Room Diplomat</p>
@@ -449,7 +449,7 @@
                 <div class="gm-stat"><span>Development</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 78"></span></span><strong>78</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="noemi-ridge" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">OP</span>
               <div>
                 <p class="kicker">Old-School Promoter</p>
@@ -463,7 +463,7 @@
                 <div class="gm-stat"><span>Fan Pulse</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 70"></span></span><strong>70</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="atlas-crowe" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">SE</span>
               <div>
                 <p class="kicker">Sports Entertainment Visionary</p>
@@ -477,7 +477,7 @@
                 <div class="gm-stat"><span>Business</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 77"></span></span><strong>77</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="lyra-hayes" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">WP</span>
               <div>
                 <p class="kicker">Workrate Purist</p>
@@ -491,7 +491,7 @@
                 <div class="gm-stat"><span>Creativity</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 75"></span></span><strong>75</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="odessa-king" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">BA</span>
               <div>
                 <p class="kicker">Brand Architect</p>
@@ -505,7 +505,7 @@
                 <div class="gm-stat"><span>Fan Pulse</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 79"></span></span><strong>79</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="vera-knox" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">RN</span>
               <div>
                 <p class="kicker">Ruthless Negotiator</p>
@@ -519,7 +519,7 @@
                 <div class="gm-stat"><span>Scouting</span><span class="gm-stat-bar" aria-hidden="true"><span style="--rating: 72"></span></span><strong>72</strong></div>
               </div>
             </article>
-            <article class="gm-card">
+            <article class="gm-card" data-gm-id="emi-calder" tabindex="0" role="button" aria-pressed="false">
               <span class="portrait-frame gm-frame" aria-hidden="true">DS</span>
               <div>
                 <p class="kicker">Developmental Scout</p>
@@ -660,52 +660,52 @@
                 <h3>Scouting Feed</h3>
               </div>
               <div class="talent-list" aria-label="Read-only projected candidate feed">
-                <button class="talent-row selected" type="button" aria-pressed="true" data-talent-name="Ace Mercer" data-talent-role="Main Event / Technical / Veteran" data-talent-style="Star Power: High | Ring Work: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, world title and midcard title eligible.">
+                <button class="talent-row selected" type="button" aria-pressed="true" data-candidate-id="candidate-ace-mercer" data-draft-rank="01" data-availability="Available" data-talent-name="Ace Mercer" data-talent-role="Main Event / Technical / Veteran" data-talent-style="Star Power: High | Ring Work: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, world title and midcard title eligible.">
                   <span class="mini-portrait">AM</span>
                   <strong>Ace Mercer</strong>
                   <small>01 | Available | Main Event</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Bruno Vale" data-talent-role="Upper Card / Powerhouse / Veteran" data-talent-style="Star Power: Strong | Ring Work: Solid" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, world title and tag team title eligible.">
+                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-bruno-vale" data-draft-rank="02" data-availability="Available" data-talent-name="Bruno Vale" data-talent-role="Upper Card / Powerhouse / Veteran" data-talent-style="Star Power: Strong | Ring Work: Solid" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, world title and tag team title eligible.">
                   <span class="mini-portrait">BV</span>
                   <strong>Bruno Vale</strong>
                   <small>02 | Available | Upper Card</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Cassian Ryde" data-talent-role="Midcard / High Flyer / Prospect" data-talent-style="Star Power: Rising | Ring Work: Flashy" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible.">
+                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-cassian-ryde" data-draft-rank="03" data-availability="Available" data-talent-name="Cassian Ryde" data-talent-role="Midcard / High Flyer / Prospect" data-talent-style="Star Power: Rising | Ring Work: Flashy" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible.">
                   <span class="mini-portrait">CR</span>
                   <strong>Cassian Ryde</strong>
                   <small>03 | Available | Prospect</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Dante Cross" data-talent-role="Midcard / Tag Specialist / Technical" data-talent-style="Star Power: Steady | Tag Fit: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible.">
+                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-dante-cross" data-draft-rank="04" data-availability="Available" data-talent-name="Dante Cross" data-talent-role="Midcard / Tag Specialist / Technical" data-talent-style="Star Power: Steady | Tag Fit: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible.">
                   <span class="mini-portrait">DC</span>
                   <strong>Dante Cross</strong>
                   <small>04 | Available | Tag Specialist</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Elena Voss" data-talent-role="Main Event / Promo Specialist / Veteran" data-talent-style="Star Power: Elite | Promo: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world title eligible.">
+                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-elena-voss" data-draft-rank="05" data-availability="Available" data-talent-name="Elena Voss" data-talent-role="Main Event / Promo Specialist / Veteran" data-talent-style="Star Power: Elite | Promo: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world title eligible.">
                   <span class="mini-portrait">EV</span>
                   <strong>Elena Voss</strong>
                   <small>05 | Available | Main Event</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Fiona Hale" data-talent-role="Upper Card / Technical / Tag Specialist" data-talent-style="Ring Work: Elite | Durability: Durable" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world and tag team title eligible.">
+                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-fiona-hale" data-draft-rank="06" data-availability="Available" data-talent-name="Fiona Hale" data-talent-role="Upper Card / Technical / Tag Specialist" data-talent-style="Ring Work: Elite | Durability: Durable" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world and tag team title eligible.">
                   <span class="mini-portrait">FH</span>
                   <strong>Fiona Hale</strong>
                   <small>06 | Available | Technical</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Gia Stone" data-talent-role="Midcard / Powerhouse / Prospect" data-talent-style="Star Power: Rising | Durability: Durable" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world title eligible.">
+                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-gia-stone" data-draft-rank="07" data-availability="Available" data-talent-name="Gia Stone" data-talent-role="Midcard / Powerhouse / Prospect" data-talent-style="Star Power: Rising | Durability: Durable" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world title eligible.">
                   <span class="mini-portrait">GS</span>
                   <strong>Gia Stone</strong>
                   <small>07 | Available | Prospect</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Hana Reyes" data-talent-role="Midcard / High Flyer / Tag Specialist" data-talent-style="Ring Work: Flashy | Tag Fit: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world and tag team title eligible.">
+                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-hana-reyes" data-draft-rank="08" data-availability="Available" data-talent-name="Hana Reyes" data-talent-role="Midcard / High Flyer / Tag Specialist" data-talent-style="Ring Work: Flashy | Tag Fit: Elite" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Women's division, women's world and tag team title eligible.">
                   <span class="mini-portrait">HR</span>
                   <strong>Hana Reyes</strong>
                   <small>08 | Available | High Flyer</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Ivan North" data-talent-role="Upper Card / Promo Specialist / Powerhouse" data-talent-style="Promo: Elite | Availability blocked" data-talent-read="Read-only candidate projection marks this fixture unavailable." data-talent-fit="Men's division, currently unavailable for draft validation.">
+                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-ivan-north" data-draft-rank="09" data-availability="Unavailable" data-talent-name="Ivan North" data-talent-role="Upper Card / Promo Specialist / Powerhouse" data-talent-style="Promo: Elite | Availability blocked" data-talent-read="Read-only candidate projection marks this fixture unavailable." data-talent-fit="Men's division, currently unavailable for draft validation.">
                   <span class="mini-portrait">IN</span>
                   <strong>Ivan North</strong>
                   <small>09 | Unavailable | Blocked</small>
                 </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-talent-name="Jules Kade" data-talent-role="Midcard / Tag Specialist / Prospect" data-talent-style="Star Power: Developing | Tag Fit: Strong" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible.">
+                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-jules-kade" data-draft-rank="10" data-availability="Available" data-talent-name="Jules Kade" data-talent-role="Midcard / Tag Specialist / Prospect" data-talent-style="Star Power: Developing | Tag Fit: Strong" data-talent-read="Project-backed candidate preview. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible.">
                   <span class="mini-portrait">JK</span>
                   <strong>Jules Kade</strong>
                   <small>10 | Available | Prospect</small>
@@ -727,20 +727,22 @@
 
             <article class="pick-confirmation">
               <p class="kicker">Status Panel</p>
-              <h3>Read-only draft board preview</h3>
+              <h3>Selection intent preview</h3>
               <div class="confirmation-steps">
-                <span>Candidate projection ready</span>
-                <span>Selection intent blocked</span>
+                <span id="intent-preview-candidate">Ace Mercer selected</span>
+                <span id="intent-preview-brand">Raw local preview</span>
+                <span id="intent-preview-pick">Round 1 / Pick 1 placeholder</span>
+                <span id="intent-preview-status">Preview only - pick locked</span>
                 <span>Roster assignment blocked</span>
                 <span>Draft completion blocked</span>
               </div>
-              <p class="quiet-note">Project-backed candidate data is visible. No pick is made, no roster changes, and no draft completion occurs.</p>
+              <p class="quiet-note" id="intent-preview-note">A UI-only selection intent preview is staged in memory. Make Pick remains locked, with no draft pick, roster change, or draft completion.</p>
             </article>
           </div>
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="select-brand">Back to Brand Select</button>
-            <button class="hero-cta small" type="button" data-go-to="draft-recap">View Draft Recap State</button>
+            <button class="hero-cta small" type="button" disabled>Draft Recap Locked</button>
           </div>
         </section>
 

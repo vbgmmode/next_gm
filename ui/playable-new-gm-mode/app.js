@@ -5,12 +5,20 @@
   const flowCards = Array.from(document.querySelectorAll("[data-flow-target]"));
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
   const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
+  const gmCards = Array.from(document.querySelectorAll("[data-gm-id]"));
   const brandControls = Array.from(document.querySelectorAll("[data-brand]"));
   const activeLabel = document.getElementById("active-screen-label");
   const railActiveLabel = document.getElementById("rail-active-label");
   const brandBug = document.getElementById("brand-bug");
   const phaseLabel = document.getElementById("phase-label");
   const brandNameTargets = Array.from(document.querySelectorAll(".js-brand-name"));
+  const intentPreviewTargets = {
+    candidate: document.getElementById("intent-preview-candidate"),
+    brand: document.getElementById("intent-preview-brand"),
+    pick: document.getElementById("intent-preview-pick"),
+    status: document.getElementById("intent-preview-status"),
+    note: document.getElementById("intent-preview-note"),
+  };
   const talentDetail = {
     initials: document.getElementById("talent-detail-initials"),
     name: document.getElementById("talent-detail-name"),
@@ -34,13 +42,13 @@
 
   const sectionNavMap = {
     "game-landing": undefined,
-    "save-selection": "settings",
+    "save-selection": undefined,
     "settings-screen": "settings",
-    "contract-signing": "settings",
-    "setup-basics": "settings",
-    "ai-setup": "settings",
-    "choose-gm": "settings",
-    "select-brand": "settings",
+    "contract-signing": undefined,
+    "setup-basics": undefined,
+    "ai-setup": undefined,
+    "choose-gm": undefined,
+    "select-brand": undefined,
     "draft-room": "booking",
     "draft-recap": "roster",
     "brand-dashboard": "dashboard",
@@ -51,6 +59,13 @@
     smackdown: { label: "SmackDown", mark: "SD" },
     nxt: { label: "NXT", mark: "NXT" },
     aew: { label: "AEW", mark: "AEW" },
+  };
+  const uiState = {
+    currentScreenId: "game-landing",
+    selectedGmId: "maren-vale",
+    selectedBrandId: "raw",
+    selectedCandidateId: "candidate-ace-mercer",
+    selectedDraftIntentPreview: undefined,
   };
   let dockCollapseTimer;
 
@@ -101,6 +116,7 @@
       return;
     }
 
+    uiState.currentScreenId = targetId;
     const activeNavSection = preferredNavSection || sectionNavMap[targetId];
     const activeNavItem = navItems.find((item) => item.dataset.navSection === activeNavSection);
 
@@ -137,6 +153,10 @@
 
   }
 
+  function getBrandLabel() {
+    return brandLabels[uiState.selectedBrandId]?.label || "Raw";
+  }
+
   function setBrand(brandId) {
     const brand = brandLabels[brandId];
 
@@ -144,6 +164,7 @@
       return;
     }
 
+    uiState.selectedBrandId = brandId;
     document.body.classList.remove("brand-raw", "brand-smackdown", "brand-nxt", "brand-aew");
     document.body.classList.add(`brand-${brandId}`);
 
@@ -158,6 +179,104 @@
     brandNameTargets.forEach((target) => {
       target.textContent = brand.label;
     });
+
+    const selectedRow = talentRows.find((row) => row.dataset.candidateId === uiState.selectedCandidateId);
+    if (selectedRow) {
+      setSelectedCandidate(selectedRow);
+    }
+  }
+
+  function setSelectedGm(card) {
+    uiState.selectedGmId = card.dataset.gmId;
+
+    gmCards.forEach((item) => {
+      const isSelected = item === card;
+      item.classList.toggle("selected", isSelected);
+      item.setAttribute("aria-pressed", String(isSelected));
+    });
+  }
+
+  function createDraftSelectionIntentPresentationPreview(row) {
+    const candidateName = row.dataset.talentName;
+    const candidateId = row.dataset.candidateId;
+    const availability = row.dataset.availability || "Available";
+
+    return {
+      previewKind: "ui-only-draft-selection-intent-presentation-preview",
+      candidateId,
+      candidateName,
+      brandId: uiState.selectedBrandId,
+      brandName: getBrandLabel(),
+      roundLabel: "Round 1",
+      pickLabel: "Pick 1",
+      boardRank: row.dataset.draftRank,
+      previewStatus:
+        availability === "Available"
+          ? "preview-only-pick-locked"
+          : "preview-only-candidate-unavailable",
+    };
+  }
+
+  function updateIntentPreview(preview) {
+    if (intentPreviewTargets.candidate) {
+      intentPreviewTargets.candidate.textContent = `${preview.candidateName} selected`;
+    }
+
+    if (intentPreviewTargets.brand) {
+      intentPreviewTargets.brand.textContent = `${preview.brandName} local preview`;
+    }
+
+    if (intentPreviewTargets.pick) {
+      intentPreviewTargets.pick.textContent = `${preview.roundLabel} / ${preview.pickLabel} placeholder`;
+    }
+
+    if (intentPreviewTargets.status) {
+      intentPreviewTargets.status.textContent =
+        preview.previewStatus === "preview-only-candidate-unavailable"
+          ? "Preview only - candidate unavailable"
+          : "Preview only - pick locked";
+    }
+
+    if (intentPreviewTargets.note) {
+      intentPreviewTargets.note.textContent =
+        "A UI-only selection intent preview is staged in memory. Make Pick remains locked, with no draft pick, roster change, or draft completion.";
+    }
+  }
+
+  function setSelectedCandidate(row) {
+    uiState.selectedCandidateId = row.dataset.candidateId;
+    uiState.selectedDraftIntentPreview = createDraftSelectionIntentPresentationPreview(row);
+
+    talentRows.forEach((item) => {
+      const isSelected = item === row;
+      item.classList.toggle("selected", isSelected);
+      item.setAttribute("aria-pressed", String(isSelected));
+    });
+
+    if (talentDetail.initials) {
+      talentDetail.initials.textContent = row.dataset.talentName
+        .split(" ")
+        .map((part) => part.charAt(0))
+        .join("")
+        .slice(0, 2);
+    }
+    if (talentDetail.name) {
+      talentDetail.name.textContent = row.dataset.talentName;
+    }
+    if (talentDetail.role) {
+      talentDetail.role.textContent = row.dataset.talentRole;
+    }
+    if (talentDetail.style) {
+      talentDetail.style.textContent = row.dataset.talentStyle;
+    }
+    if (talentDetail.read) {
+      talentDetail.read.textContent = row.dataset.talentRead;
+    }
+    if (talentDetail.fit) {
+      talentDetail.fit.textContent = row.dataset.talentFit;
+    }
+
+    updateIntentPreview(uiState.selectedDraftIntentPreview);
   }
 
   navItems.forEach((item) => {
@@ -207,37 +326,27 @@
 
   talentRows.forEach((row) => {
     row.addEventListener("click", () => {
-      talentRows.forEach((item) => {
-        const isSelected = item === row;
-        item.classList.toggle("selected", isSelected);
-        item.setAttribute("aria-pressed", String(isSelected));
-      });
+      setSelectedCandidate(row);
+    });
+  });
 
-      if (talentDetail.initials) {
-        talentDetail.initials.textContent = row.dataset.talentName
-          .split(" ")
-          .map((part) => part.charAt(0))
-          .join("")
-          .slice(0, 2);
-      }
-      if (talentDetail.name) {
-        talentDetail.name.textContent = row.dataset.talentName;
-      }
-      if (talentDetail.role) {
-        talentDetail.role.textContent = row.dataset.talentRole;
-      }
-      if (talentDetail.style) {
-        talentDetail.style.textContent = row.dataset.talentStyle;
-      }
-      if (talentDetail.read) {
-        talentDetail.read.textContent = row.dataset.talentRead;
-      }
-      if (talentDetail.fit) {
-        talentDetail.fit.textContent = row.dataset.talentFit;
+  gmCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      setSelectedGm(card);
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        setSelectedGm(card);
       }
     });
   });
 
   setBrand("raw");
+  const initialCandidate = talentRows.find((row) => row.dataset.candidateId === uiState.selectedCandidateId);
+  if (initialCandidate) {
+    setSelectedCandidate(initialCandidate);
+  }
   showSection("game-landing");
 })();
