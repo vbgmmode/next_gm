@@ -70,6 +70,11 @@ Manual verification target:
 - Confirm the expanded dock overlays the screen and does not push content down.
 - Confirm the top overlay subtly dims or blurs the app behind it.
 - Confirm keyboard focus expands the dock and has a visible focus state.
+- Confirm selecting a dock item by pointer switches sections and immediately collapses the dock.
+- Confirm activating a dock item by keyboard Enter or Space switches sections and immediately collapses the dock.
+- Confirm Escape collapses the expanded dock without trapping focus.
+- Confirm pointer leave collapses the expanded dock after a short tasteful delay.
+- Confirm clicking the main screen can collapse the dock, but is not required after selecting a dock item.
 - Confirm active nav state is obvious without relying only on color.
 - Confirm the dock remains usable at smaller laptop width.
 - Confirm the top dock does not cover critical controls in a broken way.

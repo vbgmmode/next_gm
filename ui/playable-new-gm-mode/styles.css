@@ -190,8 +190,8 @@ button:disabled {
     backdrop-filter 160ms ease;
 }
 
-.top-icon-rail:hover::after,
-.top-icon-rail:focus-within::after {
+.top-icon-rail:not(.dock-collapsed):hover::after,
+.top-icon-rail:not(.dock-collapsed):focus-within::after {
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(3px);
 }
@@ -281,8 +281,8 @@ button:disabled {
     color 150ms ease;
 }
 
-.top-icon-rail:hover .nav-tab,
-.top-icon-rail:focus-within .nav-tab {
+.top-icon-rail:not(.dock-collapsed):hover .nav-tab,
+.top-icon-rail:not(.dock-collapsed):focus-within .nav-tab {
   width: 112px;
   min-width: 92px;
   justify-content: flex-start;
@@ -359,8 +359,8 @@ button:disabled {
   white-space: nowrap;
 }
 
-.top-icon-rail:hover .nav-label,
-.top-icon-rail:focus-within .nav-label {
+.top-icon-rail:not(.dock-collapsed):hover .nav-label,
+.top-icon-rail:not(.dock-collapsed):focus-within .nav-label {
   display: inline;
 }
 
@@ -1662,8 +1662,8 @@ dd {
 }
 
 @media (max-width: 1180px) and (min-width: 761px) {
-  .top-icon-rail:hover .nav-tab,
-  .top-icon-rail:focus-within .nav-tab {
+  .top-icon-rail:not(.dock-collapsed):hover .nav-tab,
+  .top-icon-rail:not(.dock-collapsed):focus-within .nav-tab {
     width: 98px;
     min-width: 82px;
   }
@@ -1785,16 +1785,16 @@ dd {
     padding: 0 3px;
   }
 
-  .top-icon-rail:hover .nav-tab,
-  .top-icon-rail:focus-within .nav-tab {
+  .top-icon-rail:not(.dock-collapsed):hover .nav-tab,
+  .top-icon-rail:not(.dock-collapsed):focus-within .nav-tab {
     width: 31px;
     min-width: 31px;
     justify-content: center;
     padding: 0 3px;
   }
 
-  .top-icon-rail:hover .nav-label,
-  .top-icon-rail:focus-within .nav-label {
+  .top-icon-rail:not(.dock-collapsed):hover .nav-label,
+  .top-icon-rail:not(.dock-collapsed):focus-within .nav-label {
     display: none;
   }
   .game-shell {

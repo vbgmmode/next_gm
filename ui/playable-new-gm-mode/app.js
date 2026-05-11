@@ -1,5 +1,6 @@
 (() => {
   const sections = Array.from(document.querySelectorAll("[data-screen-title]"));
+  const topDock = document.querySelector(".top-icon-rail");
   const navItems = Array.from(document.querySelectorAll("[data-nav-target]"));
   const flowCards = Array.from(document.querySelectorAll("[data-flow-target]"));
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
@@ -50,6 +51,29 @@
     nxt: { label: "NXT", mark: "NXT" },
     aew: { label: "AEW", mark: "AEW" },
   };
+  let dockCollapseTimer;
+
+  function clearDockCollapseTimer() {
+    if (dockCollapseTimer) {
+      window.clearTimeout(dockCollapseTimer);
+      dockCollapseTimer = undefined;
+    }
+  }
+
+  function collapseDock() {
+    clearDockCollapseTimer();
+    topDock?.classList.add("dock-collapsed");
+  }
+
+  function releaseDockCollapse() {
+    clearDockCollapseTimer();
+    topDock?.classList.remove("dock-collapsed");
+  }
+
+  function scheduleDockCollapse() {
+    clearDockCollapseTimer();
+    dockCollapseTimer = window.setTimeout(collapseDock, 180);
+  }
 
   function getSection(targetId) {
     return sections.find((section) => section.id === targetId);
@@ -144,7 +168,26 @@
   navItems.forEach((item) => {
     item.addEventListener("click", () => {
       showSection(item.dataset.navTarget, item.dataset.navSection);
+      collapseDock();
     });
+  });
+
+  if (topDock) {
+    topDock.addEventListener("pointerenter", releaseDockCollapse);
+    topDock.addEventListener("pointerleave", scheduleDockCollapse);
+    topDock.addEventListener("focusin", releaseDockCollapse);
+  }
+
+  document.addEventListener("click", (event) => {
+    if (topDock && !topDock.contains(event.target)) {
+      collapseDock();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      collapseDock();
+    }
   });
 
   flowCards.forEach((card) => {
