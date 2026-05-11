@@ -28,6 +28,19 @@ Manual verification target:
 - Confirm player-facing labels use Preview Build, Draft Controls Locked, Scouting Feed, Board Preview, Commissioner Desk, Brand HQ, and Week 1 Setup style language.
 - Confirm raw backend/service wording is absent from normal player-facing UI.
 
+## Visual Authenticity QA
+
+- Confirm the UI does not look "Codex coded" or like an AI-generated dashboard skin.
+- Confirm the visual system does not overuse circles, pills, bubbly cards, soft blobs, or decorative glow.
+- Confirm tags, badges, and lock states read as compact broadcast labels instead of rounded SaaS pills.
+- Confirm panels use sharper sports TV geometry, hard frames, bars, plates, and lower-third treatments.
+- Confirm Save Selection feels like a real sports/wrestling game campaign entry screen.
+- Confirm New GM Setup and Setup Review feel like contract packet / league office / war-room surfaces.
+- Confirm Draft Room feels like a draft broadcast with ON THE CLOCK drama, board energy, and scouting desk framing.
+- Confirm selected talent reads as a broadcast profile card, not a generic info card.
+- Confirm Post-Draft Brand HQ centers Week 1 Setup, Book Show, Roster, Rivalries, Championships, Calendar, IWC Pulse, and Analytics instead of Draft Preview.
+- Confirm visual accents feel purposeful and brand-driven, not random decorative shapes.
+
 ## Navigation QA
 
 - Confirm the nav is hidden/hover or compact-overlay style, not a chunky always-visible sidebar.
