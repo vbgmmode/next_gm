@@ -625,14 +625,14 @@
               <h2 id="draft-room-title" class="js-brand-name">Raw</h2>
               <span class="pick-badge" id="mini-draft-pick-badge">Pick 1</span>
               <div class="draft-budget-board" aria-label="Draft budget">
-                <span id="draft-budget-starting">Starting Budget: 120</span>
-                <span id="draft-budget-remaining">Remaining Budget: 120</span>
-                <span id="draft-budget-spent">Spent Budget: 0</span>
-                <span id="draft-budget-signed">Signed Superstars: 0</span>
-                <span id="draft-budget-minimum-roster">Minimum Viable Roster: 16</span>
-                <span id="draft-budget-booking-reserve">Booking Reserve Target: 20</span>
-                <span id="draft-budget-viability">Minimum roster not viable</span>
-                <span id="draft-budget-reserve-status">Booking reserve protected</span>
+                <span id="draft-budget-starting">Budget 120</span>
+                <span id="draft-budget-remaining">Remaining 120</span>
+                <span id="draft-budget-spent">Spent 0</span>
+                <span id="draft-budget-signed">Signed 0/16</span>
+                <span id="draft-budget-minimum-roster">Min Roster 16</span>
+                <span id="draft-budget-booking-reserve">Reserve 20</span>
+                <span id="draft-budget-viability">Roster Not Ready</span>
+                <span id="draft-budget-reserve-status">Reserve Protected</span>
               </div>
               <div class="need-board">
                 <span>Best Available</span>
@@ -794,68 +794,83 @@
         >
           <div class="screen-header">
             <div>
-              <p class="kicker" id="draft-recap-path-label">Mock Post-Draft Preview</p>
-              <h2 id="draft-recap-title"><span class="js-brand-name">Raw</span> mock draft recap</h2>
+              <p class="kicker" id="draft-recap-path-label">Post-Draft Command</p>
+              <h2 id="draft-recap-title"><span class="js-brand-name">Raw</span> Draft Recap</h2>
             </div>
-            <span class="header-badge" id="draft-recap-badge">Mock Draft Recap - no draft executed</span>
+            <span class="header-badge" id="draft-recap-badge">Finish Draft to open the recap</span>
           </div>
 
-          <div class="recap-layout">
-            <article class="recap-hero">
-              <p class="kicker">Preview Path</p>
-              <h3 id="draft-recap-roster">Raw mock roster placeholder</h3>
-              <p id="draft-recap-copy">This screen is available for shell QA. It does not mean a pick, roster, or draft completion occurred.</p>
+          <div class="recap-layout post-draft-command-layout">
+            <article class="recap-hero post-draft-summary-panel">
+              <p class="kicker">Draft Summary</p>
+              <h3 id="draft-recap-roster">Raw roster pending</h3>
+              <p id="draft-recap-copy">Finish the draft to review your signed roster, budget position, and locked next steps.</p>
               <dl class="meta-grid mock-recap-meta" aria-label="Draft recap preview context">
                 <div><dt>GM</dt><dd id="draft-recap-gm">Maren Vale</dd></div>
-                <div><dt>Brand</dt><dd id="draft-recap-brand">Raw mock preview</dd></div>
-                <div><dt>Local Picks</dt><dd id="draft-recap-candidate">Ace Mercer carried forward as preview context</dd></div>
-                <div><dt>Pick Slot</dt><dd id="draft-recap-pick">Mock continuation only</dd></div>
-                <div><dt>Budget Summary</dt><dd id="draft-recap-budget-summary">No local budget spent</dd></div>
-                <div><dt>Draft Result</dt><dd id="draft-recap-result-status">No real draft result</dd></div>
-                <div><dt>Roster Status</dt><dd id="draft-recap-roster-status">No roster assignment</dd></div>
+                <div><dt>Brand</dt><dd id="draft-recap-brand">Raw</dd></div>
+                <div><dt>Signed Picks</dt><dd id="draft-recap-candidate">No picks recorded yet</dd></div>
+                <div><dt>Pick Slot</dt><dd id="draft-recap-pick">Pick 1</dd></div>
+                <div><dt>Budget</dt><dd id="draft-recap-budget-summary">Starting 120 / Remaining 120</dd></div>
+                <div><dt>Draft Result</dt><dd id="draft-recap-result-status">Draft not finished</dd></div>
+                <div><dt>Roster Status</dt><dd id="draft-recap-roster-status">Minimum roster not ready</dd></div>
               </dl>
-              <p class="quiet-note" id="draft-recap-note">Presentation-only QA path. No pick, roster assignment, roster state, or draft completion summary exists.</p>
+              <p class="quiet-note" id="draft-recap-note">Local Draft Only. Not Saved Yet. Week 1 Locked.</p>
             </article>
-            <div class="division-groups">
-              <article class="division-card">
-                <h3>World title scene</h3>
-                <span>Mock slot 1 - Rex Nova</span>
-                <span>Mock slot 4 - Atlas King</span>
+
+            <section class="roster-board-panel recap-roster-board" aria-labelledby="draft-recap-roster-list-title">
+              <div class="panel-title roster-board-title">
+                <div>
+                  <p class="kicker">Signed Roster</p>
+                  <h3 id="draft-recap-roster-list-title">Roster Board</h3>
+                </div>
+                <span class="broadcast-label live">Local Draft Only</span>
+              </div>
+              <p class="roster-lock-message" id="draft-recap-lock">Finish the draft to view your roster.</p>
+              <div class="post-draft-roster-list locked" id="draft-recap-roster-list" aria-label="Signed local draft roster recap"></div>
+            </section>
+
+            <aside class="roster-summary-panel recap-summary-panel" aria-label="Draft recap roster summary">
+              <div class="panel-title">
+                <p class="kicker">GM Desk</p>
+                <h3>Roster Command</h3>
+              </div>
+              <div class="roster-summary-grid">
+                <span class="summary-primary" id="draft-recap-summary-signed-count">Signed Superstars: 0</span>
+                <span class="summary-primary" id="draft-recap-summary-minimum">Minimum Viable Roster: 16</span>
+                <span class="summary-status" id="draft-recap-summary-minimum-status">Minimum roster not viable</span>
+                <span id="draft-recap-summary-starting-budget">Starting Budget: 120</span>
+                <span id="draft-recap-summary-budget-spent">Budget Spent: 0</span>
+                <span id="draft-recap-summary-remaining-budget">Remaining Budget: 120</span>
+                <span id="draft-recap-summary-booking-reserve">Booking Reserve Target: 20</span>
+                <span class="summary-status" id="draft-recap-summary-reserve-status">Booking reserve protected</span>
+                <span class="summary-lock" id="draft-recap-summary-local-only">Local Draft Only / Not Saved Yet</span>
+                <span class="summary-lock" id="draft-recap-summary-week-one">Week 1 Locked</span>
+              </div>
+            </aside>
+
+            <section class="locked-setup-panel recap-setup-panel" aria-label="Locked post-draft setup">
+              <article class="locked-setup-card">
+                <strong>Championship Setup</strong>
+                <span>Setup Locked</span>
               </article>
-              <article class="division-card">
-                <h3>Midcard title scene</h3>
-                <span>Mock slot 6 - Cruz Arrow</span>
-                <span>Mock slot 9 - Dante Voss</span>
+              <article class="locked-setup-card">
+                <strong>Rivalry Setup</strong>
+                <span>Setup Locked</span>
               </article>
-              <article class="division-card">
-                <h3>Women's division</h3>
-                <span>Mock slot 2 - Maya Steele</span>
-                <span>Mock slot 7 - Juno Vale</span>
+              <article class="locked-setup-card">
+                <strong>Week 1 Booking</strong>
+                <span>Week 1 Locked</span>
               </article>
-              <article class="division-card">
-                <h3>Tag division</h3>
-                <span>Mock slot 5 - Sable Riot</span>
-                <span>Mock slot 8 - The Rail Splitters</span>
+              <article class="locked-setup-card">
+                <strong>Save/Persistence</strong>
+                <span>Not Saved Yet</span>
               </article>
-              <article class="division-card">
-                <h3>Prospects</h3>
-                <span>Mock slot 10 - Nia Voss</span>
-                <span>Mock slot 13 - Ellis Knox</span>
-              </article>
-              <article class="division-card">
-                <h3>Unassigned</h3>
-                <span>Mock slot 14 - Mara Saint</span>
-                <span>Mock slot 16 - Ty March</span>
-              </article>
-            </div>
+            </section>
           </div>
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="draft-room">Back to Draft</button>
-            <div class="draft-action-cluster">
-              <button class="ghost-button" type="button" data-go-to="roster-hub">View Roster Hub</button>
-              <button class="hero-cta small" type="button" data-go-to="brand-dashboard">Continue to Brand Dashboard Preview</button>
-            </div>
+            <button class="hero-cta small" type="button" data-go-to="brand-dashboard">Continue to Brand Dashboard Preview</button>
           </div>
         </section>
 
@@ -978,7 +993,7 @@
               </div>
               <div class="alert-list">
                 <article class="alert-leak urgent"><span class="severity urgent">Urgent</span><strong>Phase 3 required for real draft.</strong><em>Mock recap did not create a roster.</em></article>
-                <article class="alert-leak important"><span class="severity important">Important</span><strong>Review mock roster layout.</strong><em>Shell QA can inspect post-draft surfaces.</em></article>
+                <article class="alert-leak important"><span class="severity important">Important</span><strong>Review signed roster.</strong><em>Post-draft command remains local until saving unlocks.</em></article>
                 <article class="alert-leak optional"><span class="severity optional">Optional</span><strong>Preview setup checklist.</strong><em>Champion and rivalry setup remain locked.</em></article>
                 <article class="alert-leak blocked"><span class="severity blocked">Blocked</span><strong>Run show is coming later.</strong><em>Week advancement is not part of this build.</em></article>
               </div>

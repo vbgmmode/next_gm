@@ -116,8 +116,11 @@ describe("Playable New GM Mode post-draft roster screen", () => {
       projection.displayLabels.bookingReserveStatusLine,
       "Booking reserve protected"
     );
-    assert.equal(projection.displayLabels.localOnlyLine, "Local-only / not saved");
-    assert.equal(projection.displayLabels.weekOneLockedLine, "Week 1 locked");
+    assert.equal(
+      projection.displayLabels.localOnlyLine,
+      "Local Draft Only / Not Saved Yet"
+    );
+    assert.equal(projection.displayLabels.weekOneLockedLine, "Week 1 Locked");
   });
 
   it("keeps championship, rivalry, Week 1, and save setup cards locked display-only", () => {
@@ -136,19 +139,19 @@ describe("Playable New GM Mode post-draft roster screen", () => {
       [
         {
           label: "Championship Setup",
-          status: "Locked",
+          status: "Setup Locked",
           locked: true,
           displayOnly: true,
         },
         {
           label: "Rivalry Setup",
-          status: "Locked",
+          status: "Setup Locked",
           locked: true,
           displayOnly: true,
         },
         {
           label: "Week 1 Booking",
-          status: "Locked",
+          status: "Week 1 Locked",
           locked: true,
           displayOnly: true,
         },
@@ -166,6 +169,9 @@ describe("Playable New GM Mode post-draft roster screen", () => {
     const html = readPlayableUiFile("index.html");
     const appSource = readPlayableUiFile("app.js");
 
+    assert.match(html, /id="draft-recap"/);
+    assert.match(html, /Draft Recap/);
+    assert.match(html, /draft-recap-roster-list/);
     assert.match(html, /id="roster-hub"/);
     assert.match(html, /Finish the draft to view your roster\./);
     assert.match(html, /post-draft-roster-list/);
@@ -174,6 +180,7 @@ describe("Playable New GM Mode post-draft roster screen", () => {
     assert.match(html, /Week 1 Booking/);
     assert.match(html, /Save\/Persistence/);
     assert.match(appSource, /createPostDraftRosterHubProjection/);
+    assert.match(appSource, /updateDraftRecapCommandSurface/);
     assert.doesNotMatch(html, /candidateId|fixtureId|validation object|diagnostic/i);
   });
 

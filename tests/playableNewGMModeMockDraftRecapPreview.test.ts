@@ -6,8 +6,8 @@ import { describe, it } from "node:test";
 import { createMockDraftRecapPreviewState } from "../ui/playable-new-gm-mode/draftRecapPreviewState.js";
 import { shouldShowDock } from "../ui/playable-new-gm-mode/screenShellState.js";
 
-describe("Playable New GM Mode mock draft recap preview", () => {
-  it("creates UI-local presentation-only mock recap state", () => {
+describe("Playable New GM Mode draft recap preview", () => {
+  it("creates UI-local presentation-only recap preview state", () => {
     const preview = createMockDraftRecapPreviewState({
       selectedGm: { gmId: "maren-vale", displayName: "Maren Vale" },
       selectedBrand: { brandId: "raw", brandLabel: "Raw" },
@@ -22,7 +22,7 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     assert.equal(preview.uiOnly, true);
     assert.equal(preview.presentationOnly, true);
     assert.equal(preview.mockOnly, true);
-    assert.equal(preview.phase, "qa-preview-post-draft-flow");
+    assert.equal(preview.phase, "draft-recap-preview");
     assert.deepEqual(preview.selectedGmReference, {
       hasGm: true,
       gmId: "maren-vale",
@@ -33,11 +33,11 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     assert.equal(preview.selectedCandidateReference.displayName, "Ace Mercer");
     assert.equal(
       preview.displayLabels.recapStatusLine,
-      "Mock Draft Recap - no draft executed"
+      "Finish Draft to open the recap"
     );
   });
 
-  it("keeps mock recap state free of real draft, roster, persistence, and gameplay fields", () => {
+  it("keeps recap preview state free of real draft, roster, persistence, and gameplay fields", () => {
     const preview = createMockDraftRecapPreviewState();
     const keys = collectKeys(preview);
     const forbiddenFieldIds = [
@@ -60,7 +60,7 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     }
   });
 
-  it("keeps local draft actions locked and keeps a separate mock continuation CTA", () => {
+  it("keeps local draft actions locked and keeps a separate recap preview CTA", () => {
     const html = readPlayableUiFile("index.html");
 
     assert.match(
@@ -98,13 +98,13 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     );
   });
 
-  it("labels mock Draft Recap and Brand Dashboard as preview-only shell surfaces", () => {
+  it("labels Draft Recap and Brand Dashboard with player-facing locked setup copy", () => {
     const html = readPlayableUiFile("index.html");
 
-    assert.match(html, /Mock Post-Draft Preview/);
-    assert.match(html, /Mock Draft Recap - no draft executed/);
-    assert.match(html, /No pick, roster assignment, roster state, or draft completion summary exists\./);
-    assert.match(html, /Week 1 Setup preview - draft and roster creation still locked/);
+    assert.match(html, /Post-Draft Command/);
+    assert.match(html, /Finish Draft to open the recap/);
+    assert.match(html, /Local Draft Only\. Not Saved Yet\. Week 1 Locked\./);
+    assert.match(html, /Week 1 Setup preview/);
   });
 
   it("keeps the dock hidden until Brand Dashboard", () => {

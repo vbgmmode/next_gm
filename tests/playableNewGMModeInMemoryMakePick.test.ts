@@ -331,11 +331,12 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(collectKeys(pickResult).includes("budgetDeducted"), false);
   });
 
-  it("distinguishes real in-memory recap projection from mock QA preview", () => {
+  it("distinguishes real in-memory recap projection from the locked draft recap preview", () => {
     const html = readPlayableUiFile("index.html");
     const controllerSource = readPlayableUiFile("inMemoryDraftActionController.js");
 
-    assert.match(html, /Mock Draft Recap - no draft executed/);
+    assert.match(html, /Finish Draft to open the recap/);
+    assert.match(html, /Draft Recap/);
     assert.match(html, /Preview Recap/);
     assert.match(controllerSource, /Draft Finished Locally/);
     assert.match(controllerSource, /local-finance-limited-draft-recap-projection/);
@@ -345,12 +346,12 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     const html = readPlayableUiFile("index.html");
     const appSource = readPlayableUiFile("app.js");
 
-    assert.match(html, /Starting Budget: 120/);
-    assert.match(html, /Remaining Budget: 120/);
-    assert.match(html, /Spent Budget: 0/);
-    assert.match(html, /Signed Superstars: 0/);
-    assert.match(html, /Minimum Viable Roster: 16/);
-    assert.match(html, /Booking Reserve Target: 20/);
+    assert.match(html, /Budget 120/);
+    assert.match(html, /Remaining 120/);
+    assert.match(html, /Spent 0/);
+    assert.match(html, /Signed 0\/16/);
+    assert.match(html, /Min Roster 16/);
+    assert.match(html, /Reserve 20/);
     assert.match(html, /Signing Tier: Franchise/);
     assert.match(html, /Signing Cost: 18/);
     assert.match(html, /Budget After Signing: 102/);

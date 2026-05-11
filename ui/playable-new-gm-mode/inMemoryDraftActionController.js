@@ -513,18 +513,18 @@ export function createPostDraftRosterHubProjection({
       persisted: false,
     }),
     lockedSetupCards: Object.freeze([
-      createLockedSetupCard("Championship Setup", "Locked"),
-      createLockedSetupCard("Rivalry Setup", "Locked"),
-      createLockedSetupCard("Week 1 Booking", "Locked"),
+      createLockedSetupCard("Championship Setup", "Setup Locked"),
+      createLockedSetupCard("Rivalry Setup", "Setup Locked"),
+      createLockedSetupCard("Week 1 Booking", "Week 1 Locked"),
       createLockedSetupCard("Save/Persistence", "Not Active"),
     ]),
     capabilityFlags: createBlockedCapabilityFlags(),
     displayLabels: Object.freeze({
       titleLine: localDraftFinished
-        ? `${brandLabel} roster hub`
+        ? `${brandLabel} Draft Recap`
         : `${brandLabel} roster locked`,
       statusLine: localDraftFinished
-        ? "Local roster visible"
+        ? "Post-draft command ready"
         : "Finish the draft to view your roster.",
       signedCountLine: `Signed Superstars: ${progress.signedTalentCount}`,
       minimumRosterLine: `Minimum Viable Roster: ${progress.minimumViableRosterCount}`,
@@ -538,8 +538,8 @@ export function createPostDraftRosterHubProjection({
       bookingReserveStatusLine: progress.bookingReserveProtected
         ? "Booking reserve protected"
         : "Booking reserve dipped",
-      localOnlyLine: "Local-only / not saved",
-      weekOneLockedLine: "Week 1 locked",
+      localOnlyLine: "Local Draft Only / Not Saved Yet",
+      weekOneLockedLine: "Week 1 Locked",
       emptyRosterLine: "Finish the draft to view your roster.",
     }),
   });

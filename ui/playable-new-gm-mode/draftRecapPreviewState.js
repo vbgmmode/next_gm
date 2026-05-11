@@ -15,22 +15,22 @@ export function createMockDraftRecapPreviewState({
     uiOnly: true,
     presentationOnly: true,
     mockOnly: true,
-    phase: "qa-preview-post-draft-flow",
+    phase: "draft-recap-preview",
     source: "initial-draft-preview-continuation",
     selectedGmReference: gm,
     selectedBrandReference: brand,
     selectedCandidateReference: candidate,
     displayLabels: Object.freeze({
-      recapStatusLine: "Mock Draft Recap - no draft executed",
+      recapStatusLine: "Finish Draft to open the recap",
       gmLine: gm.hasGm ? gm.displayName : "GM preview missing",
-      brandLine: brand.hasBrand ? `${brand.brandLabel} mock preview` : "Brand preview missing",
+      brandLine: brand.hasBrand ? brand.brandLabel : "Brand preview missing",
       candidateLine: candidate.hasCandidate
-        ? `${candidate.displayName} carried forward as preview context`
-        : "No candidate carried forward",
-      rosterLine: `${brand.brandLabel} mock roster placeholder`,
-      dashboardLine: "Week 1 Setup preview - draft and roster creation still locked",
+        ? `${candidate.displayName} selected`
+        : "No candidate selected",
+      rosterLine: `${brand.brandLabel} roster pending`,
+      dashboardLine: "Week 1 setup remains locked",
       noteLine:
-        "Presentation-only QA path. No pick, roster assignment, roster state, or draft completion summary exists.",
+        "Local Draft Only. Not Saved Yet. Week 1 Locked.",
     }),
     blockedCapabilityLabels: Object.freeze([
       "Mock preview does not use Make Pick",

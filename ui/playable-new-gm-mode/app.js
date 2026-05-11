@@ -94,6 +94,20 @@ import {
     dashboard: document.getElementById("dashboard-preview-note"),
     dashboardMiniDraftState: document.getElementById("dashboard-mini-draft-state"),
   };
+  const draftRecapCommandTargets = {
+    lock: document.getElementById("draft-recap-lock"),
+    list: document.getElementById("draft-recap-roster-list"),
+    signedCount: document.getElementById("draft-recap-summary-signed-count"),
+    minimumRoster: document.getElementById("draft-recap-summary-minimum"),
+    minimumStatus: document.getElementById("draft-recap-summary-minimum-status"),
+    startingBudget: document.getElementById("draft-recap-summary-starting-budget"),
+    budgetSpent: document.getElementById("draft-recap-summary-budget-spent"),
+    remainingBudget: document.getElementById("draft-recap-summary-remaining-budget"),
+    bookingReserve: document.getElementById("draft-recap-summary-booking-reserve"),
+    bookingReserveStatus: document.getElementById("draft-recap-summary-reserve-status"),
+    localOnly: document.getElementById("draft-recap-summary-local-only"),
+    weekOneLocked: document.getElementById("draft-recap-summary-week-one"),
+  };
   const rosterHubTargets = {
     title: document.getElementById("roster-hub-title"),
     status: document.getElementById("roster-hub-status"),
@@ -111,6 +125,7 @@ import {
     weekOneLocked: document.getElementById("roster-summary-week-one"),
   };
   const talentDetail = {
+    panel: document.querySelector(".selected-profile"),
     initials: document.getElementById("talent-detail-initials"),
     name: document.getElementById("talent-detail-name"),
     role: document.getElementById("talent-detail-role"),
@@ -216,17 +231,21 @@ import {
   }
 
   function showSection(targetId, preferredNavSection, options = {}) {
-    const target = getSection(targetId);
+    const resolvedTargetId =
+      targetId === "roster-hub" && uiState.miniDraftProgress.localDraftFinished
+        ? "draft-recap"
+        : targetId;
+    const target = getSection(resolvedTargetId);
 
     if (!target) {
       return;
     }
 
-    uiState.currentScreenId = targetId;
+    uiState.currentScreenId = resolvedTargetId;
     const navigationContext = options.navigationContext;
-    const dockVisible = shouldShowDock(targetId, { navigationContext });
+    const dockVisible = shouldShowDock(resolvedTargetId, { navigationContext });
     const activeNavSection = resolveActiveDockSection({
-      screenId: targetId,
+      screenId: resolvedTargetId,
       preferredNavSection,
       sectionNavMap,
       navigationContext,
@@ -258,8 +277,8 @@ import {
       }
     });
 
-    updateFlow(targetId);
-    document.body.classList.toggle("is-landing", targetId === "game-landing");
+    updateFlow(resolvedTargetId);
+    document.body.classList.toggle("is-landing", resolvedTargetId === "game-landing");
     document.body.classList.toggle("is-dock-hidden", !dockVisible);
     document.body.classList.toggle("is-game-shell", dockVisible);
 
@@ -275,8 +294,12 @@ import {
       phaseLabel.textContent = target.dataset.flowPhase || "Preview";
     }
 
-    if (targetId === "roster-hub") {
+    if (resolvedTargetId === "roster-hub") {
       updatePostDraftRosterHub();
+    }
+
+    if (resolvedTargetId === "draft-recap") {
+      updateDraftRecapCommandSurface();
     }
   }
 
@@ -437,29 +460,30 @@ import {
 
   function updateDraftBudgetPanel() {
     const progress = uiState.miniDraftProgress;
+    const minimumTarget =
+      progress.minimumViableRosterCount ??
+      progress.minimumRosterTarget ??
+      NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER;
+    const startingBudget =
+      progress.startingDraftBudget ??
+      NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER;
+    const reserveBudget =
+      progress.bookingReserveBudget ??
+      NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER;
 
-    setText(
-      draftBudgetTargets.starting,
-      `Starting Budget: ${progress.startingDraftBudget ?? NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER}`
-    );
-    setText(draftBudgetTargets.remaining, `Remaining Budget: ${progress.remainingDraftBudget}`);
-    setText(draftBudgetTargets.spent, `Spent Budget: ${progress.budgetSpent}`);
-    setText(draftBudgetTargets.signed, `Signed Superstars: ${progress.signedTalentCount}`);
-    setText(
-      draftBudgetTargets.minimumRosterTarget,
-      `Minimum Viable Roster: ${progress.minimumViableRosterCount ?? progress.minimumRosterTarget ?? NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER}`
-    );
-    setText(
-      draftBudgetTargets.reserve,
-      `Booking Reserve Target: ${progress.bookingReserveBudget ?? NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER}`
-    );
+    setText(draftBudgetTargets.starting, `Budget ${startingBudget}`);
+    setText(draftBudgetTargets.remaining, `Remaining ${progress.remainingDraftBudget}`);
+    setText(draftBudgetTargets.spent, `Spent ${progress.budgetSpent}`);
+    setText(draftBudgetTargets.signed, `Signed ${progress.signedTalentCount}/${minimumTarget}`);
+    setText(draftBudgetTargets.minimumRosterTarget, `Min Roster ${minimumTarget}`);
+    setText(draftBudgetTargets.reserve, `Reserve ${reserveBudget}`);
     setText(
       draftBudgetTargets.viability,
-      progress.minimumRosterViable ? "Minimum roster viable" : "Minimum roster not viable"
+      progress.minimumRosterViable ? "Roster Ready" : "Roster Not Ready"
     );
     setText(
       draftBudgetTargets.reserveStatus,
-      progress.bookingReserveProtected ? "Booking reserve protected" : "Booking reserve dipped"
+      progress.bookingReserveProtected ? "Reserve Protected" : "Reserve Dipped"
     );
     updateDraftSignedRosterPanel();
   }
@@ -578,22 +602,23 @@ import {
 
   function updateMockDraftRecapPreview(preview) {
     setText(draftRecapTargets.badge, preview.displayLabels.recapStatusLine);
-    setText(draftRecapTargets.path, "Preview Path");
-    setText(draftRecapTargets.title, `${getBrandLabel()} mock draft recap`);
+    setText(draftRecapTargets.path, "Draft Recap Preview");
+    setText(draftRecapTargets.title, `${getBrandLabel()} Draft Recap`);
     setText(
       draftRecapTargets.copy,
-      "This screen is available for shell QA. It does not mean a pick, roster, or draft completion occurred."
+      "Finish the draft to review your signed roster, budget position, and locked next steps."
     );
     setText(draftRecapTargets.gm, preview.displayLabels.gmLine);
     setText(draftRecapTargets.brand, preview.displayLabels.brandLine);
     setText(draftRecapTargets.candidate, preview.displayLabels.candidateLine);
-    setText(draftRecapTargets.pick, "Mock continuation only");
+    setText(draftRecapTargets.pick, "Draft not finished");
     setText(draftRecapTargets.budget, "No local budget spent");
-    setText(draftRecapTargets.status, "No real draft result");
-    setText(draftRecapTargets.rosterStatus, "No roster assignment");
+    setText(draftRecapTargets.status, "Draft not finished");
+    setText(draftRecapTargets.rosterStatus, "Roster locked");
     setText(draftRecapTargets.roster, preview.displayLabels.rosterLine);
     setText(draftRecapTargets.note, preview.displayLabels.noteLine);
     setText(draftRecapTargets.dashboard, preview.displayLabels.dashboardLine);
+    updateDraftRecapCommandSurface();
   }
 
   function updateInMemoryDraftRecapProjection(projection) {
@@ -612,6 +637,7 @@ import {
     setText(draftRecapTargets.note, projection.displayLabels.noteLine);
     setText(draftRecapTargets.dashboard, projection.displayLabels.dashboardLine);
     updateDashboardMiniDraftState(projection);
+    updateDraftRecapCommandSurface();
   }
 
   function updateDashboardMiniDraftState(projection) {
@@ -646,28 +672,41 @@ import {
       miniDraftProgress: uiState.miniDraftProgress,
     });
 
-    setText(rosterHubTargets.title, projection.displayLabels.titleLine);
-    setText(rosterHubTargets.status, projection.displayLabels.statusLine);
-    setText(rosterHubTargets.lock, projection.displayLabels.emptyRosterLine);
-    setText(rosterHubTargets.signedCount, projection.displayLabels.signedCountLine);
-    setText(rosterHubTargets.minimumRoster, projection.displayLabels.minimumRosterLine);
-    setText(rosterHubTargets.minimumStatus, projection.displayLabels.minimumRosterStatusLine);
-    setText(rosterHubTargets.startingBudget, projection.displayLabels.startingBudgetLine);
-    setText(rosterHubTargets.budgetSpent, projection.displayLabels.budgetSpentLine);
-    setText(rosterHubTargets.remainingBudget, projection.displayLabels.remainingBudgetLine);
-    setText(rosterHubTargets.bookingReserve, projection.displayLabels.bookingReserveLine);
+    renderPostDraftRosterProjection(projection, rosterHubTargets);
+  }
+
+  function updateDraftRecapCommandSurface() {
+    const projection = createPostDraftRosterHubProjection({
+      selectedBrand: getSelectedBrandDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+    });
+
+    renderPostDraftRosterProjection(projection, draftRecapCommandTargets);
+  }
+
+  function renderPostDraftRosterProjection(projection, targets) {
+    setText(targets.title, projection.displayLabels.titleLine);
+    setText(targets.status, projection.displayLabels.statusLine);
+    setText(targets.lock, projection.displayLabels.emptyRosterLine);
+    setText(targets.signedCount, projection.displayLabels.signedCountLine);
+    setText(targets.minimumRoster, projection.displayLabels.minimumRosterLine);
+    setText(targets.minimumStatus, projection.displayLabels.minimumRosterStatusLine);
+    setText(targets.startingBudget, projection.displayLabels.startingBudgetLine);
+    setText(targets.budgetSpent, projection.displayLabels.budgetSpentLine);
+    setText(targets.remainingBudget, projection.displayLabels.remainingBudgetLine);
+    setText(targets.bookingReserve, projection.displayLabels.bookingReserveLine);
     setText(
-      rosterHubTargets.bookingReserveStatus,
+      targets.bookingReserveStatus,
       projection.displayLabels.bookingReserveStatusLine
     );
-    setText(rosterHubTargets.localOnly, projection.displayLabels.localOnlyLine);
-    setText(rosterHubTargets.weekOneLocked, projection.displayLabels.weekOneLockedLine);
+    setText(targets.localOnly, projection.displayLabels.localOnlyLine);
+    setText(targets.weekOneLocked, projection.displayLabels.weekOneLockedLine);
 
-    rosterHubTargets.lock?.classList.toggle("hidden", !projection.locked);
-    rosterHubTargets.list?.classList.toggle("locked", projection.locked);
+    targets.lock?.classList.toggle("hidden", !projection.locked);
+    targets.list?.classList.toggle("locked", projection.locked);
 
-    if (rosterHubTargets.list) {
-      rosterHubTargets.list.replaceChildren(
+    if (targets.list) {
+      targets.list.replaceChildren(
         ...(projection.locked
           ? []
           : projection.signedTalent.map((talent) =>
@@ -925,6 +964,7 @@ import {
     setMeter(talentDetail.durabilityMeter, row.dataset.durabilityValue);
     setMeter(talentDetail.riskMeter, row.dataset.riskValue);
     setMeter(talentDetail.confidenceMeter, row.dataset.confidenceValue);
+    talentDetail.panel?.classList.remove("empty-selection");
 
     updateIntentPreview(uiState.selectedDraftIntentPreview);
     updateFinancePreviewForCandidate(getCandidateDisplayFromRow(row));
@@ -953,6 +993,7 @@ import {
       : "Choose another available wrestler to continue the draft.");
     setText(talentDetail.fit, "Not Saved Yet. Reload resets progress.");
     setText(talentDetail.previewStatus, result.miniDraftProgress.displayLabels.statusLine);
+    talentDetail.panel?.classList.add("empty-selection");
     setText(talentDetail.starPower, "--");
     setText(talentDetail.ringWork, "--");
     setText(talentDetail.promo, "--");
