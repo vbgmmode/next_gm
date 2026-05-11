@@ -22,6 +22,7 @@ Required feel:
 - Game home screen for Dashboard.
 - Broadcast command screen for Draft Room.
 - Tactical glass command-center material: dark layered glass, sharp panel edges, 1px borders, inner highlights, contained scanlines, and brand-lit under-glow.
+- Premium Dark Broadcast meets Underground Wrestling: deeper charcoal/black surfaces, controlled brand light, serious command-center contrast, and no bright SaaS panel fills.
 
 Current rejected problems:
 
@@ -33,6 +34,21 @@ Current rejected problems:
 - Overall experience feels off instead of playable.
 
 Future implementation must solve those problems structurally, not by lightly restyling the same layout.
+
+## Typography And Mood Contract
+
+Playable New GM Mode uses CSS font-role tokens only. Do not add external font imports, Google Fonts, CDN links, bundled font files, or runtime font requests.
+
+Required font roles:
+
+- `--font-display`: main-event display voice for Game Landing title, major section headers, brand names, command strip titles, and big dramatic labels. Intended direction is Bebas Neue / Anton / Syncopate, implemented through local system-safe fallbacks.
+- `--font-ui`: readable command-surface body and control text for core UI copy.
+- `--font-data`: analytics/meta voice for ratings, stat labels, dates, budgets, percentages, status IDs, GM card stat numbers, and compact system labels.
+- `--font-ticker`: dirt-sheet/social voice for IWC Pulse, alert fragments, ticker-style copy, leak cards, and short social pressure labels.
+
+Display text should be uppercase, heavy, sharp, and game-like. Body text should remain readable and should not adopt novelty styling. Data text should make numbers and compact labels easier to scan. Ticker text may feel dirt-sheet or social-adjacent but must stay legible and restrained.
+
+The base mood should be darker than a generic dashboard: premium dark broadcast, underground wrestling venue, night-time production room, and tactical analytics cockpit. Use deep charcoal, black glass, subtle red/brand undertones, controlled glow, strong hierarchy, and border/shadow separation. Do not flatten the UI into muddy black-on-black, and do not push glow into cyberpunk neon.
 
 ## Non-Negotiable Visual Direction
 

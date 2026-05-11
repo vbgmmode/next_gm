@@ -56,6 +56,7 @@ Expected local URL style:
 ## Visual QA
 
 - Confirm the UI feels like a premium wrestling GM game cockpit, not a SaaS/admin dashboard.
+- Confirm the mood reads as Premium Dark Broadcast meets Underground Wrestling: darker command room, serious GM cockpit, controlled brand glow, and no bright SaaS panel fills.
 - Confirm the prototype leads with draft-night war room and wrestling TV package energy.
 - Confirm there is no equal-card wall on Save Selection, Setup, Draft Room, or Brand HQ.
 - Confirm Save Selection uses cinematic save-slot panels and poster/portrait-style placeholders.
@@ -72,6 +73,7 @@ Expected local URL style:
 - Confirm cards read as sharp sports-broadcast rectangles, not oversized rounded SaaS cards.
 - Confirm panel corners stay sharp and tactical instead of bubbly or startup-app rounded.
 - Confirm tactical glass surfaces use subtle borders, scanlines, inner highlights, and brand-lit under-glow without hurting readability.
+- Confirm darkened glass surfaces still have enough readable contrast and do not collapse into muddy black-on-black.
 - Confirm brand lighting feels like arena/stage flare behind glass, not a cyberpunk wallpaper or flat solid brand background.
 - Confirm tags, badges, and lock states read as compact broadcast labels instead of rounded SaaS pills.
 - Confirm panels use sharper sports TV geometry, hard frames, bars, plates, and lower-third treatments.
@@ -86,6 +88,17 @@ Expected local URL style:
 - Confirm GM Alerts read like readable dirt-sheet leaks, objective fragments, or broadcast ticker pressure rather than a plain SaaS task list.
 - Confirm visual accents feel purposeful and brand-driven, not random decorative shapes.
 - Confirm the screen does not read as a generic SaaS/admin dashboard.
+
+## Typography QA
+
+- Confirm the static UI defines `--font-display`, `--font-ui`, `--font-data`, and `--font-ticker`.
+- Confirm no external font imports, Google Fonts, CDN links, or bundled font files were added.
+- Confirm Game Landing title, major section headers, brand names, and command strip titles use the display role.
+- Confirm body text and controls remain readable through the UI role.
+- Confirm ratings, stat labels, percentages, budgets, dates, and status labels use the data/meta role.
+- Confirm IWC Pulse, alert fragments, social/ticker copy, and dirt-sheet pressure labels use the ticker role where appropriate.
+- Confirm display headings feel game/broadcast-heavy without causing text overflow.
+- Confirm GM card stat numbers and dashboard metric text remain easy to scan.
 
 ## Brand Palette QA
 

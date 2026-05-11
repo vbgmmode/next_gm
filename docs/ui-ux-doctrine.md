@@ -16,11 +16,20 @@ These decisions are binding for the Playable New GM Mode prototype and future im
 
 ### Art Direction / Visual Authenticity
 
-Next GM should read as a serious premium wrestling GM management game, not a generic web dashboard. The visual blend is WWE 2K-style wrestling mode familiarity, ESPN/NFL Draft-style broadcast polish, and premium sports franchise menu clarity.
+Next GM should read as a serious premium wrestling GM management game, not a generic web dashboard. The visual blend is WWE 2K-style wrestling mode familiarity, ESPN/NFL Draft-style broadcast polish, premium sports franchise menu clarity, and a darker underground wrestling command-center mood.
 
-The base UI mood is dark, polished, readable, and management-focused. Everyday management screens should be calm and usable. Big moments such as draft night, PLEs, title changes, rivalry turns, show recaps, and major IWC/social fallout should receive stronger dramatic staging.
+The base UI mood is Premium Dark Broadcast meets Underground Wrestling: dark, polished, readable, tactical, and management-focused. Everyday management screens should feel like a night-time production room or scouting cockpit, not a bright SaaS dashboard. Big moments such as draft night, PLEs, title changes, rivalry turns, show recaps, and major IWC/social fallout should receive stronger dramatic staging.
 
-Avoid SaaS dashboard tells: bubbly cards, soft blob decoration, oversized rounded cards, pill overload, random color accents, full-page scrolling, and equal-weight card walls. Use sharp sports-broadcast rectangles, lower-third language, glass-panel surfaces, LED/titantron texture, controlled glow, and brand-led lighting.
+Avoid SaaS dashboard tells: bubbly cards, soft blob decoration, oversized rounded cards, pill overload, random color accents, full-page scrolling, bright panel fills, and equal-weight card walls. Use sharp sports-broadcast rectangles, lower-third language, darker glass-panel surfaces, LED/titantron texture, controlled glow, and brand-led lighting.
+
+Typography should be role-driven through CSS variables only:
+
+- `--font-display` for main-event headers, landing title, brand names, and command strip titles.
+- `--font-ui` for readable body and control text.
+- `--font-data` for ratings, stats, dates, budgets, percentages, and compact meta labels.
+- `--font-ticker` for IWC Pulse, dirt-sheet fragments, ticker copy, and alert pressure labels.
+
+Do not add external font imports, Google Fonts, CDN links, bundled font files, or runtime font requests. Use local/offline system-safe font stacks.
 
 ### App Shell And Navigation
 
@@ -133,15 +142,15 @@ The initial playable brand palettes are Raw, SmackDown, NXT, and AEW. These are 
 
 Base UI tokens:
 
-- `--bg-app: #080A0F`
-- `--bg-surface: #10141D`
-- `--bg-surface-2: #171D29`
-- `--bg-glass: rgba(18, 24, 36, 0.72)`
-- `--border-subtle: rgba(255, 255, 255, 0.10)`
-- `--border-strong: rgba(255, 255, 255, 0.22)`
-- `--text-primary: #F4F7FB`
-- `--text-secondary: #AAB4C3`
-- `--text-muted: #6F7A8A`
+- `--bg-app: #030407`
+- `--bg-surface: #0A0D14`
+- `--bg-surface-2: #111622`
+- `--bg-glass: rgba(8, 11, 18, 0.80)`
+- `--border-subtle: rgba(255, 255, 255, 0.085)`
+- `--border-strong: rgba(255, 255, 255, 0.20)`
+- `--text-primary: #F2F4F7`
+- `--text-secondary: #B0BAC8`
+- `--text-muted: #768190`
 - `--warning: #F5B942`
 - `--danger: #E5484D`
 - `--success: #35C46A`
@@ -176,6 +185,7 @@ Next GM should feel like a living wrestling broadcast universe. The player is no
 The experience should blend:
 
 - Premium dark broadcast UI.
+- Underground wrestling venue mood.
 - Clean sports analytics dashboard structure.
 - Video game menu energy.
 - Wrestling dirt sheet and social universe flavor.
