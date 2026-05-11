@@ -2082,6 +2082,17 @@ dd {
   overflow: hidden;
 }
 
+.draft-action-cluster {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.qa-preview-button {
+  border-style: dashed;
+}
+
 .settings-screen {
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 10px;
@@ -2122,10 +2133,15 @@ dd {
 .recap-hero {
   display: grid;
   align-content: end;
+  gap: 8px;
   border-left: 6px solid var(--brand-primary);
   background:
     linear-gradient(115deg, var(--brand-soft), transparent 56%),
     var(--surface-plate);
+}
+
+.mock-recap-meta {
+  grid-template-columns: 1fr;
 }
 
 .division-groups {

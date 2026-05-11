@@ -788,7 +788,10 @@
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="select-brand">Back to Brand Select</button>
-            <button class="hero-cta small" type="button" disabled>Draft Recap Locked</button>
+            <div class="draft-action-cluster">
+              <button class="ghost-button qa-preview-button" type="button" data-preview-go-to="draft-recap">QA Preview: Mock Draft Recap</button>
+              <button class="hero-cta small" type="button" disabled>Draft Recap Locked</button>
+            </div>
           </div>
         </section>
 
@@ -802,55 +805,61 @@
         >
           <div class="screen-header">
             <div>
-              <p class="kicker">Post-Draft First View</p>
-              <h2 id="draft-recap-title"><span class="js-brand-name">Raw</span> draft recap</h2>
+              <p class="kicker">Mock Post-Draft Preview</p>
+              <h2 id="draft-recap-title"><span class="js-brand-name">Raw</span> mock draft recap</h2>
             </div>
-            <span class="header-badge">Roster Review</span>
+            <span class="header-badge" id="mock-recap-badge">Mock Draft Recap - no draft executed</span>
           </div>
 
           <div class="recap-layout">
             <article class="recap-hero">
-              <p class="kicker">Full Roster</p>
-              <h3>Grouped by division</h3>
-              <p>After the initial draft, this becomes the first stop before Brand Dashboard and Week 1 setup.</p>
+              <p class="kicker">QA Preview Path</p>
+              <h3 id="mock-recap-roster">Raw mock roster placeholder</h3>
+              <p>This screen is available for shell QA before Phase 3. It does not mean a pick, roster, or draft completion occurred.</p>
+              <dl class="meta-grid mock-recap-meta" aria-label="Mock draft recap preview context">
+                <div><dt>GM</dt><dd id="mock-recap-gm">Maren Vale</dd></div>
+                <div><dt>Brand</dt><dd id="mock-recap-brand">Raw mock preview</dd></div>
+                <div><dt>Preview Candidate</dt><dd id="mock-recap-candidate">Ace Mercer carried forward as preview context</dd></div>
+              </dl>
+              <p class="quiet-note" id="mock-recap-note">Presentation-only QA path. No pick, roster assignment, roster state, or draft completion summary exists.</p>
             </article>
             <div class="division-groups">
               <article class="division-card">
                 <h3>World title scene</h3>
-                <span>Pick 1 - Rex Nova</span>
-                <span>Pick 4 - Atlas King</span>
+                <span>Mock slot 1 - Rex Nova</span>
+                <span>Mock slot 4 - Atlas King</span>
               </article>
               <article class="division-card">
                 <h3>Midcard title scene</h3>
-                <span>Pick 6 - Cruz Arrow</span>
-                <span>Pick 9 - Dante Voss</span>
+                <span>Mock slot 6 - Cruz Arrow</span>
+                <span>Mock slot 9 - Dante Voss</span>
               </article>
               <article class="division-card">
                 <h3>Women's division</h3>
-                <span>Pick 2 - Maya Steele</span>
-                <span>Pick 7 - Juno Vale</span>
+                <span>Mock slot 2 - Maya Steele</span>
+                <span>Mock slot 7 - Juno Vale</span>
               </article>
               <article class="division-card">
                 <h3>Tag division</h3>
-                <span>Pick 5 - Sable Riot</span>
-                <span>Pick 8 - The Rail Splitters</span>
+                <span>Mock slot 5 - Sable Riot</span>
+                <span>Mock slot 8 - The Rail Splitters</span>
               </article>
               <article class="division-card">
                 <h3>Prospects</h3>
-                <span>Pick 10 - Nia Voss</span>
-                <span>Pick 13 - Ellis Knox</span>
+                <span>Mock slot 10 - Nia Voss</span>
+                <span>Mock slot 13 - Ellis Knox</span>
               </article>
               <article class="division-card">
                 <h3>Unassigned</h3>
-                <span>Pick 14 - Mara Saint</span>
-                <span>Pick 16 - Ty March</span>
+                <span>Mock slot 14 - Mara Saint</span>
+                <span>Mock slot 16 - Ty March</span>
               </article>
             </div>
           </div>
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="draft-room">Back to Draft</button>
-            <button class="hero-cta small" type="button" data-go-to="brand-dashboard">Continue to Brand Dashboard</button>
+            <button class="hero-cta small" type="button" data-go-to="brand-dashboard">Continue to Brand Dashboard Preview</button>
           </div>
         </section>
 
@@ -864,25 +873,25 @@
         >
           <div class="brand-dashboard-hero monitor-hero">
             <div class="hero-copy">
-              <p class="kicker">This Week's Show</p>
+              <p class="kicker">Week 1 Setup Preview</p>
               <h2 id="brand-dashboard-title"><span class="js-brand-name">Raw</span> launch night</h2>
-              <p>Monday night needs a clean first card: draft fallout, champion direction, and urgent setup calls before bell time.</p>
+              <p id="dashboard-preview-note">Week 1 Setup preview - draft and roster creation still locked</p>
             </div>
             <div class="hero-command-stack monitor-stack" aria-label="Week one command monitors">
               <article class="command-monitor">
                 <span>This Week's Show</span>
-                <strong>Monday Night Raw</strong>
-                <em>Week 1 - Draft fallout</em>
+                <strong>Preview Shell</strong>
+                <em>No card or week started</em>
               </article>
               <article class="command-monitor healthy">
                 <span>Brand Health</span>
-                <strong>Launch Ready</strong>
-                <em>Roster set, title scene needs focus</em>
+                <strong>Setup Preview</strong>
+                <em>Mock roster context only</em>
               </article>
               <article class="command-monitor urgent">
                 <span>GM Alerts</span>
-                <strong>3 Urgent Alerts</strong>
-                <em>2 Important - 1 Blocked Setup Item</em>
+                <strong>3 Setup Reminders</strong>
+                <em>Draft, roster, gameplay locked</em>
               </article>
             </div>
             <div class="hero-actions">
@@ -898,9 +907,9 @@
                 <h3 id="gm-alerts-title">GM Alerts</h3>
               </div>
               <div class="alert-list">
-                <article class="alert-leak urgent"><span class="severity urgent">Urgent</span><strong>Book your champion this week.</strong><em>Title presence anchors the launch show.</em></article>
-                <article class="alert-leak important"><span class="severity important">Important</span><strong>Review roster balance.</strong><em>Tag depth needs direction before TV.</em></article>
-                <article class="alert-leak optional"><span class="severity optional">Optional</span><strong>Create rivalry hooks.</strong><em>Heat can be manual now or emerge later.</em></article>
+                <article class="alert-leak urgent"><span class="severity urgent">Urgent</span><strong>Phase 3 required for real draft.</strong><em>Mock recap did not create a roster.</em></article>
+                <article class="alert-leak important"><span class="severity important">Important</span><strong>Review mock roster layout.</strong><em>Shell QA can inspect post-draft surfaces.</em></article>
+                <article class="alert-leak optional"><span class="severity optional">Optional</span><strong>Preview setup checklist.</strong><em>Champion and rivalry setup remain locked.</em></article>
                 <article class="alert-leak blocked"><span class="severity blocked">Blocked</span><strong>Run show is coming later.</strong><em>Week advancement is not part of this build.</em></article>
               </div>
             </section>

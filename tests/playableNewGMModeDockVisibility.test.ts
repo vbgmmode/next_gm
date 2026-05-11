@@ -143,6 +143,7 @@ describe("Playable New GM Mode dock visibility", () => {
       readPlayableUiFile("app.js"),
       readPlayableUiFile("screenShellState.js"),
       readPlayableUiFile("draftSelectionIntentAdapter.js"),
+      readPlayableUiFile("draftRecapPreviewState.js"),
     ].join("\n");
     const forbiddenSnippets = [
       "fetch",

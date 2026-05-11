@@ -78,9 +78,12 @@ Expected local URL style:
 - Confirm the selection intent preview shows selected candidate, selected brand, Round 1 / Pick 1 placeholder, and preview-only locked status.
 - Confirm selecting Ivan North reports an unavailable blocked preview state and still does not create a pick.
 - Confirm Make Pick and Auto Draft stay disabled after selecting any candidate.
-- Confirm Draft Recap does not unlock from the candidate preview.
-- Confirm Draft Recap appears as the first post-draft state.
-- Confirm Brand Dashboard becomes the primary Week 1 / post-draft surface.
+- Confirm Draft Recap does not unlock as a real completed-draft state from the candidate preview.
+- Confirm Initial Draft no longer dead-ends manual shell QA because a separate mock/preview continuation CTA exists.
+- Confirm the mock/preview continuation is clearly labeled as QA Preview or Mock Draft Recap.
+- Confirm the mock/preview continuation is visually secondary to the locked real draft actions.
+- Confirm Draft Recap appears as a mock/preview-only post-draft shell until Phase 3.
+- Confirm Brand Dashboard becomes the primary Week 1 / post-draft shell preview after Draft Recap.
 - Confirm Draft Preview is not presented as the primary surface after Draft Recap.
 
 ## Visual QA
@@ -201,11 +204,17 @@ Expected local URL style:
 - Confirm setup choices are hardcoded visual placeholders.
 - Confirm assistant setup does not save keys, make calls, or activate live AI.
 - Confirm Draft Room controls remain disabled, including Make Pick and Auto Draft.
+- Confirm the QA Preview / Mock Draft Recap CTA only creates UI-local presentation state.
+- Confirm the QA Preview / Mock Draft Recap CTA can move from Initial Draft to Draft Recap and then Brand Dashboard for shell QA.
+- Confirm real Make Pick remains locked even when the mock continuation is available.
+- Confirm Draft Recap clearly says mock/preview and does not imply real draft execution.
+- Confirm the dock remains hidden on Initial Draft and Draft Recap and appears only at Brand Dashboard.
 - Confirm clicking a talent row only updates the selected talent card in the DOM.
 - Confirm clicking a talent row only updates local JS memory and the UI-only selection intent preview.
 - Confirm the adapter-backed selection intent preview never calls draft pick creation, execution, roster assignment, roster state creation, draft completion, or gameplay start.
 - Confirm reload resets current screen, selected GM, selected brand, selected candidate, and selection intent preview to the static defaults.
 - Confirm Draft Recap and Brand Dashboard are preview states only.
+- Confirm the mock recap state carries only selected GM, selected brand, and selected preview candidate display references.
 - Confirm selected superstar scouting projection never exposes hidden formulas, hidden rolls, raw backend diagnostics, exact internal deltas, or engine reads.
 - Confirm no save payloads are created.
 - Confirm no database writes are triggered.
@@ -214,6 +223,7 @@ Expected local URL style:
 - Confirm the browser UI does not import or call draft services or gameplay services.
 - Confirm the domain read-only projection boundary has tests proving draft actions remain locked.
 - Confirm real draft execution is still not wired.
+- Confirm no real draft completion summary, draft pick object, roster assignment object, or roster state object is created by the QA preview path.
 - Confirm the next approved runtime step is selection intent preview, not pick execution.
 - Confirm no draft pick, roster state, Week 1 state, show state, match state, fan/social state, business state, or AI flavor output is created.
 

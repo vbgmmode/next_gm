@@ -3,6 +3,7 @@ import {
   createCandidateDisplayFromDataset,
   createDraftSelectionIntentPreview,
 } from "./draftSelectionIntentAdapter.js";
+import { createMockDraftRecapPreviewState } from "./draftRecapPreviewState.js";
 import {
   resolveActiveDockSection,
   shouldShowDock,
@@ -14,6 +15,7 @@ import {
   const navItems = Array.from(document.querySelectorAll("[data-nav-target]"));
   const flowCards = Array.from(document.querySelectorAll("[data-flow-target]"));
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
+  const previewControls = Array.from(document.querySelectorAll("[data-preview-go-to]"));
   const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
   const gmCards = Array.from(document.querySelectorAll("[data-gm-id]"));
   const brandControls = Array.from(document.querySelectorAll("[data-brand]"));
@@ -28,6 +30,15 @@ import {
     pick: document.getElementById("intent-preview-pick"),
     status: document.getElementById("intent-preview-status"),
     note: document.getElementById("intent-preview-note"),
+  };
+  const mockRecapTargets = {
+    badge: document.getElementById("mock-recap-badge"),
+    gm: document.getElementById("mock-recap-gm"),
+    brand: document.getElementById("mock-recap-brand"),
+    candidate: document.getElementById("mock-recap-candidate"),
+    roster: document.getElementById("mock-recap-roster"),
+    note: document.getElementById("mock-recap-note"),
+    dashboard: document.getElementById("dashboard-preview-note"),
   };
   const talentDetail = {
     initials: document.getElementById("talent-detail-initials"),
@@ -89,6 +100,7 @@ import {
     selectedBrandId: "raw",
     selectedCandidateId: "candidate-ace-mercer",
     selectedDraftIntentPreview: undefined,
+    mockDraftRecapPreview: undefined,
   };
   let dockCollapseTimer;
 
@@ -237,6 +249,24 @@ import {
     });
   }
 
+  function getSelectedGmDisplay() {
+    const selectedCard = gmCards.find((card) => card.dataset.gmId === uiState.selectedGmId);
+    const displayName = selectedCard?.querySelector("h3")?.textContent;
+
+    return {
+      gmId: uiState.selectedGmId,
+      displayName,
+    };
+  }
+
+  function getSelectedCandidateDisplay() {
+    const selectedRow = talentRows.find((row) => row.dataset.candidateId === uiState.selectedCandidateId);
+
+    return selectedRow
+      ? createCandidateDisplayFromDataset(selectedRow.dataset)
+      : undefined;
+  }
+
   function createDraftSelectionIntentPresentationPreview(row) {
     return createDraftSelectionIntentPreview({
       selectedCandidate: createCandidateDisplayFromDataset(row.dataset),
@@ -267,6 +297,47 @@ import {
 
     if (intentPreviewTargets.note) {
       intentPreviewTargets.note.textContent = preview.displayLabels.noteLine;
+    }
+  }
+
+  function createMockDraftRecapPreviewFromUiState() {
+    return createMockDraftRecapPreviewState({
+      selectedGm: getSelectedGmDisplay(),
+      selectedBrand: {
+        brandId: uiState.selectedBrandId,
+        brandLabel: getBrandLabel(),
+      },
+      selectedCandidate: getSelectedCandidateDisplay(),
+    });
+  }
+
+  function updateMockDraftRecapPreview(preview) {
+    if (mockRecapTargets.badge) {
+      mockRecapTargets.badge.textContent = preview.displayLabels.recapStatusLine;
+    }
+
+    if (mockRecapTargets.gm) {
+      mockRecapTargets.gm.textContent = preview.displayLabels.gmLine;
+    }
+
+    if (mockRecapTargets.brand) {
+      mockRecapTargets.brand.textContent = preview.displayLabels.brandLine;
+    }
+
+    if (mockRecapTargets.candidate) {
+      mockRecapTargets.candidate.textContent = preview.displayLabels.candidateLine;
+    }
+
+    if (mockRecapTargets.roster) {
+      mockRecapTargets.roster.textContent = preview.displayLabels.rosterLine;
+    }
+
+    if (mockRecapTargets.note) {
+      mockRecapTargets.note.textContent = preview.displayLabels.noteLine;
+    }
+
+    if (mockRecapTargets.dashboard) {
+      mockRecapTargets.dashboard.textContent = preview.displayLabels.dashboardLine;
     }
   }
 
@@ -361,6 +432,16 @@ import {
     control.addEventListener("click", () => {
       if (!control.disabled) {
         showSection(control.dataset.goTo);
+      }
+    });
+  });
+
+  previewControls.forEach((control) => {
+    control.addEventListener("click", () => {
+      if (!control.disabled) {
+        uiState.mockDraftRecapPreview = createMockDraftRecapPreviewFromUiState();
+        updateMockDraftRecapPreview(uiState.mockDraftRecapPreview);
+        showSection(control.dataset.previewGoTo);
       }
     });
   });

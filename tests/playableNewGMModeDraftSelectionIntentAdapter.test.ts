@@ -207,6 +207,8 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
       readPlayableUiFile("index.html"),
       readPlayableUiFile("app.js"),
       readPlayableUiFile("draftSelectionIntentAdapter.js"),
+      readPlayableUiFile("draftRecapPreviewState.js"),
+      readPlayableUiFile("screenShellState.js"),
     ].join("\n");
     const forbiddenSnippets = [
       "fetch",
