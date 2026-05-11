@@ -3,6 +3,7 @@ import {
   createDraftSelectionIntentPreview,
 } from "./draftSelectionIntentAdapter.js";
 import { createMockDraftRecapPreviewState } from "./draftRecapPreviewState.js";
+import { createLocalGameSetupProjection } from "./localGameSetupController.js";
 import {
   createAutoFillMinimumRosterReadiness,
   createFinishDraftReadiness,
@@ -94,6 +95,9 @@ import {
     difficulty: document.getElementById("setup-difficulty-summary"),
     activeBrands: document.getElementById("setup-active-brands-summary"),
     startingBudget: document.getElementById("setup-starting-budget-summary"),
+    playerBrand: document.getElementById("setup-player-brand-summary"),
+    activeBrandList: document.getElementById("setup-active-brand-list"),
+    competingGmList: document.getElementById("setup-competing-gm-list"),
   };
   const intentPreviewTargets = {
     candidate: document.getElementById("intent-preview-candidate"),
@@ -549,12 +553,12 @@ import {
   }
 
   function updateSetupBasicsSurface() {
-    const difficultyLabel =
-      uiState.selectedDifficulty === "easy"
-        ? "Easy"
-        : uiState.selectedDifficulty === "hard"
-          ? "Hard"
-          : "Normal";
+    const setupProjection = createLocalGameSetupProjection({
+      selectedDifficulty: uiState.selectedDifficulty,
+      activeBrandCount: uiState.activeBrandCount,
+      selectedBrandId: uiState.selectedBrandId,
+      selectedGm: getSelectedGmDisplay(),
+    });
 
     difficultyControls.forEach((control) => {
       const active = control.dataset.difficulty === uiState.selectedDifficulty;
@@ -568,12 +572,12 @@ import {
       control.setAttribute("aria-pressed", String(active));
     });
 
-    setText(setupBasicsTargets.difficulty, difficultyLabel);
-    setText(setupBasicsTargets.activeBrands, `${uiState.activeBrandCount} brands`);
-    setText(
-      setupBasicsTargets.startingBudget,
-      formatBudgetUnitsAsMoney(NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER)
-    );
+    setText(setupBasicsTargets.difficulty, setupProjection.displayLabels.difficultyLine);
+    setText(setupBasicsTargets.activeBrands, setupProjection.displayLabels.activeBrandsLine);
+    setText(setupBasicsTargets.startingBudget, setupProjection.displayLabels.startingBudgetLine);
+    setText(setupBasicsTargets.playerBrand, getBrandLabel());
+    setText(setupBasicsTargets.activeBrandList, setupProjection.displayLabels.activeBrandLine);
+    setText(setupBasicsTargets.competingGmList, setupProjection.displayLabels.competingGmLine);
   }
 
   function getSelectedGmDisplay() {

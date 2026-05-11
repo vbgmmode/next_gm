@@ -4,6 +4,11 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 
 import {
+  createLocalGameSetupProjection,
+  LOCAL_GAME_SETUP_BRANDS,
+  LOCAL_GAME_SETUP_DIFFICULTIES,
+} from "../ui/playable-new-gm-mode/localGameSetupController.js";
+import {
   createInitialMiniDraftProgress,
   createMakePickReadiness,
   executeLocalFinishDraft,
@@ -370,10 +375,40 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.match(html, /data-active-brand-count="2"/);
     assert.match(html, /data-active-brand-count="3"/);
     assert.match(html, /data-active-brand-count="4"/);
+    assert.match(html, /id="setup-active-brand-list"/);
+    assert.match(html, /id="setup-competing-gm-list"/);
     assert.match(html, /Other brands visible, CPU drafting not active yet/);
+    assert.match(appSource, /createLocalGameSetupProjection/);
     assert.match(appSource, /selectedDifficulty: "normal"/);
     assert.match(appSource, /activeBrandCount: 4/);
     assert.doesNotMatch(appSource, /cpuDraft|runCpu|otherBrandPick/);
+  });
+
+  it("projects selected active brands and competing GMs without simulation", () => {
+    const projection = createLocalGameSetupProjection({
+      selectedDifficulty: "hard",
+      activeBrandCount: 2,
+      selectedBrandId: "aew",
+      selectedGm,
+    });
+
+    assert.equal(LOCAL_GAME_SETUP_DIFFICULTIES.length, 3);
+    assert.equal(LOCAL_GAME_SETUP_BRANDS.length, 4);
+    assert.equal(projection.selectedDifficulty, "hard");
+    assert.equal(projection.activeBrandCount, 2);
+    assert.deepEqual(
+      projection.activeBrands.map((brand) => brand.brandId),
+      ["raw", "aew"]
+    );
+    assert.deepEqual(
+      projection.competingBrands.map((brand) => brand.brandLabel),
+      ["Raw"]
+    );
+    assert.equal(projection.displayLabels.startingBudgetLine, "$12,000,000");
+    assert.equal(projection.capabilityFlags.canRunCpuDraft, false);
+    assert.equal(projection.capabilityFlags.canSimulateOtherBrands, false);
+    assert.equal(projection.capabilityFlags.canPersistSetup, false);
+    assert.equal(projection.capabilityFlags.usesBrowserStorage, false);
   });
 
   it("keeps dock visibility correct across draft and dashboard screens", () => {
