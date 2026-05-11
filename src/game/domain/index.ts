@@ -207,6 +207,11 @@ export {
   PLAYABLE_NEW_GM_MODE_GAMEPLAY_STATE_MODEL_CAPABILITY_FLAGS
 } from "./playableNewGMModeGameplayStateModel.ts";
 export type * from "./playableNewGMModeGameplayStateModel.ts";
+export {
+  createPlayableNewGMModeSavePayloadContract,
+  PLAYABLE_NEW_GM_MODE_SAVE_PAYLOAD_CONTRACT_CAPABILITY_FLAGS
+} from "./playableNewGMModeSavePayloadContract.ts";
+export type * from "./playableNewGMModeSavePayloadContract.ts";
 export { createNewGMModeDraftPickCandidateObjectValidator } from "./newGMModeDraftPickCandidateObjectValidator.ts";
 export type * from "./newGMModeDraftPickCandidateObjectValidator.ts";
 export { createNewGMModeDraftPickCandidateReadinessSummary } from "./newGMModeDraftPickCandidateReadinessSummary.ts";
