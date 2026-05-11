@@ -92,7 +92,7 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
     });
     assert.equal(
       preview.displayLabels.statusLine,
-      "Preview only - pick locked"
+      "Ready for in-memory Make Pick"
     );
   });
 
@@ -185,12 +185,12 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
     ]);
   });
 
-  it("keeps Make Pick, Auto Draft, and Draft Recap locked in the static UI", () => {
+  it("keeps Make Pick controlled, Auto Draft locked, and direct Draft Recap locked in the static UI", () => {
     const html = readPlayableUiFile("index.html");
 
     assert.match(
       html,
-      /<button class="panel-button" type="button" disabled>Make Pick Locked<\/button>/
+      /<button class="panel-button" type="button" data-make-pick-action disabled aria-disabled="true">Make Pick Locked<\/button>/
     );
     assert.match(
       html,
@@ -202,12 +202,13 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
     );
   });
 
-  it("does not call forbidden draft execution, roster, storage, network, or generated-output surfaces from changed UI files", () => {
+  it("does not call forbidden storage, network, or generated-output surfaces from changed UI files", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("app.js"),
       readPlayableUiFile("draftSelectionIntentAdapter.js"),
       readPlayableUiFile("draftRecapPreviewState.js"),
+      readPlayableUiFile("inMemoryDraftActionController.js"),
       readPlayableUiFile("screenShellState.js"),
     ].join("\n");
     const forbiddenSnippets = [
@@ -218,11 +219,6 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
       "indexedDB",
       "document.cookie",
       "sqlite",
-      "createNewGMModeInMemoryDraftFlow",
-      "createNewGMModeDraftPickCreationService",
-      "createNewGMModeDraftPickExecutionService",
-      "createNewGMModeDraftPickRosterAssignmentService",
-      "createNewGMModeRosterStateCreationService",
       "OpenAI",
       "api key",
       ["Math", "random"].join("."),

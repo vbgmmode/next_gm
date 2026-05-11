@@ -1,6 +1,7 @@
 import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { createServer } from "node:http";
+import { stripTypeScriptTypes } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,6 +18,7 @@ const contentTypes = new Map([
   [".html", "text/html; charset=utf-8"],
   [".js", "text/javascript; charset=utf-8"],
   [".json", "application/json; charset=utf-8"],
+  [".ts", "text/javascript; charset=utf-8"],
   [".png", "image/png"],
   [".jpg", "image/jpeg"],
   [".jpeg", "image/jpeg"],
@@ -34,12 +36,13 @@ function resolveRequestPath(requestUrl) {
     };
   }
 
-  if (!pathname.startsWith(uiRoute)) {
+  if (!pathname.startsWith(uiRoute) && !pathname.startsWith("/src/")) {
     return undefined;
   }
 
-  const relativePath =
-    pathname === uiRoute ? "ui/playable-new-gm-mode/index.html" : pathname.slice(1);
+  const relativePath = pathname === uiRoute
+    ? "ui/playable-new-gm-mode/index.html"
+    : pathname.slice(1);
   const filePath = path.resolve(repoRoot, relativePath);
 
   if (!filePath.startsWith(repoRoot + path.sep)) {
@@ -73,6 +76,19 @@ async function handleRequest(request, response) {
     const contentType =
       contentTypes.get(path.extname(resolved.filePath).toLowerCase()) ||
       "application/octet-stream";
+
+    if (path.extname(resolved.filePath).toLowerCase() === ".ts") {
+      const source = await readFile(resolved.filePath, "utf8");
+      const transformed = stripTypeScriptTypes(source);
+
+      response.writeHead(200, {
+        "Cache-Control": "no-store",
+        "Content-Length": Buffer.byteLength(transformed),
+        "Content-Type": contentType,
+      });
+      response.end(transformed);
+      return;
+    }
 
     response.writeHead(200, {
       "Cache-Control": "no-store",

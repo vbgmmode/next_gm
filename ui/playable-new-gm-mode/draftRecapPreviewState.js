@@ -33,7 +33,7 @@ export function createMockDraftRecapPreviewState({
         "Presentation-only QA path. No pick, roster assignment, roster state, or draft completion summary exists.",
     }),
     blockedCapabilityLabels: Object.freeze([
-      "Make Pick remains locked",
+      "Mock preview does not use Make Pick",
       "No draft pick object",
       "No roster assignment object",
       "No roster state object",

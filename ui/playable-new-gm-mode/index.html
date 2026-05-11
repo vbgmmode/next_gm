@@ -615,8 +615,8 @@
         >
           <div class="draft-lower-third">
             <span>Preview Build</span>
-            <strong>Draft Controls Locked</strong>
-            <em>SCOUTING DESK OPEN. MAKE PICK, AUTO DRAFT, AND DRAFT RECAP REMAIN LOCKED.</em>
+            <strong>Controlled Pick Window</strong>
+            <em>MAKE PICK RUNS LOCAL MEMORY ONLY WHEN ELIGIBLE. AUTO DRAFT AND DIRECT RECAP REMAIN LOCKED.</em>
           </div>
 
           <div class="draft-composition">
@@ -631,7 +631,7 @@
                 <span>Prospects: developmental upside open</span>
               </div>
               <div class="draft-buttons">
-                <button class="panel-button" type="button" disabled>Make Pick Locked</button>
+                <button class="panel-button" type="button" data-make-pick-action disabled aria-disabled="true">Make Pick Locked</button>
                 <button class="panel-button" type="button" disabled>Auto Draft Locked</button>
               </div>
             </article>
@@ -672,8 +672,8 @@
                   <span class="profile-role" id="talent-detail-role">Main Event / Technical / Veteran</span>
                   <dl class="profile-reads compact-reads">
                     <div><dt>Roster fit</dt><dd id="talent-detail-fit">Men's division, world title and midcard title eligible.</dd></div>
-                    <div><dt>Scout note</dt><dd id="talent-detail-read">Scouting preview. Draft actions remain locked.</dd></div>
-                    <div><dt>Pick preview</dt><dd id="talent-detail-preview-status">Preview only - pick locked</dd></div>
+                    <div><dt>Scout note</dt><dd id="talent-detail-read">Scouting preview. Make Pick uses local in-memory draft only when eligible.</dd></div>
+                    <div><dt>Pick preview</dt><dd id="talent-detail-preview-status">Ready for in-memory Make Pick</dd></div>
                   </dl>
                 </div>
               </div>
@@ -778,11 +778,11 @@
                 <span id="intent-preview-candidate">Ace Mercer selected</span>
                 <span id="intent-preview-brand">Raw local preview</span>
                 <span id="intent-preview-pick">Round 1 / Pick 1 placeholder</span>
-                <span id="intent-preview-status">Preview only - pick locked</span>
+                <span id="intent-preview-status">Ready for in-memory Make Pick</span>
                 <span>Roster assignment blocked</span>
                 <span>Draft completion blocked</span>
               </div>
-              <p class="quiet-note" id="intent-preview-note">Preview only. No pick, roster, or recap is created.</p>
+              <p class="quiet-note" id="intent-preview-note">Make Pick creates a local-only in-memory draft result and does not save or start Week 1.</p>
             </article>
           </div>
 
@@ -805,23 +805,26 @@
         >
           <div class="screen-header">
             <div>
-              <p class="kicker">Mock Post-Draft Preview</p>
+              <p class="kicker" id="draft-recap-path-label">Mock Post-Draft Preview</p>
               <h2 id="draft-recap-title"><span class="js-brand-name">Raw</span> mock draft recap</h2>
             </div>
-            <span class="header-badge" id="mock-recap-badge">Mock Draft Recap - no draft executed</span>
+            <span class="header-badge" id="draft-recap-badge">Mock Draft Recap - no draft executed</span>
           </div>
 
           <div class="recap-layout">
             <article class="recap-hero">
               <p class="kicker">QA Preview Path</p>
-              <h3 id="mock-recap-roster">Raw mock roster placeholder</h3>
-              <p>This screen is available for shell QA before Phase 3. It does not mean a pick, roster, or draft completion occurred.</p>
-              <dl class="meta-grid mock-recap-meta" aria-label="Mock draft recap preview context">
-                <div><dt>GM</dt><dd id="mock-recap-gm">Maren Vale</dd></div>
-                <div><dt>Brand</dt><dd id="mock-recap-brand">Raw mock preview</dd></div>
-                <div><dt>Preview Candidate</dt><dd id="mock-recap-candidate">Ace Mercer carried forward as preview context</dd></div>
+              <h3 id="draft-recap-roster">Raw mock roster placeholder</h3>
+              <p id="draft-recap-copy">This screen is available for shell QA. It does not mean a pick, roster, or draft completion occurred.</p>
+              <dl class="meta-grid mock-recap-meta" aria-label="Draft recap preview context">
+                <div><dt>GM</dt><dd id="draft-recap-gm">Maren Vale</dd></div>
+                <div><dt>Brand</dt><dd id="draft-recap-brand">Raw mock preview</dd></div>
+                <div><dt>Candidate</dt><dd id="draft-recap-candidate">Ace Mercer carried forward as preview context</dd></div>
+                <div><dt>Pick Slot</dt><dd id="draft-recap-pick">Mock continuation only</dd></div>
+                <div><dt>Draft Result</dt><dd id="draft-recap-result-status">No real draft result</dd></div>
+                <div><dt>Roster Status</dt><dd id="draft-recap-roster-status">No roster assignment</dd></div>
               </dl>
-              <p class="quiet-note" id="mock-recap-note">Presentation-only QA path. No pick, roster assignment, roster state, or draft completion summary exists.</p>
+              <p class="quiet-note" id="draft-recap-note">Presentation-only QA path. No pick, roster assignment, roster state, or draft completion summary exists.</p>
             </article>
             <div class="division-groups">
               <article class="division-card">

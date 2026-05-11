@@ -60,12 +60,12 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     }
   });
 
-  it("keeps real draft actions locked and adds a separate mock continuation CTA", () => {
+  it("keeps Auto Draft locked and keeps a separate mock continuation CTA", () => {
     const html = readPlayableUiFile("index.html");
 
     assert.match(
       html,
-      /<button class="panel-button" type="button" disabled>Make Pick Locked<\/button>/
+      /<button class="panel-button" type="button" data-make-pick-action disabled aria-disabled="true">Make Pick Locked<\/button>/
     );
     assert.match(
       html,
@@ -94,7 +94,7 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     );
   });
 
-  it("labels Draft Recap and Brand Dashboard as preview-only shell surfaces", () => {
+  it("labels mock Draft Recap and Brand Dashboard as preview-only shell surfaces", () => {
     const html = readPlayableUiFile("index.html");
 
     assert.match(html, /Mock Post-Draft Preview/);
@@ -109,7 +109,7 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     assert.equal(shouldShowDock("brand-dashboard"), true);
   });
 
-  it("does not add forbidden runtime surfaces to changed UI files", () => {
+  it("does not add forbidden storage, network, or generated-output surfaces to changed UI files", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -117,6 +117,7 @@ describe("Playable New GM Mode mock draft recap preview", () => {
       readPlayableUiFile("screenShellState.js"),
       readPlayableUiFile("draftSelectionIntentAdapter.js"),
       readPlayableUiFile("draftRecapPreviewState.js"),
+      readPlayableUiFile("inMemoryDraftActionController.js"),
     ].join("\n");
     const forbiddenSnippets = [
       "fetch",
@@ -126,11 +127,6 @@ describe("Playable New GM Mode mock draft recap preview", () => {
       "indexedDB",
       "document.cookie",
       "sqlite",
-      "createNewGMModeInMemoryDraftFlow",
-      "createNewGMModeDraftPickCreationService",
-      "createNewGMModeDraftPickExecutionService",
-      "createNewGMModeDraftPickRosterAssignmentService",
-      "createNewGMModeRosterStateCreationService",
       "OpenAI",
       "api key",
       ["Math", "random"].join("."),

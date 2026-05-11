@@ -113,7 +113,7 @@ describe("Playable New GM Mode dock visibility", () => {
     assert.match(source, /item\.removeAttribute\("aria-current"\);/);
   });
 
-  it("keeps Make Pick locked and preserves draft intent preview behavior", () => {
+  it("keeps Auto Draft locked and preserves draft intent preview behavior", () => {
     const html = readPlayableUiFile("index.html");
     const preview = createDraftSelectionIntentPreview({
       selectedCandidate: createCandidateDisplayFromDataset({
@@ -130,13 +130,17 @@ describe("Playable New GM Mode dock visibility", () => {
 
     assert.match(
       html,
-      /<button class="panel-button" type="button" disabled>Make Pick Locked<\/button>/
+      /<button class="panel-button" type="button" data-make-pick-action disabled aria-disabled="true">Make Pick Locked<\/button>/
+    );
+    assert.match(
+      html,
+      /<button class="panel-button" type="button" disabled>Auto Draft Locked<\/button>/
     );
     assert.equal(preview.status, "ready-preview-selection-intent-locked");
-    assert.equal(preview.displayLabels.statusLine, "Preview only - pick locked");
+    assert.equal(preview.displayLabels.statusLine, "Ready for in-memory Make Pick");
   });
 
-  it("does not add forbidden runtime surfaces to changed UI shell files", () => {
+  it("does not add forbidden storage, network, or generated-output surfaces to changed UI shell files", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -144,6 +148,7 @@ describe("Playable New GM Mode dock visibility", () => {
       readPlayableUiFile("screenShellState.js"),
       readPlayableUiFile("draftSelectionIntentAdapter.js"),
       readPlayableUiFile("draftRecapPreviewState.js"),
+      readPlayableUiFile("inMemoryDraftActionController.js"),
     ].join("\n");
     const forbiddenSnippets = [
       "fetch",
@@ -153,11 +158,6 @@ describe("Playable New GM Mode dock visibility", () => {
       "indexedDB",
       "document.cookie",
       "sqlite",
-      "createNewGMModeInMemoryDraftFlow",
-      "createNewGMModeDraftPickCreationService",
-      "createNewGMModeDraftPickExecutionService",
-      "createNewGMModeDraftPickRosterAssignmentService",
-      "createNewGMModeRosterStateCreationService",
       "OpenAI",
       "api key",
       ["Math", "random"].join("."),

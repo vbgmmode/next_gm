@@ -5,6 +5,10 @@ import {
 } from "./draftSelectionIntentAdapter.js";
 import { createMockDraftRecapPreviewState } from "./draftRecapPreviewState.js";
 import {
+  createMakePickReadiness,
+  executeInMemoryMakePick,
+} from "./inMemoryDraftActionController.js";
+import {
   resolveActiveDockSection,
   shouldShowDock,
 } from "./screenShellState.js";
@@ -16,6 +20,7 @@ import {
   const flowCards = Array.from(document.querySelectorAll("[data-flow-target]"));
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
   const previewControls = Array.from(document.querySelectorAll("[data-preview-go-to]"));
+  const makePickControl = document.querySelector("[data-make-pick-action]");
   const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
   const gmCards = Array.from(document.querySelectorAll("[data-gm-id]"));
   const brandControls = Array.from(document.querySelectorAll("[data-brand]"));
@@ -31,13 +36,19 @@ import {
     status: document.getElementById("intent-preview-status"),
     note: document.getElementById("intent-preview-note"),
   };
-  const mockRecapTargets = {
-    badge: document.getElementById("mock-recap-badge"),
-    gm: document.getElementById("mock-recap-gm"),
-    brand: document.getElementById("mock-recap-brand"),
-    candidate: document.getElementById("mock-recap-candidate"),
-    roster: document.getElementById("mock-recap-roster"),
-    note: document.getElementById("mock-recap-note"),
+  const draftRecapTargets = {
+    badge: document.getElementById("draft-recap-badge"),
+    path: document.getElementById("draft-recap-path-label"),
+    title: document.getElementById("draft-recap-title"),
+    copy: document.getElementById("draft-recap-copy"),
+    gm: document.getElementById("draft-recap-gm"),
+    brand: document.getElementById("draft-recap-brand"),
+    candidate: document.getElementById("draft-recap-candidate"),
+    pick: document.getElementById("draft-recap-pick"),
+    status: document.getElementById("draft-recap-result-status"),
+    rosterStatus: document.getElementById("draft-recap-roster-status"),
+    roster: document.getElementById("draft-recap-roster"),
+    note: document.getElementById("draft-recap-note"),
     dashboard: document.getElementById("dashboard-preview-note"),
   };
   const talentDetail = {
@@ -101,6 +112,7 @@ import {
     selectedCandidateId: "candidate-ace-mercer",
     selectedDraftIntentPreview: undefined,
     mockDraftRecapPreview: undefined,
+    completedInMemoryDraftResult: undefined,
   };
   let dockCollapseTimer;
 
@@ -267,13 +279,17 @@ import {
       : undefined;
   }
 
+  function getSelectedBrandDisplay() {
+    return {
+      brandId: uiState.selectedBrandId,
+      brandLabel: getBrandLabel(),
+    };
+  }
+
   function createDraftSelectionIntentPresentationPreview(row) {
     return createDraftSelectionIntentPreview({
       selectedCandidate: createCandidateDisplayFromDataset(row.dataset),
-      selectedBrand: {
-        brandId: uiState.selectedBrandId,
-        brandLabel: getBrandLabel(),
-      },
+      selectedBrand: getSelectedBrandDisplay(),
       draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
     });
   }
@@ -303,42 +319,62 @@ import {
   function createMockDraftRecapPreviewFromUiState() {
     return createMockDraftRecapPreviewState({
       selectedGm: getSelectedGmDisplay(),
-      selectedBrand: {
-        brandId: uiState.selectedBrandId,
-        brandLabel: getBrandLabel(),
-      },
+      selectedBrand: getSelectedBrandDisplay(),
       selectedCandidate: getSelectedCandidateDisplay(),
     });
   }
 
   function updateMockDraftRecapPreview(preview) {
-    if (mockRecapTargets.badge) {
-      mockRecapTargets.badge.textContent = preview.displayLabels.recapStatusLine;
+    setText(draftRecapTargets.badge, preview.displayLabels.recapStatusLine);
+    setText(draftRecapTargets.path, "QA Preview Path");
+    setText(draftRecapTargets.title, `${getBrandLabel()} mock draft recap`);
+    setText(
+      draftRecapTargets.copy,
+      "This screen is available for shell QA. It does not mean a pick, roster, or draft completion occurred."
+    );
+    setText(draftRecapTargets.gm, preview.displayLabels.gmLine);
+    setText(draftRecapTargets.brand, preview.displayLabels.brandLine);
+    setText(draftRecapTargets.candidate, preview.displayLabels.candidateLine);
+    setText(draftRecapTargets.pick, "Mock continuation only");
+    setText(draftRecapTargets.status, "No real draft result");
+    setText(draftRecapTargets.rosterStatus, "No roster assignment");
+    setText(draftRecapTargets.roster, preview.displayLabels.rosterLine);
+    setText(draftRecapTargets.note, preview.displayLabels.noteLine);
+    setText(draftRecapTargets.dashboard, preview.displayLabels.dashboardLine);
+  }
+
+  function updateInMemoryDraftRecapProjection(projection) {
+    setText(draftRecapTargets.badge, projection.displayLabels.recapStatusLine);
+    setText(draftRecapTargets.path, projection.displayLabels.pathLine);
+    setText(draftRecapTargets.title, projection.displayLabels.titleLine);
+    setText(draftRecapTargets.copy, projection.displayLabels.copyLine);
+    setText(draftRecapTargets.gm, projection.displayLabels.gmLine);
+    setText(draftRecapTargets.brand, projection.displayLabels.brandLine);
+    setText(draftRecapTargets.candidate, projection.displayLabels.candidateLine);
+    setText(draftRecapTargets.pick, projection.displayLabels.pickLine);
+    setText(draftRecapTargets.status, projection.displayLabels.draftResultStatusLine);
+    setText(draftRecapTargets.rosterStatus, projection.displayLabels.rosterStatusLine);
+    setText(draftRecapTargets.roster, projection.displayLabels.rosterLine);
+    setText(draftRecapTargets.note, projection.displayLabels.noteLine);
+    setText(draftRecapTargets.dashboard, projection.displayLabels.dashboardLine);
+  }
+
+  function updateMakePickControl() {
+    if (!makePickControl) {
+      return;
     }
 
-    if (mockRecapTargets.gm) {
-      mockRecapTargets.gm.textContent = preview.displayLabels.gmLine;
-    }
+    const readiness = createMakePickReadiness({
+      selectedCandidate: getSelectedCandidateDisplay(),
+      selectedBrand: getSelectedBrandDisplay(),
+      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
+      completedInMemoryDraftResult: uiState.completedInMemoryDraftResult,
+    });
 
-    if (mockRecapTargets.brand) {
-      mockRecapTargets.brand.textContent = preview.displayLabels.brandLine;
-    }
-
-    if (mockRecapTargets.candidate) {
-      mockRecapTargets.candidate.textContent = preview.displayLabels.candidateLine;
-    }
-
-    if (mockRecapTargets.roster) {
-      mockRecapTargets.roster.textContent = preview.displayLabels.rosterLine;
-    }
-
-    if (mockRecapTargets.note) {
-      mockRecapTargets.note.textContent = preview.displayLabels.noteLine;
-    }
-
-    if (mockRecapTargets.dashboard) {
-      mockRecapTargets.dashboard.textContent = preview.displayLabels.dashboardLine;
-    }
+    makePickControl.disabled = !readiness.canMakePick;
+    makePickControl.textContent = readiness.displayLabels.buttonLabel;
+    makePickControl.setAttribute("aria-disabled", String(!readiness.canMakePick));
+    makePickControl.classList.toggle("enabled", readiness.canMakePick);
   }
 
   function setText(target, value) {
@@ -393,6 +429,7 @@ import {
     setMeter(talentDetail.confidenceMeter, row.dataset.confidenceValue);
 
     updateIntentPreview(uiState.selectedDraftIntentPreview);
+    updateMakePickControl();
   }
 
   navItems.forEach((item) => {
@@ -446,9 +483,38 @@ import {
     });
   });
 
+  makePickControl?.addEventListener("click", () => {
+    if (makePickControl.disabled) {
+      return;
+    }
+
+    const result = executeInMemoryMakePick({
+      selectedCandidate: getSelectedCandidateDisplay(),
+      selectedBrand: getSelectedBrandDisplay(),
+      selectedGm: getSelectedGmDisplay(),
+      draftSlot: DEFAULT_LOCAL_DRAFT_SLOT,
+      completedInMemoryDraftResult: uiState.completedInMemoryDraftResult,
+    });
+
+    uiState.completedInMemoryDraftResult = result;
+
+    if (result.projection) {
+      updateInMemoryDraftRecapProjection(result.projection);
+    } else if (intentPreviewTargets.note) {
+      intentPreviewTargets.note.textContent = result.displayLabels.noteLine;
+    }
+
+    updateMakePickControl();
+
+    if (result.actionStatus === "in-memory-make-pick-succeeded") {
+      showSection("draft-recap");
+    }
+  });
+
   brandControls.forEach((control) => {
     control.addEventListener("click", () => {
       setBrand(control.dataset.brand);
+      updateMakePickControl();
     });
   });
 
@@ -476,5 +542,6 @@ import {
   if (initialCandidate) {
     setSelectedCandidate(initialCandidate);
   }
+  updateMakePickControl();
   showSection("game-landing");
 })();

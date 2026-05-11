@@ -18,8 +18,8 @@ export const DRAFT_SELECTION_INTENT_PREVIEW_STATUS = Object.freeze({
 
 // UI-local presentation adapter only. It mirrors the domain selection-intent
 // references at a display-safe level; the domain remains the source of truth.
-// Phase 3 must hand off to the existing Real Draft System v1 services instead
-// of treating this preview object as a draft action.
+// Phase 3 hands this preview off to a separate Make Pick controller. This
+// adapter still does not create draft picks or roster state by itself.
 export function createDraftSelectionIntentPreview({
   selectedCandidate,
   selectedBrand,
@@ -95,9 +95,9 @@ export function createDraftSelectionIntentPreview({
       noteLine: createNoteLine(status),
     }),
     lockedActionLabels: Object.freeze([
-      "Make Pick locked",
+      "Make Pick controlled by Phase 3A action",
       "Auto Draft locked",
-      "Draft Recap locked",
+      "Direct Draft Recap locked",
     ]),
     blockedCapabilityLabels: Object.freeze([
       "No pick created",
@@ -166,7 +166,7 @@ function createBlockedReasonIds(status) {
 
 function createStatusLabel(status) {
   if (status === DRAFT_SELECTION_INTENT_PREVIEW_STATUS.READY) {
-    return "Preview only - pick locked";
+    return "Ready for in-memory Make Pick";
   }
 
   if (status === DRAFT_SELECTION_INTENT_PREVIEW_STATUS.MISSING_CANDIDATE) {
@@ -182,7 +182,7 @@ function createStatusLabel(status) {
 
 function createNoteLine(status) {
   if (status === DRAFT_SELECTION_INTENT_PREVIEW_STATUS.READY) {
-    return "Selection intent preview only. Make Pick remains locked.";
+    return "Selection intent ready. Make Pick creates a local-only in-memory result.";
   }
 
   if (status === DRAFT_SELECTION_INTENT_PREVIEW_STATUS.CANDIDATE_UNAVAILABLE) {
