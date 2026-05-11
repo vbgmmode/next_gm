@@ -100,7 +100,10 @@ describe("Playable New GM Mode draft recap preview", () => {
   it("labels Draft Recap and Week 1 HQ with player-facing setup copy", () => {
     const html = readPlayableUiFile("index.html");
 
-    assert.match(html, /Post-Draft Command/);
+    assert.match(html, /Post-Draft Brand HQ/);
+    assert.match(html, /Command Center Arrival/);
+    assert.match(html, /Draft Rules \/ Budget Intro/);
+    assert.match(html, /Talent belongs to drafting brand/);
     assert.match(html, /Finish Draft to open the recap/);
     assert.match(html, /Crown your champions, build one rivalry, then book Week 1\./);
     assert.match(html, /Assign Champions/);

@@ -254,24 +254,30 @@
           aria-labelledby="setup-basics-title"
           hidden
         >
-          <div class="screen-header">
+          <div class="screen-header league-launch-header">
             <div>
-              <p class="kicker">Campaign Terms</p>
-              <h2 id="setup-basics-title">Build your GM universe</h2>
+              <p class="kicker">League Launch Broadcast</p>
+              <h2 id="setup-basics-title">Open a living GM universe</h2>
             </div>
-            <span class="header-badge">New Game Setup</span>
+            <span class="header-badge">Owner Briefing Live</span>
           </div>
 
-          <div class="setup-composition basics-composition">
-            <article class="setup-spotlight contract-card">
-              <p class="kicker">Universe Setup</p>
-              <h3>Year One: Prime Time</h3>
-              <p class="compact-copy">Choose your GM identity, pressure level, active brands, and opening budget before draft night.</p>
+          <div class="setup-composition basics-composition league-launch-composition">
+            <article class="setup-spotlight contract-card league-launch-card">
+              <p class="kicker">Commissioner's Desk</p>
+              <h3>Year One: Prime Time War</h3>
+              <p class="compact-copy">Set the pressure, active brands, and opening money for a league where every rival GM enters draft night with a seat at the table.</p>
               <div class="field-strip"><span>Difficulty</span><strong id="setup-difficulty-summary">Normal</strong></div>
               <div class="field-strip"><span>Active Brands</span><strong id="setup-active-brands-summary">4 brands</strong></div>
               <div class="field-strip"><span>Starting Budget</span><strong id="setup-starting-budget-summary">$12,000,000</strong></div>
               <div class="field-strip"><span>Player Brand</span><strong id="setup-player-brand-summary">Raw</strong></div>
               <div class="field-strip"><span>Experience</span><strong>Classic GM</strong></div>
+              <div class="league-rundown" aria-label="First session flow">
+                <span>Choose GM</span>
+                <span>Set Difficulty</span>
+                <span>Activate Rivals</span>
+                <span>Enter Draft</span>
+              </div>
             </article>
 
             <div class="setup-lanes setup-option-grid" aria-label="Local setup options">
@@ -307,8 +313,9 @@
               </button>
             </div>
 
-            <aside class="setup-desk">
-              <p class="kicker">Competing Brands</p>
+            <aside class="setup-desk league-control-room">
+              <p class="kicker">League Control</p>
+              <h3>Brands on the board</h3>
               <div class="lock-stack">
                 <span id="setup-active-brand-list">Raw: Player GM | SmackDown: Talia Quinn | NXT: Soren Drake | AEW: Maya Blaze</span>
                 <span id="setup-competing-gm-list">SmackDown: Talia Quinn | NXT: Soren Drake | AEW: Maya Blaze</span>
@@ -612,9 +619,23 @@
             <span id="brand-baseline-competitors">Competitors: SmackDown, NXT, AEW</span>
           </div>
 
+          <section class="draft-briefing-panel" aria-label="Draft rules and budget briefing">
+            <div class="briefing-copy">
+              <p class="kicker">League Draft Briefing</p>
+              <h3>Draft Rules / Budget Intro</h3>
+              <p>Every active brand enters the same televised draft order. Your picks sign to your brand, rival picks stay visible, and the budget uses real money labels from the opening difficulty.</p>
+            </div>
+            <div class="draft-briefing-grid">
+              <span><strong>Your Brand</strong><em class="js-brand-name">Raw</em></span>
+              <span><strong>Budget</strong><em>Real money labels</em></span>
+              <span><strong>Rivals</strong><em>Visible pick order</em></span>
+              <span><strong>Draft Rule</strong><em>Talent belongs to drafting brand</em></span>
+            </div>
+          </section>
+
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="choose-gm">Back</button>
-            <button class="hero-cta small" type="button" data-go-to="draft-room">Begin Initial Draft</button>
+            <button class="hero-cta small" type="button" data-go-to="draft-room">Enter Draft Room</button>
           </div>
         </section>
 
@@ -626,17 +647,18 @@
           aria-labelledby="draft-room-title"
           hidden
         >
-          <div class="draft-lower-third">
-            <span>On The Clock</span>
-            <strong><span id="draft-on-clock-brand" class="js-brand-name">Raw</span> Draft Night</strong>
+          <div class="draft-lower-third televised-draft-banner">
+            <span>Live Draft War Room</span>
+            <strong><span id="draft-on-clock-brand" class="js-brand-name">Raw</span> on the clock</strong>
             <em id="draft-competing-brands">Competing brands: SmackDown, NXT, AEW</em>
           </div>
 
           <div class="draft-composition">
             <article class="on-clock">
-              <p class="kicker">Picking Now</p>
+              <p class="kicker">Current Brand On The Clock</p>
               <h2 id="draft-room-title" class="js-brand-name">Raw</h2>
               <span class="pick-badge" id="mini-draft-pick-badge">Pick 1</span>
+              <p class="ownership-note"><strong>Your brand owns this pick.</strong> A completed selection signs the talent to your roster; source roster remains metadata only.</p>
               <div class="draft-budget-board" aria-label="Draft budget">
                 <span id="draft-budget-starting">Budget $12,000,000</span>
                 <span id="draft-budget-remaining">Remaining $12,000,000</span>
@@ -660,8 +682,8 @@
 
             <article class="board-panel">
               <div class="panel-title">
-                <p class="kicker">Pick Order</p>
-                <h3>Pick Order</h3>
+                <p class="kicker">Rival Brand Presence</p>
+                <h3>Televised Pick Order</h3>
               </div>
               <div class="draft-board" id="draft-pick-order-board" aria-label="Draft order">
                 <div class="board-row board-head"><span>Pick</span><span>Brand</span><span>Status</span></div>
@@ -678,8 +700,8 @@
 
             <article class="scouting-panel">
               <div class="panel-title talent-board-title">
-                <p class="kicker">Main Board</p>
-                <h3>Talent Board</h3>
+                <p class="kicker">League Talent Board</p>
+                <h3>Available Talent</h3>
               </div>
               <div class="talent-board-head" aria-hidden="true">
                 <span>Name</span>
@@ -700,7 +722,7 @@
             <article class="selected-profile superstar-spotlight">
               <div class="spotlight-header">
                 <div>
-                  <p class="kicker">Selected Wrestler</p>
+                  <p class="kicker">Selected Talent Signing Panel</p>
                   <h3 id="talent-detail-name">Ace Mercer</h3>
                 </div>
                 <span class="profile-status" id="talent-detail-availability">Available</span>
@@ -755,8 +777,8 @@
               </div>
 
               <div class="pick-confirmation">
-                <p class="kicker">Draft Slip</p>
-                <h3>Pick Preview</h3>
+                <p class="kicker">Your Brand Draft Slip</p>
+                <h3>Signing Preview</h3>
                 <div class="confirmation-steps">
                   <span id="intent-preview-candidate">Ace Mercer selected</span>
                   <span id="intent-preview-brand">Raw on the clock</span>
@@ -770,13 +792,13 @@
                   <span id="finance-preview-affordability">Expensive but affordable</span>
                   <span id="finance-preview-reserve">Booking reserve protected after signing</span>
                 </div>
-                <p class="quiet-note" id="intent-preview-note">Make Pick signs this superstar to your draft roster and updates the budget.</p>
+                <p class="quiet-note" id="intent-preview-note">Make Pick signs this superstar to your brand roster and updates the budget.</p>
               </div>
             </article>
 
             <article class="draft-signed-panel">
               <div class="panel-title">
-                <p class="kicker">Right Rail</p>
+                <p class="kicker">Your Brand Ledger</p>
                 <h3>Signed Roster</h3>
               </div>
               <div class="draft-signed-summary">
@@ -784,7 +806,7 @@
                 <strong>Minimum Roster</strong>
               </div>
               <div id="draft-signed-roster-list" class="draft-signed-roster-list" aria-label="Signed roster so far">
-                <p class="empty-signed-roster">No picks yet. Make Pick to add your first signing.</p>
+                <p class="empty-signed-roster">No picks yet. Your completed selections will belong to your brand.</p>
               </div>
             </article>
           </div>
@@ -809,9 +831,9 @@
           aria-labelledby="draft-recap-title"
           hidden
         >
-          <div class="screen-header">
+          <div class="screen-header hq-arrival-header">
             <div>
-              <p class="kicker" id="draft-recap-path-label">Post-Draft Command</p>
+              <p class="kicker" id="draft-recap-path-label">Post-Draft Brand HQ</p>
               <h2 id="draft-recap-title">Welcome to Monday Night Raw</h2>
             </div>
             <span class="header-badge" id="draft-recap-badge">Finish Draft to open the recap</span>
@@ -819,7 +841,7 @@
 
           <div class="recap-layout post-draft-command-layout">
             <article class="recap-hero post-draft-summary-panel">
-              <p class="kicker">Post-Draft Brand HQ</p>
+              <p class="kicker">Command Center Arrival</p>
               <h3 id="draft-recap-roster">Raw roster pending</h3>
               <p id="draft-recap-copy">Finish the draft to review your signed roster, budget position, and locked next steps.</p>
               <dl class="meta-grid mock-recap-meta" aria-label="Draft recap preview context">
@@ -827,11 +849,11 @@
                 <div><dt>Brand</dt><dd id="draft-recap-brand">Raw</dd></div>
                 <div><dt>Difficulty</dt><dd id="draft-recap-difficulty">Normal</dd></div>
                 <div><dt>Competitors</dt><dd id="draft-recap-competitors">SmackDown, NXT, AEW</dd></div>
-                <div><dt>Signed Picks</dt><dd id="draft-recap-candidate">No picks recorded yet</dd></div>
+                <div><dt>Top Signings</dt><dd id="draft-recap-candidate">No picks recorded yet</dd></div>
                 <div><dt>Pick Slot</dt><dd id="draft-recap-pick">Pick 1</dd></div>
                 <div><dt>Budget</dt><dd id="draft-recap-budget-summary">Starting $12,000,000 / Remaining $12,000,000</dd></div>
                 <div><dt>Draft Result</dt><dd id="draft-recap-result-status">Draft not finished</dd></div>
-                <div><dt>Roster Status</dt><dd id="draft-recap-roster-status">Minimum roster not ready</dd></div>
+                <div><dt>Roster Count</dt><dd id="draft-recap-roster-status">Minimum roster not ready</dd></div>
               </dl>
               <p class="quiet-note" id="draft-recap-note">Crown your champions, build one rivalry, then book Week 1.</p>
             </article>

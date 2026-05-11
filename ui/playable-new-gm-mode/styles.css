@@ -456,6 +456,7 @@ body.is-landing .game-hud {
 .mode-tile,
 .setup-spotlight,
 .setup-desk,
+.draft-briefing-panel,
 .contract-hero,
 .assistant-console,
 .office-packet,
@@ -1150,6 +1151,7 @@ dd {
 .office-packet,
 .setup-spotlight,
 .setup-desk,
+.draft-briefing-panel,
 .gm-card,
 .brand-plate,
 .on-clock,
@@ -1211,6 +1213,59 @@ dd {
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+}
+
+.league-launch-composition {
+  grid-template-columns: minmax(270px, 0.84fr) minmax(360px, 1.16fr) minmax(260px, 0.72fr);
+}
+
+.league-launch-card {
+  display: grid;
+  grid-template-rows: auto auto auto repeat(5, auto) minmax(0, 1fr);
+  gap: 7px;
+  border-left: 7px solid var(--brand-primary);
+  background:
+    radial-gradient(circle at 18% 116%, color-mix(in srgb, var(--brand-primary) 24%, transparent), transparent 58%),
+    linear-gradient(110deg, color-mix(in srgb, var(--brand-soft) 90%, transparent), transparent 62%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 19px),
+    var(--bg-surface);
+}
+
+.league-launch-card h3,
+.league-control-room h3 {
+  white-space: normal;
+}
+
+.league-rundown {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  min-width: 0;
+  min-height: 0;
+  align-self: end;
+}
+
+.league-rundown span {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 34%, var(--border-subtle));
+  border-left: 4px solid var(--brand-primary);
+  background: rgba(0, 0, 0, 0.34);
+  color: var(--text-secondary);
+  padding: 7px 8px;
+  font-size: 0.66rem;
+  font-weight: 950;
+  font-family: var(--font-data);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.league-control-room {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 8px;
+  border-top: 5px solid color-mix(in srgb, var(--brand-accent) 54%, var(--brand-primary));
 }
 
 .field-strip {
@@ -1569,6 +1624,90 @@ dd {
   white-space: nowrap;
 }
 
+#select-brand {
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+  gap: 9px;
+}
+
+.draft-briefing-panel {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.3fr);
+  gap: 10px;
+  min-width: 0;
+  min-height: 84px;
+  align-items: stretch;
+  overflow: hidden;
+  border-left: 7px solid var(--brand-primary);
+  background:
+    radial-gradient(circle at 82% 110%, color-mix(in srgb, var(--brand-primary) 18%, transparent), transparent 55%),
+    linear-gradient(100deg, color-mix(in srgb, var(--brand-soft) 84%, transparent), transparent 62%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 22px),
+    var(--surface-plate);
+  padding: 10px;
+}
+
+.briefing-copy {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.briefing-copy h3 {
+  white-space: normal;
+}
+
+.briefing-copy p {
+  margin-bottom: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.draft-briefing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.draft-briefing-grid span {
+  display: grid;
+  min-width: 0;
+  align-content: center;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 38%, var(--border-subtle));
+  border-top: 4px solid color-mix(in srgb, var(--brand-primary) 62%, transparent);
+  background: rgba(0, 0, 0, 0.34);
+  padding: 8px;
+}
+
+.draft-briefing-grid strong,
+.draft-briefing-grid em {
+  min-width: 0;
+  overflow: hidden;
+  font-style: normal;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.draft-briefing-grid strong {
+  color: var(--text-muted);
+  font-size: 0.58rem;
+  font-weight: 950;
+  font-family: var(--font-data);
+}
+
+.draft-briefing-grid em {
+  color: var(--text-primary);
+  font-size: 0.72rem;
+  font-weight: 950;
+  font-family: var(--font-ticker);
+}
+
 .draft-screen {
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 8px;
@@ -1697,11 +1836,11 @@ dd {
 .draft-ticker {
   display: grid;
   gap: 0.35rem;
-  margin-top: 0.85rem;
-  padding: 0.8rem 0.9rem;
+  margin-top: 0.35rem;
+  padding: 0.62rem 0.72rem;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 18px;
+  border-radius: var(--radius-control);
   background: rgba(0, 0, 0, 0.24);
 }
 
@@ -1752,7 +1891,7 @@ dd {
   display: grid;
   grid-column: 3;
   grid-row: 1;
-  grid-template-rows: auto minmax(0, 0.58fr) auto auto;
+  grid-template-rows: auto minmax(0, 0.58fr) auto minmax(0, 0.7fr);
   gap: 8px;
   border-top: 5px solid var(--brand-primary);
   border-color: color-mix(in srgb, var(--brand-primary) 52%, var(--border-subtle));
@@ -1761,6 +1900,25 @@ dd {
     linear-gradient(115deg, color-mix(in srgb, var(--brand-soft) 88%, transparent), transparent 62%),
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 22px),
     var(--bg-surface);
+}
+
+.ownership-note {
+  margin: 0;
+  overflow: hidden;
+  border-left: 4px solid color-mix(in srgb, var(--brand-accent) 62%, var(--brand-primary));
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--text-secondary);
+  padding: 7px 8px;
+  font-size: 0.72rem;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.ownership-note strong {
+  color: var(--brand-accent);
+  font-weight: 950;
 }
 
 .pick-confirmation {
@@ -2409,7 +2567,7 @@ dd {
 
 .recap-layout {
   display: grid;
-  grid-template-columns: minmax(230px, 0.5fr) minmax(0, 1.35fr) minmax(270px, 0.66fr);
+  grid-template-columns: minmax(260px, 0.58fr) minmax(0, 1.26fr) minmax(286px, 0.72fr);
   grid-template-rows: minmax(0, 1fr) minmax(118px, auto);
   gap: 10px;
   min-width: 0;
@@ -2433,6 +2591,12 @@ dd {
 .post-draft-summary-panel {
   grid-column: 1;
   grid-row: 1 / 3;
+  border-left-width: 8px;
+  background:
+    radial-gradient(circle at 26% 112%, color-mix(in srgb, var(--brand-primary) 24%, transparent), transparent 58%),
+    linear-gradient(110deg, color-mix(in srgb, var(--brand-soft) 88%, transparent), transparent 62%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 20px),
+    var(--surface-plate);
 }
 
 .recap-roster-board {
@@ -3548,6 +3712,15 @@ dd {
     padding: 12px;
   }
 
+  .draft-briefing-panel {
+    min-height: 76px;
+    padding: 8px;
+  }
+
+  .draft-briefing-grid span {
+    padding: 6px 7px;
+  }
+
   .save-screen {
     grid-template-rows: minmax(104px, 0.31fr) minmax(0, 1fr);
   }
@@ -3722,6 +3895,7 @@ dd {
   .contract-stage,
   .assistant-stage,
   .setup-composition,
+  .draft-briefing-panel,
   .setup-flow-layout,
   .rivalry-flow-layout,
   .draft-composition,
@@ -3739,6 +3913,7 @@ dd {
   }
 
   .equal-baseline-strip,
+  .draft-briefing-grid,
   .division-groups,
   .locked-setup-panel,
   .hero-metrics,
@@ -3760,6 +3935,10 @@ dd {
   .draft-composition {
     grid-template-rows: auto minmax(320px, 1fr) minmax(260px, 0.82fr) minmax(150px, auto) minmax(140px, auto);
     overflow: hidden auto;
+  }
+
+  #select-brand {
+    grid-template-rows: auto minmax(260px, 1fr) auto auto auto;
   }
 
   .on-clock,
