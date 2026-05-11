@@ -257,16 +257,16 @@
           <div class="screen-header">
             <div>
               <p class="kicker">Campaign Terms</p>
-              <h2 id="setup-basics-title">Set the save file</h2>
+              <h2 id="setup-basics-title">Build your GM universe</h2>
             </div>
-            <span class="header-badge">Static Setup</span>
+            <span class="header-badge">New Game Setup</span>
           </div>
 
           <div class="setup-composition basics-composition">
             <article class="setup-spotlight contract-card">
-              <p class="kicker">Save Name</p>
+              <p class="kicker">Universe Setup</p>
               <h3>Year One: Prime Time</h3>
-              <p class="compact-copy">A display-only campaign name for this prototype. No file is created.</p>
+              <p class="compact-copy">Choose your GM identity, pressure level, active brands, and opening budget before draft night.</p>
               <div class="field-strip"><span>Difficulty</span><strong id="setup-difficulty-summary">Normal</strong></div>
               <div class="field-strip"><span>Active Brands</span><strong id="setup-active-brands-summary">4 brands</strong></div>
               <div class="field-strip"><span>Starting Budget</span><strong id="setup-starting-budget-summary">$12,000,000</strong></div>
@@ -308,14 +308,12 @@
             </div>
 
             <aside class="setup-desk">
-              <p class="kicker">Static Boundary</p>
+              <p class="kicker">Competing Brands</p>
               <div class="lock-stack">
                 <span id="setup-active-brand-list">Raw: Player GM | SmackDown: Talia Quinn | NXT: Soren Drake | AEW: Maya Blaze</span>
                 <span id="setup-competing-gm-list">SmackDown: Talia Quinn | NXT: Soren Drake | AEW: Maya Blaze</span>
-                <span>Setup choices are local session metadata</span>
-                <span>Other brands visible, CPU drafting not active yet</span>
-                <span>Save writes through the local preview host</span>
-                <span>No browser storage</span>
+                <span>Rival brands are present on draft night</span>
+                <span>Difficulty sets the displayed starting budget</span>
               </div>
             </aside>
           </div>
@@ -608,10 +606,10 @@
           </div>
 
           <div class="equal-baseline-strip">
-            <span>Same starting money</span>
-            <span>Same prestige</span>
-            <span>Same resources</span>
-            <span>Same baseline difficulty</span>
+            <span id="brand-baseline-budget">Starting Budget: $12,000,000</span>
+            <span id="brand-baseline-difficulty">Difficulty: Normal</span>
+            <span id="brand-baseline-active-brands">Active Brands: 4</span>
+            <span id="brand-baseline-competitors">Competitors: SmackDown, NXT, AEW</span>
           </div>
 
           <div class="screen-actions">
@@ -630,8 +628,8 @@
         >
           <div class="draft-lower-third">
             <span>On The Clock</span>
-            <strong><span class="js-brand-name">Raw</span> Draft Night</strong>
-            <em>Draft Budget, Pick Order, and Signed Roster are live for this draft. Not Saved Yet. Week 1 Locked.</em>
+            <strong><span id="draft-on-clock-brand" class="js-brand-name">Raw</span> Draft Night</strong>
+            <em id="draft-competing-brands">Competing brands: SmackDown, NXT, AEW</em>
           </div>
 
           <div class="draft-composition">
@@ -653,6 +651,10 @@
                 <span>Best Available</span>
                 <span>Reserve Protected</span>
                 <span>Minimum Roster 0/16</span>
+              </div>
+              <div class="draft-ticker" aria-label="Recent Picks">
+                <strong>Recent Picks</strong>
+                <span id="draft-ticker-list">Draft Night opens with Raw on the clock.</span>
               </div>
             </article>
 
@@ -810,26 +812,28 @@
           <div class="screen-header">
             <div>
               <p class="kicker" id="draft-recap-path-label">Post-Draft Command</p>
-              <h2 id="draft-recap-title"><span class="js-brand-name">Raw</span> Draft Recap</h2>
+              <h2 id="draft-recap-title">Welcome to Monday Night Raw</h2>
             </div>
             <span class="header-badge" id="draft-recap-badge">Finish Draft to open the recap</span>
           </div>
 
           <div class="recap-layout post-draft-command-layout">
             <article class="recap-hero post-draft-summary-panel">
-              <p class="kicker">Draft Summary</p>
+              <p class="kicker">Post-Draft Brand HQ</p>
               <h3 id="draft-recap-roster">Raw roster pending</h3>
               <p id="draft-recap-copy">Finish the draft to review your signed roster, budget position, and locked next steps.</p>
               <dl class="meta-grid mock-recap-meta" aria-label="Draft recap preview context">
                 <div><dt>GM</dt><dd id="draft-recap-gm">Maren Vale</dd></div>
                 <div><dt>Brand</dt><dd id="draft-recap-brand">Raw</dd></div>
+                <div><dt>Difficulty</dt><dd id="draft-recap-difficulty">Normal</dd></div>
+                <div><dt>Competitors</dt><dd id="draft-recap-competitors">SmackDown, NXT, AEW</dd></div>
                 <div><dt>Signed Picks</dt><dd id="draft-recap-candidate">No picks recorded yet</dd></div>
                 <div><dt>Pick Slot</dt><dd id="draft-recap-pick">Pick 1</dd></div>
                 <div><dt>Budget</dt><dd id="draft-recap-budget-summary">Starting $12,000,000 / Remaining $12,000,000</dd></div>
                 <div><dt>Draft Result</dt><dd id="draft-recap-result-status">Draft not finished</dd></div>
                 <div><dt>Roster Status</dt><dd id="draft-recap-roster-status">Minimum roster not ready</dd></div>
               </dl>
-              <p class="quiet-note" id="draft-recap-note">Local Draft Only. Not Saved Yet. Week 1 Locked.</p>
+              <p class="quiet-note" id="draft-recap-note">Crown your champions, build one rivalry, then book Week 1.</p>
             </article>
 
             <section class="roster-board-panel recap-roster-board" aria-labelledby="draft-recap-roster-list-title">
@@ -851,6 +855,7 @@
               </div>
               <div class="roster-summary-grid">
                 <span class="summary-primary" id="draft-recap-summary-signed-count">Signed Superstars: 0</span>
+                <span class="summary-primary" id="draft-recap-summary-top-signings">Top Signings: --</span>
                 <span class="summary-primary" id="draft-recap-summary-minimum">Minimum Viable Roster: 16</span>
                 <span class="summary-status" id="draft-recap-summary-minimum-status">Minimum roster not viable</span>
                 <span id="draft-recap-summary-starting-budget">Starting Budget: $12,000,000</span>

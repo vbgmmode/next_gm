@@ -6,6 +6,7 @@ import { createMockDraftRecapPreviewState } from "./draftRecapPreviewState.js";
 import {
   createLocalDraftOrderPreviewProjection,
   createLocalGameSetupProjection,
+  readLocalGameSetupStartingBudgetUnits,
 } from "./localGameSetupController.js";
 import {
   createAutoFillMinimumRosterReadiness,
@@ -16,6 +17,7 @@ import {
   executeAutoFillMinimumRoster,
   executeInMemoryMakePick,
   executeLocalFinishDraft,
+  executeRivalBrandDraftPicks,
 } from "./inMemoryDraftActionController.js";
 import {
   LOCAL_RIVALRY_INTENSITIES,
@@ -91,6 +93,9 @@ import {
   };
   const draftPickOrderTargets = {
     board: document.getElementById("draft-pick-order-board"),
+    onClockBrand: document.getElementById("draft-on-clock-brand"),
+    competingBrands: document.getElementById("draft-competing-brands"),
+    ticker: document.getElementById("draft-ticker-list"),
   };
   const draftSignedRosterTargets = {
     count: document.getElementById("draft-signed-roster-count"),
@@ -128,6 +133,8 @@ import {
     copy: document.getElementById("draft-recap-copy"),
     gm: document.getElementById("draft-recap-gm"),
     brand: document.getElementById("draft-recap-brand"),
+    difficulty: document.getElementById("draft-recap-difficulty"),
+    competitors: document.getElementById("draft-recap-competitors"),
     candidate: document.getElementById("draft-recap-candidate"),
     pick: document.getElementById("draft-recap-pick"),
     budget: document.getElementById("draft-recap-budget-summary"),
@@ -142,6 +149,7 @@ import {
     lock: document.getElementById("draft-recap-lock"),
     list: document.getElementById("draft-recap-roster-list"),
     signedCount: document.getElementById("draft-recap-summary-signed-count"),
+    topSignings: document.getElementById("draft-recap-summary-top-signings"),
     minimumRoster: document.getElementById("draft-recap-summary-minimum"),
     minimumStatus: document.getElementById("draft-recap-summary-minimum-status"),
     startingBudget: document.getElementById("draft-recap-summary-starting-budget"),
@@ -350,7 +358,10 @@ import {
     selectedCandidateId: "candidate-roman-reigns",
     selectedDraftIntentPreview: undefined,
     mockDraftRecapPreview: undefined,
-    miniDraftProgress: createInitialMiniDraftProgress(),
+    miniDraftProgress: createInitialMiniDraftProgress({
+      selectedBrand: { brandId: "raw", brandLabel: "Raw" },
+      startingDraftBudget: 120,
+    }),
     localPostDraftSetup: createInitialLocalPostDraftSetupState(),
     localWeekOneBooking: createInitialLocalWeekOneBookingState(),
     localWeeklyLoop: createInitialLocalWeeklyLoopState(),
@@ -526,6 +537,11 @@ import {
       target.textContent = brand.label;
     });
 
+    resetDraftProgressForSetupIfSafe();
+    updateSetupBasicsSurface();
+    updateDraftPickOrderSurface();
+    updatePostDraftRosterHub();
+
     const selectedRow = talentRows.find((row) => row.dataset.candidateId === uiState.selectedCandidateId);
     if (selectedRow) {
       setSelectedCandidate(selectedRow);
@@ -548,6 +564,7 @@ import {
     }
 
     uiState.selectedDifficulty = difficulty;
+    resetDraftProgressForSetupIfSafe();
     updateSetupBasicsSurface();
   }
 
@@ -559,7 +576,27 @@ import {
     }
 
     uiState.activeBrandCount = normalizedCount;
+    resetDraftProgressForSetupIfSafe();
     updateSetupBasicsSurface();
+  }
+
+  function resetDraftProgressForSetupIfSafe() {
+    if (
+      uiState.miniDraftProgress.completedPickSummaries.length ||
+      uiState.miniDraftProgress.rivalPickSummaries?.length ||
+      uiState.miniDraftProgress.localDraftFinished
+    ) {
+      return;
+    }
+
+    uiState.miniDraftProgress = createInitialMiniDraftProgress({
+      selectedBrand: getSelectedBrandDisplay(),
+      startingDraftBudget: readLocalGameSetupStartingBudgetUnits(
+        uiState.selectedDifficulty
+      ),
+    });
+    updateDraftBudgetPanel();
+    updateFinanceCandidateRows();
   }
 
   function updateSetupBasicsSurface() {
@@ -588,6 +625,22 @@ import {
     setText(setupBasicsTargets.playerBrand, getBrandLabel());
     setText(setupBasicsTargets.activeBrandList, setupProjection.displayLabels.activeBrandLine);
     setText(setupBasicsTargets.competingGmList, setupProjection.displayLabels.competingGmLine);
+    setText(
+      document.getElementById("brand-baseline-budget"),
+      `Starting Budget: ${setupProjection.displayLabels.startingBudgetLine}`
+    );
+    setText(
+      document.getElementById("brand-baseline-difficulty"),
+      `Difficulty: ${setupProjection.displayLabels.difficultyLine}`
+    );
+    setText(
+      document.getElementById("brand-baseline-active-brands"),
+      `Active Brands: ${setupProjection.displayLabels.activeBrandsLine}`
+    );
+    setText(
+      document.getElementById("brand-baseline-competitors"),
+      `Competitors: ${setupProjection.competingBrands.map((brand) => brand.brandLabel).join(", ")}`
+    );
   }
 
   function getSelectedGmDisplay() {
@@ -667,7 +720,8 @@ import {
     setText(
       financePreviewTargets.startingBudget,
       `Starting Budget: ${formatBudgetUnitsAsMoney(
-        NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER
+        uiState.miniDraftProgress.startingDraftBudget ??
+          NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER
       )}`
     );
     setText(
@@ -723,7 +777,7 @@ import {
       progress.bookingReserveBudget ??
       NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER;
 
-    setText(draftBudgetTargets.starting, `Budget ${formatBudgetUnitsAsMoney(startingBudget)}`);
+    setText(draftBudgetTargets.starting, `Starting Budget ${formatBudgetUnitsAsMoney(startingBudget)}`);
     setText(draftBudgetTargets.remaining, `Remaining ${formatBudgetUnitsAsMoney(progress.remainingDraftBudget)}`);
     setText(draftBudgetTargets.spent, `Spent ${formatBudgetUnitsAsMoney(progress.budgetSpent)}`);
     setText(draftBudgetTargets.signed, `Signed ${progress.signedTalentCount}/${minimumTarget}`);
@@ -752,6 +806,13 @@ import {
       selectedBrandId: uiState.selectedBrandId,
       selectedGm: getSelectedGmDisplay(),
     });
+    const currentTurn = getCurrentDraftTurnBrand(projection.rows);
+    setText(draftPickOrderTargets.onClockBrand, currentTurn.brandLabel);
+    setText(
+      draftPickOrderTargets.competingBrands,
+      `Competing brands: ${projection.setupProjection.competingBrands.map((brand) => brand.brandLabel).join(", ")}`
+    );
+    setText(draftPickOrderTargets.ticker, createDraftTickerLine());
 
     draftPickOrderTargets.board.replaceChildren(
       createDraftOrderHeaderRow(),
@@ -825,7 +886,9 @@ import {
 
   function createDraftOrderRow(orderRow) {
     const row = document.createElement("div");
-    row.className = orderRow.pickNumber === 1 ? "board-row current" : "board-row";
+    const currentTurn =
+      orderRow.pickNumber === uiState.miniDraftProgress.currentPickIndex + 1;
+    row.className = currentTurn ? "board-row current" : "board-row";
 
     const pick = document.createElement("span");
     pick.textContent = String(orderRow.pickNumber).padStart(2, "0");
@@ -834,10 +897,45 @@ import {
     brand.textContent = orderRow.brandLabel;
 
     const status = document.createElement("em");
-    status.textContent = orderRow.statusLabel;
+    status.textContent = currentTurn ? "On The Clock" : orderRow.statusLabel;
 
     row.append(pick, brand, status);
     return row;
+  }
+
+  function getCurrentDraftTurnBrand(rows) {
+    return (
+      rows.find((row) => row.pickNumber === uiState.miniDraftProgress.currentPickIndex + 1) ||
+      rows[0] ||
+      { brandLabel: getBrandLabel() }
+    );
+  }
+
+  function getCompetingBrandsForSetup() {
+    return createLocalGameSetupProjection({
+      selectedDifficulty: uiState.selectedDifficulty,
+      activeBrandCount: uiState.activeBrandCount,
+      selectedBrandId: uiState.selectedBrandId,
+      selectedGm: getSelectedGmDisplay(),
+    }).competingBrands;
+  }
+
+  function createDraftTickerLine() {
+    const picks = [
+      ...uiState.miniDraftProgress.completedPickSummaries,
+      ...(uiState.miniDraftProgress.rivalPickSummaries || []),
+    ]
+      .slice()
+      .sort((first, second) => first.pickNumber - second.pickNumber)
+      .slice(-6);
+
+    if (!picks.length) {
+      return `${getBrandLabel()} opens Draft Night on the clock.`;
+    }
+
+    return picks
+      .map((pick) => `${pick.pickNumber}. ${pick.candidateName} signed to ${pick.brandLabel}`)
+      .join(" | ");
   }
 
   function updateFinanceCandidateRows() {
@@ -870,7 +968,7 @@ import {
         meta.textContent = [
           row.dataset.draftRank,
           drafted
-            ? "Already Signed"
+            ? createDraftedStatusLine(row.dataset.candidateId)
             : unavailable
               ? "Unavailable"
               : reserveWarning
@@ -894,6 +992,21 @@ import {
     });
   }
 
+  function createDraftedStatusLine(candidateId) {
+    const summary = findDraftedPickSummary(candidateId);
+
+    return summary?.pickSource === "rival-brand"
+      ? `Signed to ${summary.brandLabel}`
+      : "Already Signed";
+  }
+
+  function findDraftedPickSummary(candidateId) {
+    return [
+      ...uiState.miniDraftProgress.completedPickSummaries,
+      ...(uiState.miniDraftProgress.rivalPickSummaries || []),
+    ].find((summary) => summary.candidateId === candidateId);
+  }
+
   function createMockDraftRecapPreviewFromUiState() {
     return createMockDraftRecapPreviewState({
       selectedGm: getSelectedGmDisplay(),
@@ -905,13 +1018,18 @@ import {
   function updateMockDraftRecapPreview(preview) {
     setText(draftRecapTargets.badge, preview.displayLabels.recapStatusLine);
     setText(draftRecapTargets.path, "Draft Recap Preview");
-    setText(draftRecapTargets.title, `${getBrandLabel()} Draft Recap`);
+    setText(draftRecapTargets.title, `Welcome to ${getBrandWelcomeLabel(getBrandLabel())}`);
     setText(
       draftRecapTargets.copy,
       "Finish the draft to review your signed roster, budget position, and locked next steps."
     );
     setText(draftRecapTargets.gm, preview.displayLabels.gmLine);
     setText(draftRecapTargets.brand, preview.displayLabels.brandLine);
+    setText(draftRecapTargets.difficulty, getDifficultyLabel());
+    setText(
+      draftRecapTargets.competitors,
+      getCompetingBrandsForSetup().map((brand) => brand.brandLabel).join(", ")
+    );
     setText(draftRecapTargets.candidate, preview.displayLabels.candidateLine);
     setText(draftRecapTargets.pick, "Draft not finished");
     setText(draftRecapTargets.budget, "No local budget spent");
@@ -926,10 +1044,15 @@ import {
   function updateInMemoryDraftRecapProjection(projection) {
     setText(draftRecapTargets.badge, projection.displayLabels.recapStatusLine);
     setText(draftRecapTargets.path, projection.displayLabels.pathLine);
-    setText(draftRecapTargets.title, projection.displayLabels.titleLine);
+    setText(draftRecapTargets.title, `Welcome to ${getBrandWelcomeLabel(getBrandLabel())}`);
     setText(draftRecapTargets.copy, projection.displayLabels.copyLine);
     setText(draftRecapTargets.gm, projection.displayLabels.gmLine);
     setText(draftRecapTargets.brand, projection.displayLabels.brandLine);
+    setText(draftRecapTargets.difficulty, getDifficultyLabel());
+    setText(
+      draftRecapTargets.competitors,
+      getCompetingBrandsForSetup().map((brand) => brand.brandLabel).join(", ")
+    );
     setText(draftRecapTargets.candidate, projection.displayLabels.candidateLine);
     setText(draftRecapTargets.pick, projection.displayLabels.pickLine);
     setText(draftRecapTargets.budget, formatDraftBudgetSummaryLine(projection.budgetSummary));
@@ -993,6 +1116,7 @@ import {
     setText(targets.status, projection.displayLabels.statusLine);
     setText(targets.lock, projection.displayLabels.emptyRosterLine);
     setText(targets.signedCount, projection.displayLabels.signedCountLine);
+    setText(targets.topSignings, projection.displayLabels.topSigningLine);
     setText(targets.minimumRoster, projection.displayLabels.minimumRosterLine);
     setText(targets.minimumStatus, projection.displayLabels.minimumRosterStatusLine);
     setText(targets.startingBudget, `Starting Budget: ${formatBudgetUnitsAsMoney(projection.summary.startingDraftBudget)}`);
@@ -1003,7 +1127,7 @@ import {
       targets.bookingReserveStatus,
       projection.displayLabels.bookingReserveStatusLine
     );
-    setText(targets.localOnly, projection.displayLabels.localOnlyLine);
+    setText(targets.localOnly, projection.displayLabels.rivalPickLine);
     setText(targets.weekOneLocked, projection.displayLabels.weekOneLockedLine);
 
     targets.lock?.classList.toggle("hidden", !projection.locked);
@@ -1260,17 +1384,28 @@ import {
       weeklyState: uiState.localWeeklyLoop,
     });
 
-    setText(weekOneHqTargets.title, `${projection.brandLabel} ${projection.displayLabels.titleLine}`);
-    setText(weekOneHqTargets.note, projection.displayLabels.statusLine);
+    setText(weekOneHqTargets.title, `Welcome to ${getBrandWelcomeLabel(projection.brandLabel)}`);
+    setText(
+      weekOneHqTargets.note,
+      projection.unlocked
+        ? `${getSelectedGmDisplay().displayName} controls ${projection.brandLabel}. Book Week ${projection.weekNumber}.`
+        : projection.displayLabels.statusLine
+    );
     setText(weekOneHqTargets.rosterCount, `${projection.signedRosterCount} Signed`);
     setText(weekOneHqTargets.budget, `Remaining ${formatBudgetUnitsAsMoney(projection.remainingDraftBudget)}`);
     setText(
       weekOneHqTargets.setupStatus,
       projection.unlocked ? "Setup Complete" : "Setup Locked"
     );
-    setText(weekOneHqTargets.local, projection.displayLabels.localOnlyLine);
+    setText(
+      weekOneHqTargets.local,
+      `${getDifficultyLabel()} / ${getCompetingBrandsForSetup().map((brand) => brand.brandLabel).join(", ")}`
+    );
     setText(weekOneHqTargets.bookingAction, projection.displayLabels.bookingLine);
-    setText(weekOneHqTargets.statusCard, projection.displayLabels.titleLine);
+    setText(
+      weekOneHqTargets.statusCard,
+      projection.unlocked ? "Week 1 Command Center" : "Week 1 HQ Locked"
+    );
     setText(weekOneHqTargets.rosterTile, `${projection.signedRosterCount} superstars signed`);
     setText(weekOneHqTargets.budgetTile, `${formatBudgetUnitsAsMoney(projection.remainingDraftBudget)} remaining`);
     setText(
@@ -1341,6 +1476,22 @@ import {
     }
 
     updatePostDraftSetupCards();
+  }
+
+  function getDifficultyLabel() {
+    return {
+      easy: "Easy",
+      normal: "Normal",
+      hard: "Hard",
+    }[uiState.selectedDifficulty] || "Normal";
+  }
+
+  function getBrandWelcomeLabel(brandLabel) {
+    if (brandLabel === "Raw") {
+      return "Monday Night Raw";
+    }
+
+    return brandLabel;
   }
 
   function updateWeekOneBookingSurface(statusLine) {
@@ -2262,7 +2413,7 @@ import {
       }
       const meta = row.querySelector("small");
       if (meta && drafted) {
-        meta.textContent = `${row.dataset.draftRank} | Drafted | Local pick`;
+        meta.textContent = `${row.dataset.draftRank} | Drafted | ${createDraftedStatusLine(row.dataset.candidateId)}`;
       }
     });
     updateFinanceCandidateRows();
@@ -2751,6 +2902,13 @@ import {
     }
 
     if (result.actionStatus === "in-memory-make-pick-succeeded") {
+      const rivalResult = executeRivalBrandDraftPicks({
+        competingBrands: getCompetingBrandsForSetup(),
+        miniDraftProgress: uiState.miniDraftProgress,
+      });
+      uiState.miniDraftProgress = rivalResult.miniDraftProgress;
+      updateDraftedCandidateRows();
+      updateDraftBudgetPanel();
       clearSelectedCandidateAfterPick(result);
     }
 

@@ -102,7 +102,7 @@ describe("Playable New GM Mode draft recap preview", () => {
 
     assert.match(html, /Post-Draft Command/);
     assert.match(html, /Finish Draft to open the recap/);
-    assert.match(html, /Local Draft Only\. Not Saved Yet\. Week 1 Locked\./);
+    assert.match(html, /Crown your champions, build one rivalry, then book Week 1\./);
     assert.match(html, /Assign Champions/);
     assert.match(html, /Create Rivalries/);
     assert.match(html, /Week 1 HQ/);
@@ -132,8 +132,8 @@ describe("Playable New GM Mode draft recap preview", () => {
       "indexedDB",
       "document.cookie",
       "sqlite",
-      "OpenAI",
-      "api key",
+      ["Open", "AI"].join(""),
+      ["api", "key"].join(" "),
       ["Math", "random"].join("."),
     ];
 

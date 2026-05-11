@@ -97,7 +97,7 @@ describe("Playable New GM Mode finance-limited draft", () => {
     assert.equal(ready.canFinishDraft, true);
     assert.equal(finished.actionStatus, "local-draft-finished");
     assert.equal(finished.miniDraftProgress.localDraftFinished, true);
-    assert.equal(finished.projection.displayLabels.recapStatusLine, "Draft Finished Locally");
+    assert.equal(finished.projection.displayLabels.recapStatusLine, "Draft Finished");
     assert.equal(postFinishPick.actionStatus, "blocked-local-draft-finished");
   });
 

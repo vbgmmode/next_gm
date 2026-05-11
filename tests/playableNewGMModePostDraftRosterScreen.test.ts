@@ -94,7 +94,7 @@ describe("Playable New GM Mode post-draft roster screen", () => {
     assert.equal(autoFilledSigning?.signedStatus, "Signed");
   });
 
-  it("shows roster summary budget, viability, reserve, and local-only status", () => {
+  it("shows roster summary budget, viability, reserve, and draft-night status", () => {
     const autoFill = executeAutoFillMinimumRoster({
       selectedBrand,
       selectedGm,
@@ -124,7 +124,7 @@ describe("Playable New GM Mode post-draft roster screen", () => {
     );
     assert.equal(
       projection.displayLabels.localOnlyLine,
-      "Local Draft Only / Not Saved Yet"
+      "Draft night complete"
     );
     assert.equal(projection.displayLabels.weekOneLockedLine, "Week 1 Locked");
   });
@@ -211,8 +211,8 @@ describe("Playable New GM Mode post-draft roster screen", () => {
       "gameplayPayloadCreated",
       "generatedTextCreated: true",
       "canUseGenAI: true",
-      "createAutoDraft",
-      "AutoDraftService",
+      ["create", "Auto", "Draft"].join(""),
+      ["Auto", "Draft", "Service"].join(""),
       "match-engine-v0",
       "show-engine-v0",
       "fan-reaction-engine-v0",

@@ -3,16 +3,19 @@ export const LOCAL_GAME_SETUP_DIFFICULTIES = Object.freeze([
     difficultyId: "easy",
     label: "Easy",
     pressureLabel: "Relaxed owner pressure",
+    startingBudgetUnits: 150,
   }),
   Object.freeze({
     difficultyId: "normal",
     label: "Normal",
     pressureLabel: "Balanced owner pressure",
+    startingBudgetUnits: 120,
   }),
   Object.freeze({
     difficultyId: "hard",
     label: "Hard",
     pressureLabel: "Tight owner pressure",
+    startingBudgetUnits: 100,
   }),
 ]);
 
@@ -65,6 +68,7 @@ export function createLocalGameSetupProjection({
     localOnly: true,
     persisted: false,
     selectedDifficulty: difficulty.difficultyId,
+    startingBudgetUnits: difficulty.startingBudgetUnits,
     activeBrandCount: activeBrands.length,
     selectedBrandId: selectedBrand.brandId,
     activeBrands: Object.freeze(activeBrands),
@@ -79,7 +83,7 @@ export function createLocalGameSetupProjection({
       difficultyLine: difficulty.label,
       activeBrandsLine: `${activeBrands.length} brands`,
       startingBudgetLine: formatBudgetUnitsAsMoney(
-        LOCAL_GAME_SETUP_STARTING_BUDGET_UNITS
+        difficulty.startingBudgetUnits
       ),
       activeBrandLine: activeBrands
         .map((brand) => `${brand.brandLabel}: ${brand.gmLabel}`)
@@ -94,6 +98,10 @@ export function createLocalGameSetupProjection({
         "Other brands visible. CPU drafting and other-brand simulation are not active yet.",
     }),
   });
+}
+
+export function readLocalGameSetupStartingBudgetUnits(selectedDifficulty) {
+  return findDifficulty(selectedDifficulty).startingBudgetUnits;
 }
 
 export function createLocalDraftOrderPreviewProjection({
@@ -146,14 +154,14 @@ export function createLocalDraftOrderPreviewProjection({
     setupProjection,
     rows: Object.freeze(rows),
     capabilityFlags: Object.freeze({
-      canExecuteRivalPicks: false,
+      canExecuteRivalPicks: true,
       canRunCpuDraft: false,
       canPersistDraftOrder: false,
     }),
     displayLabels: Object.freeze({
       titleLine: `${setupProjection.activeBrandCount}-brand draft order`,
       noteLine:
-        "Rival turns are visible for draft-night context. CPU picks are not active yet.",
+        "Rival turns use deterministic draft-night picks without deep CPU strategy.",
     }),
   });
 }

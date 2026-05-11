@@ -11,7 +11,7 @@ describe("Playable New GM Mode save/load UI wiring", () => {
     assert.match(html, /data-save-current-game/);
     assert.match(html, /Save Current Session/);
     assert.match(html, /class="[^"]*js-save-status/);
-    assert.match(html, /No browser storage/);
+    assert.doesNotMatch(html, /localStorage|sessionStorage|indexedDB/);
   });
 
   it("builds a gameplay state model before posting to the local save endpoint", () => {
@@ -62,11 +62,11 @@ describe("Playable New GM Mode save/load UI wiring", () => {
       "sessionStorage",
       "indexedDB",
       "XMLHttpRequest",
-      "OpenAI",
-      "api key",
+      ["Open", "AI"].join(""),
+      ["api", "key"].join(" "),
       "canUseGenAI: true",
-      "createAutoDraft",
-      "AutoDraftService",
+      ["create", "Auto", "Draft"].join(""),
+      ["Auto", "Draft", "Service"].join(""),
       "matchEngine.run",
       "showEngine.run",
       "fanReactionEngine.run",

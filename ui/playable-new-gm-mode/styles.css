@@ -1694,6 +1694,34 @@ dd {
   color: var(--brand-accent);
 }
 
+.draft-ticker {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.85rem;
+  padding: 0.8rem 0.9rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.24);
+}
+
+.draft-ticker strong {
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.draft-ticker span {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-family: var(--font-ticker);
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .draft-buttons {
   display: grid;
   gap: 7px;

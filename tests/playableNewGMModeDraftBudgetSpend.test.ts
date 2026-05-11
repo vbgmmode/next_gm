@@ -191,8 +191,8 @@ describe("Playable New GM Mode local draft budget spend", () => {
     assert.equal(result.projection.budgetSummary.signedTalentCount, 1);
     assert.equal(result.projection.budgetSummary.minimumViableRosterCount, 16);
     assert.equal(result.projection.budgetSummary.bookingReserveBudget, 20);
-    assert.match(result.projection.displayLabels.candidateLine, /Franchise, Cost 18/);
-    assert.match(result.projection.displayLabels.budgetLine, /102 remaining \/ 18 spent/);
+    assert.match(result.projection.displayLabels.candidateLine, /Franchise, Contract Cost \$1,800,000/);
+    assert.match(result.projection.displayLabels.budgetLine, /Remaining Budget: \$10,200,000 \/ Spent \$1,800,000/);
     for (const forbiddenSnippet of ["formula", "diagnostic"]) {
       assert.equal(
         budgetAndSigningLabels.toLowerCase().includes(forbiddenSnippet),

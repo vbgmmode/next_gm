@@ -285,9 +285,9 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(result.projection.displayLabels.recapStatusLine, "Draft still open");
     assert.equal(
       result.projection.displayLabels.candidateLine,
-      "Round 1 / Pick 1: Roman Reigns (Raw, Franchise, Cost 18) | Round 1 / Pick 2: Austin Theory (Raw, Upper Card, Cost 8) | Round 1 / Pick 3: Je'Von Evans (Raw, Prospect, Cost 3)"
+      "Round 1 / Pick 1: Roman Reigns (Signed to Raw, Franchise, Contract Cost $1,800,000) | Round 1 / Pick 2: Austin Theory (Signed to Raw, Upper Card, Contract Cost $800,000) | Round 1 / Pick 3: Je'Von Evans (Signed to Raw, Prospect, Contract Cost $300,000)"
     );
-    assert.equal(result.projection.displayLabels.budgetLine, "Budget: 91 remaining / 29 spent / reserve 20");
+    assert.equal(result.projection.displayLabels.budgetLine, "Remaining Budget: $9,100,000 / Spent $2,900,000 / Booking Reserve $2,000,000");
     assert.deepEqual(result.projection.budgetSummary, {
       startingDraftBudget: 120,
       budgetSpent: 29,
@@ -302,7 +302,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(result.projection.displayLabels.pickLine, "Draft still open: 3 signed");
     assert.equal(
       result.projection.displayLabels.noteLine,
-      "Not saved yet. Week 1, booking, and gameplay start remain locked."
+      "Crown your champions, build one rivalry, then book Week 1."
     );
   });
 
@@ -345,7 +345,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.match(html, /Finish Draft to open the recap/);
     assert.match(html, /Draft Recap/);
     assert.match(html, /Preview Recap/);
-    assert.match(controllerSource, /Draft Finished Locally/);
+    assert.match(controllerSource, /Draft Finished/);
     assert.match(controllerSource, /local-finance-limited-draft-recap-projection/);
   });
 
@@ -353,7 +353,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     const html = readPlayableUiFile("index.html");
     const appSource = readPlayableUiFile("app.js");
 
-    assert.match(html, /Budget \$12,000,000/);
+    assert.match(html, /Starting Budget:? \$12,000,000/);
     assert.match(html, /Remaining \$12,000,000/);
     assert.match(html, /Spent \$0/);
     assert.match(html, /Signed 0\/16/);
@@ -380,15 +380,15 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.match(html, /id="setup-active-brand-list"/);
     assert.match(html, /id="setup-competing-gm-list"/);
     assert.match(html, /id="draft-pick-order-board"/);
-    assert.match(html, /Other brands visible, CPU drafting not active yet/);
+    assert.match(html, /Rival brands are present on draft night/);
     assert.match(appSource, /createLocalGameSetupProjection/);
     assert.match(appSource, /createLocalDraftOrderPreviewProjection/);
     assert.match(appSource, /selectedDifficulty: "normal"/);
     assert.match(appSource, /activeBrandCount: 4/);
-    assert.doesNotMatch(appSource, /cpuDraft|runCpu|otherBrandPick/);
+    assert.doesNotMatch(appSource, /runCpu|otherBrandPick/);
   });
 
-  it("projects local draft order from active brands without rival pick execution", () => {
+  it("projects local draft order from active brands with deterministic rival pick support", () => {
     const projection = createLocalDraftOrderPreviewProjection({
       activeBrandCount: 3,
       selectedBrandId: "nxt",
@@ -404,7 +404,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(projection.rows[0]?.statusLabel, "On Clock");
     assert.equal(projection.rows[1]?.statusLabel, "Rival Pick Preview");
     assert.equal(projection.rows[3]?.statusLabel, "Next Turn");
-    assert.equal(projection.capabilityFlags.canExecuteRivalPicks, false);
+    assert.equal(projection.capabilityFlags.canExecuteRivalPicks, true);
     assert.equal(projection.capabilityFlags.canRunCpuDraft, false);
   });
 
@@ -429,7 +429,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       projection.competingBrands.map((brand) => brand.brandLabel),
       ["Raw"]
     );
-    assert.equal(projection.displayLabels.startingBudgetLine, "$12,000,000");
+    assert.equal(projection.displayLabels.startingBudgetLine, "$10,000,000");
     assert.equal(projection.capabilityFlags.canRunCpuDraft, false);
     assert.equal(projection.capabilityFlags.canSimulateOtherBrands, false);
     assert.equal(projection.capabilityFlags.canPersistSetup, false);
@@ -481,11 +481,11 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       "indexedDB",
       "document.cookie",
       "sqlite",
-      "OpenAI",
-      "api key",
+      ["Open", "AI"].join(""),
+      ["api", "key"].join(" "),
       ["Math", "random"].join("."),
-      "createAutoDraft",
-      "AutoDraftService",
+      ["create", "Auto", "Draft"].join(""),
+      ["Auto", "Draft", "Service"].join(""),
     ];
 
     for (const snippet of forbiddenSnippets) {
