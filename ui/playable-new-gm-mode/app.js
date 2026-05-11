@@ -3,6 +3,10 @@ import {
   createCandidateDisplayFromDataset,
   createDraftSelectionIntentPreview,
 } from "./draftSelectionIntentAdapter.js";
+import {
+  resolveActiveDockSection,
+  shouldShowDock,
+} from "./screenShellState.js";
 
 (() => {
   const sections = Array.from(document.querySelectorAll("[data-screen-title]"));
@@ -128,7 +132,7 @@ import {
     });
   }
 
-  function showSection(targetId, preferredNavSection) {
+  function showSection(targetId, preferredNavSection, options = {}) {
     const target = getSection(targetId);
 
     if (!target) {
@@ -136,7 +140,14 @@ import {
     }
 
     uiState.currentScreenId = targetId;
-    const activeNavSection = preferredNavSection || sectionNavMap[targetId];
+    const navigationContext = options.navigationContext;
+    const dockVisible = shouldShowDock(targetId, { navigationContext });
+    const activeNavSection = resolveActiveDockSection({
+      screenId: targetId,
+      preferredNavSection,
+      sectionNavMap,
+      navigationContext,
+    });
     const activeNavItem = navItems.find((item) => item.dataset.navSection === activeNavSection);
 
     sections.forEach((section) => {
@@ -145,9 +156,18 @@ import {
       section.classList.toggle("active-screen", isActive);
     });
 
+    if (navDock) {
+      navDock.hidden = !dockVisible;
+      navDock.setAttribute("aria-hidden", String(!dockVisible));
+      if (!dockVisible) {
+        navDock.classList.add("dock-collapsed");
+      }
+    }
+
     navItems.forEach((item) => {
       const isActive = item.dataset.navSection === activeNavSection;
       item.classList.toggle("active", isActive);
+      item.tabIndex = dockVisible ? 0 : -1;
       if (isActive) {
         item.setAttribute("aria-current", "page");
       } else {
@@ -157,6 +177,8 @@ import {
 
     updateFlow(targetId);
     document.body.classList.toggle("is-landing", targetId === "game-landing");
+    document.body.classList.toggle("is-dock-hidden", !dockVisible);
+    document.body.classList.toggle("is-game-shell", dockVisible);
 
     if (activeLabel) {
       activeLabel.textContent = target.dataset.screenTitle;
@@ -304,7 +326,9 @@ import {
 
   navItems.forEach((item) => {
     item.addEventListener("click", () => {
-      showSection(item.dataset.navTarget, item.dataset.navSection);
+      showSection(item.dataset.navTarget, item.dataset.navSection, {
+        navigationContext: "game-shell",
+      });
       collapseDock();
     });
   });

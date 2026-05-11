@@ -47,7 +47,13 @@ Expected local URL style:
 - Confirm title-screen branching updates labels consistently:
   - Start New Game updates the active label to Contract Signing and phase to New Game Setup.
   - Select Save / Continue updates the active label to Save Selection and phase to Pre-Draft.
-  - Settings updates the active label to Settings, phase to Title Options, and marks only the Settings dock item active.
+  - Settings updates the active label to Settings, phase to Title Options, and keeps the dock hidden with no active dock item.
+- Confirm the global bottom dock is hidden during title/setup/draft onboarding.
+- Confirm Game Landing, Save Selection, Settings from title/setup, Contract Signing, Setup Basics, Assistant Setup, Choose GM, Select Brand, Initial Draft, and Draft Recap have no active or focusable dock items.
+- Confirm setup flow progression still works through screen-specific CTAs and back buttons without relying on the dock.
+- Confirm Initial Draft and Draft Recap are reached through guided setup/draft flow controls, not global dock navigation.
+- Confirm the dock appears only after reaching Brand Dashboard / Week 1 Setup, with Dashboard active by default.
+- Confirm no stale active dock state is visible or retained while onboarding screens are active.
 - Confirm a player can start a new game without an existing save file.
 - Confirm Save Selection feels like a save-management screen with large campaign/save-slot panels.
 - Confirm the visible early flow is Game Landing / Title Screen -> Select Save / Continue -> Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard.
@@ -142,7 +148,8 @@ Expected local URL style:
 ## Navigation QA
 
 - Confirm the primary nav is a compact macOS Dock-inspired bottom dock, not a top rail or side rail.
-- Confirm the dock remains visible in collapsed/default state as a compact bottom-centered glass control surface.
+- Confirm the dock is hidden during title/setup/draft onboarding and becomes visible only in the post-setup game shell.
+- Confirm the dock remains visible in collapsed/default state as a compact bottom-centered glass control surface after Brand Dashboard / Week 1 Setup is reached.
 - Confirm collapsed/default state is icon-first and the active top-level section remains clear.
 - Confirm hover/focus expands the dock into icon plus section name only.
 - Confirm expanded labels do not overflow, wrap, or clip at laptop widths.
@@ -152,15 +159,17 @@ Expected local URL style:
 - Confirm selecting a dock item by pointer switches sections and immediately collapses the dock.
 - Confirm activating a dock item by keyboard Enter or Space switches sections and immediately collapses the dock.
 - Confirm selecting any dock item clears expanded dock presentation state and leaves only the target dock item active when a dock section exists.
+- Confirm hidden dock state clears active dock classes, removes `aria-current`, and prevents dock buttons from receiving focus.
 - Confirm Escape collapses the expanded dock without trapping focus.
 - Confirm pointer leave collapses the expanded dock after a short tasteful delay.
 - Confirm clicking the main screen can collapse the dock, but is not required after selecting a dock item.
 - Confirm active nav state is obvious without relying only on color.
 - Confirm the dock remains usable at smaller laptop width.
 - Confirm the dock does not cover Save Selection actions or other critical bottom controls.
-- Confirm the dock is hidden or minimal on Landing and does not cover Landing CTAs.
+- Confirm the dock is hidden on Landing and does not cover Landing CTAs.
+- Confirm the viewport layout remains clean with and without the dock and does not leave awkward empty bottom space on onboarding screens.
 - Confirm bottom safe-area spacing remains sufficient on laptop widths.
-- Confirm nav actions switch between Save Selection, Contract Signing, Setup Basics, Assistant Setup, Choose GM, Select Brand, Initial Draft, Draft Recap, and Brand Dashboard without page reload.
+- Confirm setup/onboarding actions switch between Save Selection, Contract Signing, Setup Basics, Assistant Setup, Choose GM, Select Brand, Initial Draft, Draft Recap, and Brand Dashboard without page reload.
 - Confirm the dock never shows budget, fan count, alerts, mini metrics, breadcrumbs, long descriptions, notification text, or status copy.
 - Confirm breadcrumbs are absent.
 

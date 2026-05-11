@@ -194,6 +194,11 @@ body.is-landing .bottom-nav-dock {
   display: none;
 }
 
+body.is-dock-hidden .bottom-nav-dock,
+.bottom-nav-dock[hidden] {
+  display: none;
+}
+
 .bottom-nav-dock::before {
   content: "";
   position: absolute;
@@ -425,6 +430,10 @@ body.is-landing .bottom-nav-dock {
 body.is-landing .game-shell {
   grid-template-rows: minmax(0, 1fr);
   padding: 12px;
+}
+
+body.is-dock-hidden:not(.is-landing) .game-shell {
+  padding-bottom: 12px;
 }
 
 body.is-landing .game-hud {
