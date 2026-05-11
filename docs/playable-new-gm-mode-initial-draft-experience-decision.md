@@ -1,5 +1,7 @@
 # Playable New GM Mode Initial Draft Experience Decision
 
+> Status: Historical/Foundation-era document. Some blocked/future statements are superseded by docs/next-gm-docs-reconciliation-report.md and the current playable implementation. Do not use this document alone as current implementation guidance.
+
 ## Purpose
 
 This decision record defines how the initial playable draft should evolve after the current 3-pick mini draft preview. It is planning only. It does not approve runtime finance logic, full roster drafting, auto draft, persistence, Week 1 setup, booking, gameplay initialization, or new draft-system implementations.

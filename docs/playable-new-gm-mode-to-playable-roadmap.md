@@ -1,5 +1,7 @@
 # Playable New GM Mode v0.1 Roadmap
 
+> Status: Historical/Foundation-era document. Some blocked/future statements are superseded by docs/next-gm-docs-reconciliation-report.md and the current playable implementation. Do not use this document alone as current implementation guidance.
+
 ## Purpose
 
 This document maps the current `next_gm` repository state to a local-only Playable New GM Mode v0.1. It is a durable implementation roadmap, not runtime approval. No runtime code, persistence behavior, SQLite gameplay writes, GenAI calls, or broad refactors are approved by this document.

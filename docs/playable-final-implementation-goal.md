@@ -1,5 +1,7 @@
 # Playable Final Implementation Goal
 
+> Status: Historical/Foundation-era document. Some blocked/future statements are superseded by docs/next-gm-docs-reconciliation-report.md and the current playable implementation. Do not use this document alone as current implementation guidance.
+
 ## 1. Objective
 
 Finish the rough local playable implementation of Next GM.
