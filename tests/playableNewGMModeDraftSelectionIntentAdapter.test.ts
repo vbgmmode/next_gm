@@ -206,7 +206,7 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
     );
   });
 
-  it("does not call forbidden storage, network, or generated-output surfaces from changed UI files", () => {
+  it("does not call forbidden browser storage or generated-output surfaces from changed UI files", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("app.js"),
@@ -216,7 +216,6 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
       readPlayableUiFile("screenShellState.js"),
     ].join("\n");
     const forbiddenSnippets = [
-      "fetch",
       "XMLHttpRequest",
       "localStorage",
       "sessionStorage",

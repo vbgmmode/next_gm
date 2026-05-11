@@ -121,7 +121,8 @@
                   <div><dt>State</dt><dd>Draft Night</dd></div>
                   <div><dt>Next</dt><dd>War Room</dd></div>
                 </dl>
-                <button class="panel-button" type="button" disabled>Continue Locked</button>
+                <button class="panel-button enabled" type="button" data-continue-save>Continue Last Save</button>
+                <p class="compact-copy js-save-status" id="save-selection-status">Checking local save slot...</p>
               </div>
             </article>
 
@@ -297,8 +298,8 @@
             <aside class="setup-desk">
               <p class="kicker">Static Boundary</p>
               <div class="lock-stack">
-                <span>No save file written</span>
-                <span>No key saved</span>
+                <span>Save writes through the local preview host</span>
+                <span>No browser storage</span>
                 <span>No season started</span>
                 <span>No draft pick made</span>
               </div>
@@ -1147,9 +1148,10 @@
               <article class="hq-tile feature">
                 <span class="portrait-frame roster-frame" aria-hidden="true">RS</span>
                 <div>
-                  <p class="kicker">Local Session Only</p>
+                  <p class="kicker">Local Save</p>
                   <h3 id="week-one-hq-status-card">Week 1 HQ Locked</h3>
-                  <p>Not Saved Yet. Refreshing the page resets this local game flow.</p>
+                  <p class="js-save-status">Not Saved Yet. Save writes to the controlled local preview file.</p>
+                  <button class="panel-button enabled" type="button" data-save-current-game>Save Current Session</button>
                 </div>
               </article>
               <article class="hq-tile"><strong>Signed Roster</strong><span id="week-one-hq-roster-tile">0 superstars signed</span></article>
@@ -1318,6 +1320,8 @@
                 <span id="show-recap-fan">Fan Response: --</span>
                 <span id="show-recap-budget">Budget: --</span>
                 <span id="show-recap-local">Local Session Only / Not Saved Yet</span>
+                <button class="panel-button enabled" type="button" data-save-current-game>Save Current Session</button>
+                <em class="js-save-status">Save after the recap to keep this local week.</em>
               </div>
             </aside>
           </div>

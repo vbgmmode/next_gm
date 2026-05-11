@@ -190,7 +190,7 @@ describe("Playable New GM Mode post-draft roster screen", () => {
     assert.doesNotMatch(html, /candidateId|fixtureId|validation object|diagnostic/i);
   });
 
-  it("does not add persistence, storage, network, generated text, or engine calls", () => {
+  it("does not add browser storage, generated text, or engine calls", () => {
     const changedSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -198,7 +198,6 @@ describe("Playable New GM Mode post-draft roster screen", () => {
       readPlayableUiFile("inMemoryDraftActionController.js"),
     ].join("\n");
     const forbiddenSnippets = [
-      "fetch",
       "XMLHttpRequest",
       "localStorage",
       "sessionStorage",

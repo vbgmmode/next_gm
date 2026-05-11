@@ -144,7 +144,7 @@ describe("Playable New GM Mode dock visibility", () => {
     assert.equal(preview.displayLabels.statusLine, "Ready to make pick");
   });
 
-  it("does not add forbidden storage, network, or generated-output surfaces to changed UI shell files", () => {
+  it("does not add forbidden browser storage or generated-output surfaces to changed UI shell files", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -155,7 +155,6 @@ describe("Playable New GM Mode dock visibility", () => {
       readPlayableUiFile("inMemoryDraftActionController.js"),
     ].join("\n");
     const forbiddenSnippets = [
-      "fetch",
       "XMLHttpRequest",
       "localStorage",
       "sessionStorage",

@@ -313,7 +313,7 @@ describe("Playable New GM Mode local post-draft setup flow", () => {
     }
   });
 
-  it("wires the local setup screens without storage, network, or gameplay calls", () => {
+  it("wires the local setup screens without browser storage or gameplay calls", () => {
     const changedSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -334,7 +334,6 @@ describe("Playable New GM Mode local post-draft setup flow", () => {
       "localStorage",
       "sessionStorage",
       "indexedDB",
-      "fetch(",
       "XMLHttpRequest",
       "INSERT INTO",
       "UPDATE ",

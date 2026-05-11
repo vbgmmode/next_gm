@@ -313,7 +313,7 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.equal(shouldShowDock("show-recap"), true);
   });
 
-  it("does not add forbidden storage, network, randomness, or engine calls", () => {
+  it("does not add forbidden browser storage, randomness, or engine calls", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -326,7 +326,6 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
       "localStorage",
       "sessionStorage",
       "indexedDB",
-      "fetch(",
       "XMLHttpRequest",
       "INSERT INTO",
       "UPDATE ",

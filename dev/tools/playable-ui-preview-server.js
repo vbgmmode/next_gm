@@ -4,9 +4,15 @@ import { createServer } from "node:http";
 import { stripTypeScriptTypes } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  continuePlayableNewGMModeGame,
+  createPlayableSaveApiStatus,
+  savePlayableNewGMModeGame,
+} from "./playable-save-api-controller.js";
 
 const repoRoot = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const uiRoute = "/ui/playable-new-gm-mode/";
+const saveApiRoute = "/api/playable-new-gm-mode/save";
 const preferredPorts = [5173, 4173, 3000];
 const requestedPort = Number.parseInt(process.env.PORT || "", 10);
 const portsToTry = Number.isInteger(requestedPort)
@@ -53,6 +59,11 @@ function resolveRequestPath(requestUrl) {
 }
 
 async function handleRequest(request, response) {
+  if (request.url?.startsWith(saveApiRoute)) {
+    await handleSaveApiRequest(request, response);
+    return;
+  }
+
   const resolved = resolveRequestPath(request.url || "/");
 
   if (!resolved) {
@@ -100,6 +111,69 @@ async function handleRequest(request, response) {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
     response.end("Not found");
   }
+}
+
+async function handleSaveApiRequest(request, response) {
+  const url = new URL(request.url || "/", "http://localhost");
+
+  try {
+    if (request.method === "GET" && url.pathname === `${saveApiRoute}/status`) {
+      sendJson(response, 200, createPlayableSaveApiStatus());
+      return;
+    }
+
+    if (request.method === "GET" && url.pathname === saveApiRoute) {
+      const result = continuePlayableNewGMModeGame({
+        saveId: url.searchParams.get("saveId") || undefined,
+      });
+      sendJson(response, result.ok ? 200 : 404, result);
+      return;
+    }
+
+    if (request.method === "POST" && url.pathname === saveApiRoute) {
+      const body = await readJsonBody(request);
+      const result = savePlayableNewGMModeGame({
+        gameplayStateModel: body.gameplayStateModel,
+        saveId: body.saveId,
+      });
+      sendJson(response, result.ok ? 200 : 400, result);
+      return;
+    }
+
+    sendJson(response, 404, { ok: false, status: "not-found" });
+  } catch {
+    sendJson(response, 400, { ok: false, status: "bad-request" });
+  }
+}
+
+function readJsonBody(request) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+
+    request.on("data", (chunk) => {
+      chunks.push(chunk);
+    });
+    request.on("end", () => {
+      try {
+        const raw = Buffer.concat(chunks).toString("utf8");
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch (error) {
+        reject(error);
+      }
+    });
+    request.on("error", reject);
+  });
+}
+
+function sendJson(response, statusCode, body) {
+  const serialized = JSON.stringify(body);
+
+  response.writeHead(statusCode, {
+    "Cache-Control": "no-store",
+    "Content-Length": Buffer.byteLength(serialized),
+    "Content-Type": "application/json; charset=utf-8",
+  });
+  response.end(serialized);
 }
 
 function createPreviewServer(port) {

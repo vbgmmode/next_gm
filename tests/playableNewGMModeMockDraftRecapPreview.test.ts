@@ -115,7 +115,7 @@ describe("Playable New GM Mode draft recap preview", () => {
     assert.equal(shouldShowDock("brand-dashboard"), true);
   });
 
-  it("does not add forbidden storage, network, or generated-output surfaces to changed UI files", () => {
+  it("does not add forbidden browser storage or generated-output surfaces to changed UI files", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -126,7 +126,6 @@ describe("Playable New GM Mode draft recap preview", () => {
       readPlayableUiFile("inMemoryDraftActionController.js"),
     ].join("\n");
     const forbiddenSnippets = [
-      "fetch",
       "XMLHttpRequest",
       "localStorage",
       "sessionStorage",

@@ -39,6 +39,7 @@ import {
 import {
   createNewGMModeDraftPickCandidateObjects,
   createNewGMModeDraftFinanceProjection,
+  createPlayableNewGMModeGameplayStateModel,
   NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER,
   NEW_GM_MODE_DRAFT_FINANCE_STARTING_BUDGET_PLACEHOLDER,
@@ -59,6 +60,9 @@ import {
   const autoFillControl = document.querySelector("[data-auto-fill-minimum-roster]");
   const finishDraftControl = document.querySelector("[data-finish-local-draft]");
   const recapControl = document.querySelector("[data-local-recap-action]");
+  const saveControls = Array.from(document.querySelectorAll("[data-save-current-game]"));
+  const continueSaveControls = Array.from(document.querySelectorAll("[data-continue-save]"));
+  const saveStatusTargets = Array.from(document.querySelectorAll(".js-save-status"));
   const talentList = document.querySelector(".talent-list");
   renderPlayableRosterUniverse(talentList);
   const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
@@ -325,6 +329,7 @@ import {
     localPostDraftSetup: createInitialLocalPostDraftSetupState(),
     localWeekOneBooking: createInitialLocalWeekOneBookingState(),
     localWeeklyLoop: createInitialLocalWeeklyLoopState(),
+    lastSaveStatusLine: "Not Saved Yet",
   };
   let dockCollapseTimer;
 
@@ -1285,6 +1290,162 @@ import {
     }
   }
 
+  function createCurrentGameplayStateModel() {
+    const selectedBrand = getSelectedBrandDisplay();
+    const completedPicks = Array.isArray(uiState.miniDraftProgress.completedPickSummaries)
+      ? uiState.miniDraftProgress.completedPickSummaries
+      : [];
+    const championshipProjection = createChampionshipSetupProjection({
+      selectedBrand,
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+    const rivalryProjection = createRivalrySetupProjection({
+      selectedBrand,
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+    });
+    const brandId = selectedBrand.brandId || "raw";
+    const brandName = selectedBrand.brandLabel || "Raw";
+    const currentWeek = Number.isFinite(uiState.localWeeklyLoop.currentWeekNumber)
+      ? uiState.localWeeklyLoop.currentWeekNumber
+      : 1;
+    const currentSegments = Array.isArray(uiState.localWeekOneBooking.segments)
+      ? uiState.localWeekOneBooking.segments
+      : [];
+    const completedRecaps = Array.isArray(uiState.localWeeklyLoop.completedShowRecaps)
+      ? uiState.localWeeklyLoop.completedShowRecaps
+      : [];
+
+    return createPlayableNewGMModeGameplayStateModel({
+      gameId: "playable-new-gm-mode-local-game",
+      gameLabel: `${brandName} Local GM Session`,
+      selectedBrandId: brandId,
+      selectedBrandName: brandName,
+      currentWeek,
+      budget: {
+        startingBudget: uiState.miniDraftProgress.startingDraftBudget,
+        spentBudget: uiState.miniDraftProgress.spentDraftBudget,
+        remainingBudget: uiState.miniDraftProgress.remainingDraftBudget,
+        bookingReserveTarget: uiState.miniDraftProgress.bookingReserveBudget,
+      },
+      signedRoster: completedPicks.map((pick, index) => ({
+        wrestlerId: pick.candidateId || `signed-${index + 1}`,
+        displayName: pick.candidateName || `Signed Superstar ${index + 1}`,
+        signedBrandId: brandId,
+        signedBrandName: brandName,
+        draftedFrom: pick.sourceRosterPool || "Source Pool",
+        sourcePool: pick.sourceRosterPool || "Source Pool",
+        signingCost: pick.signingCost,
+        signingTier: pick.signingTier,
+      })),
+      champions: championshipProjection.championCards.map((card) => ({
+        titleSlotId: card.slotId,
+        titleName: card.label,
+        championWrestlerIds: card.candidateId ? [card.candidateId] : [],
+      })),
+      rivalries: rivalryProjection.validRivalries.map((rivalry, index) => ({
+        rivalryId: `starter-rivalry-${index + 1}`,
+        wrestlerAId: rivalry.wrestlerAId,
+        wrestlerBId: rivalry.wrestlerBId,
+        rivalryType: rivalry.rivalryType,
+        intensity: rivalry.intensity,
+        heatLabel: "Starter Rivalry",
+      })),
+      weeklyShowCards: [
+        ...completedRecaps.map((recap) => ({
+          weekNumber: recap.weekNumber,
+          cardId: `week-${recap.weekNumber}-completed-card`,
+          segments: recap.segmentResults,
+        })),
+        ...(currentSegments.length > 0
+          ? [{
+              weekNumber: currentWeek,
+              cardId: `week-${currentWeek}-current-card`,
+              segments: currentSegments,
+            }]
+          : []),
+      ],
+      showResults: completedRecaps.map((recap) => ({
+        weekNumber: recap.weekNumber,
+        resultId: recap.recapId,
+        showGrade: recap.showGrade,
+        bestSegmentLabel: recap.bestSegmentLine,
+      })),
+      superstarCurrentState: completedPicks.map((pick, index) => ({
+        wrestlerId: pick.candidateId || `signed-${index + 1}`,
+        momentum: "Local Preview",
+        morale: "Steady",
+        fatigue: "Fresh",
+        injuryRisk: "Low",
+        popularity: "Unsigned Baseline",
+      })),
+      championTitleState: championshipProjection.championCards.map((card) => ({
+        titleSlotId: card.slotId,
+        titleName: card.label,
+        championWrestlerIds: card.candidateId ? [card.candidateId] : [],
+        titleStatus: card.candidateId ? "Champion Selected" : "Not Selected",
+      })),
+      financeFanSummaries: completedRecaps.map((recap) => ({
+        weekNumber: recap.weekNumber,
+        financeLabel: recap.budgetNote,
+        fanResponseLabel: recap.fanResponseNote,
+      })),
+      weekHistory: completedRecaps.map((recap) => ({
+        weekNumber: recap.weekNumber,
+        summaryLabel: `${recap.weekLabel}: ${recap.showGrade}`,
+      })),
+    });
+  }
+
+  async function saveCurrentGame() {
+    updateSaveStatus("Saving current session...");
+
+    try {
+      const response = await fetch("/api/playable-new-gm-mode/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          gameplayStateModel: createCurrentGameplayStateModel(),
+        }),
+      });
+      const result = await response.json();
+      const statusLine = result.ok
+        ? `Saved ${result.selectedBrandName} Week ${result.currentWeek}`
+        : "Save failed";
+
+      uiState.lastSaveStatusLine = statusLine;
+      updateSaveStatus(statusLine);
+    } catch {
+      uiState.lastSaveStatusLine = "Save unavailable";
+      updateSaveStatus(uiState.lastSaveStatusLine);
+    }
+  }
+
+  async function continueLastSave() {
+    updateSaveStatus("Checking local save slot...");
+
+    try {
+      const response = await fetch("/api/playable-new-gm-mode/save");
+      const result = await response.json();
+      const statusLine = response.ok && result.ok
+        ? `Loaded ${result.selectedBrandName} Week ${result.currentWeek}`
+        : "No local save found";
+
+      uiState.lastSaveStatusLine = statusLine;
+      updateSaveStatus(statusLine);
+    } catch {
+      uiState.lastSaveStatusLine = "Continue unavailable";
+      updateSaveStatus(uiState.lastSaveStatusLine);
+    }
+  }
+
+  function updateSaveStatus(statusLine) {
+    saveStatusTargets.forEach((target) => {
+      target.textContent = statusLine;
+    });
+  }
+
   function renderBookingRosterControls(projection) {
     renderRosterSelectOptions({
       select: bookingTargets.wrestlerA,
@@ -1866,6 +2027,18 @@ import {
       if (!control.disabled) {
         showSection(control.dataset.goTo);
       }
+    });
+  });
+
+  saveControls.forEach((button) => {
+    button.addEventListener("click", () => {
+      void saveCurrentGame();
+    });
+  });
+
+  continueSaveControls.forEach((button) => {
+    button.addEventListener("click", () => {
+      void continueLastSave();
     });
   });
 

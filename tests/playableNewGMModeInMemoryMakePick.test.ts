@@ -388,7 +388,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     }
   });
 
-  it("wires Make Pick without storage, network, backend, or Auto Draft calls", () => {
+  it("wires Make Pick without browser storage, backend, or Auto Draft calls", () => {
     const changedUiSource = [
       readPlayableUiFile("index.html"),
       readPlayableUiFile("styles.css"),
@@ -399,7 +399,6 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       readPlayableUiFile("inMemoryDraftActionController.js"),
     ].join("\n");
     const forbiddenSnippets = [
-      "fetch",
       "XMLHttpRequest",
       "localStorage",
       "sessionStorage",
