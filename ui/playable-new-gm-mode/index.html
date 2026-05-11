@@ -197,7 +197,7 @@
               <div class="lock-stack">
                 <span>No save file loaded</span>
                 <span>No storage written</span>
-                <span>No backend call</span>
+                <span>No online call</span>
                 <span>No key saved</span>
               </div>
             </article>
@@ -265,7 +265,7 @@
             <article class="setup-spotlight contract-card">
               <p class="kicker">Save Name</p>
               <h3>Year One: Prime Time</h3>
-              <p class="compact-copy">A display-only campaign name for this prototype. No file or payload is created.</p>
+              <p class="compact-copy">A display-only campaign name for this prototype. No file is created.</p>
               <div class="field-strip"><span>Difficulty</span><strong>Standard</strong></div>
               <div class="field-strip"><span>Experience</span><strong>Classic GM</strong></div>
               <div class="field-strip"><span>Assistant</span><strong>Optional</strong></div>
@@ -614,17 +614,17 @@
           hidden
         >
           <div class="draft-lower-third">
-            <span>Preview Build</span>
-            <strong>Controlled Pick Window</strong>
-            <em>MAKE PICK RUNS LOCAL MEMORY ONLY WHEN ELIGIBLE. AUTO DRAFT AND DIRECT RECAP REMAIN LOCKED.</em>
+            <span>On The Clock</span>
+            <strong><span class="js-brand-name">Raw</span> Draft Night</strong>
+            <em>Draft Budget, Pick Order, and Signed Roster are live for this draft. Not Saved Yet. Week 1 Locked.</em>
           </div>
 
           <div class="draft-composition">
             <article class="on-clock">
-              <p class="kicker">On the clock</p>
+              <p class="kicker">Picking Now</p>
               <h2 id="draft-room-title" class="js-brand-name">Raw</h2>
               <span class="pick-badge" id="mini-draft-pick-badge">Pick 1</span>
-              <div class="draft-budget-board" aria-label="Local draft budget">
+              <div class="draft-budget-board" aria-label="Draft budget">
                 <span id="draft-budget-starting">Starting Budget: 120</span>
                 <span id="draft-budget-remaining">Remaining Budget: 120</span>
                 <span id="draft-budget-spent">Spent Budget: 0</span>
@@ -635,24 +635,18 @@
                 <span id="draft-budget-reserve-status">Booking reserve protected</span>
               </div>
               <div class="need-board">
-                <span>Men's division: main-event anchor needed</span>
-                <span>Women's division: top contender needed</span>
-                <span>Tag team scene: chemistry depth needed</span>
-                <span>Prospects: developmental upside open</span>
-              </div>
-              <div class="draft-buttons">
-                <button class="panel-button" type="button" data-make-pick-action disabled aria-disabled="true">Make Pick Locked</button>
-                <button class="panel-button" type="button" data-auto-fill-minimum-roster disabled aria-disabled="true">Auto-Fill Locked</button>
-                <button class="panel-button" type="button" data-finish-local-draft disabled aria-disabled="true">Finish Locked</button>
+                <span>Best Available</span>
+                <span>Reserve Protected</span>
+                <span>Minimum Roster 0/16</span>
               </div>
             </article>
 
             <article class="board-panel">
               <div class="panel-title">
-                <p class="kicker">Board Preview</p>
+                <p class="kicker">Pick Order</p>
                 <h3>Pick Order</h3>
               </div>
-              <div class="draft-board" aria-label="Read-only projected draft order">
+              <div class="draft-board" aria-label="Draft order">
                 <div class="board-row board-head"><span>Pick</span><span>Brand</span><span>Status</span></div>
                 <div class="board-row current"><span>01</span><strong class="js-brand-name">Raw</strong><em>On Clock</em></div>
                 <div class="board-row"><span>02</span><strong>SmackDown</strong><em>Waiting</em></div>
@@ -665,10 +659,31 @@
               </div>
             </article>
 
+            <article class="scouting-panel">
+              <div class="panel-title talent-board-title">
+                <p class="kicker">Main Board</p>
+                <h3>Talent Board</h3>
+              </div>
+              <div class="talent-board-head" aria-hidden="true">
+                <span>Name</span>
+                <span>Cost</span>
+                <span>Tier</span>
+                <span>Division</span>
+                <span>Status</span>
+              </div>
+              <div class="talent-list" aria-label="Draft talent board">
+                <button class="talent-row selected" type="button" aria-pressed="true" data-candidate-id="candidate-ace-mercer" data-draft-rank="01" data-availability="Available" data-talent-name="Ace Mercer" data-talent-role="Main Event / Technical / Veteran" data-talent-style="Star Power: High | Ring Work: Elite" data-talent-read="Scouting preview. Draft actions remain locked." data-talent-fit="Men's division, world title and midcard title eligible." data-star-power="High" data-star-power-value="90" data-ring-work="Elite" data-ring-work-value="94" data-promo="Strong" data-promo-value="82" data-durability="Durable" data-durability-value="88" data-risk="Low" data-risk-value="28" data-confidence="Strong" data-confidence-value="84">
+                  <span class="mini-portrait">AM</span>
+                  <strong>Ace Mercer</strong>
+                  <small>01 | Available | Main Event</small>
+                </button>
+              </div>
+            </article>
+
             <article class="selected-profile superstar-spotlight">
               <div class="spotlight-header">
                 <div>
-                  <p class="kicker">Selected Superstar</p>
+                  <p class="kicker">Selected Wrestler</p>
                   <h3 id="talent-detail-name">Ace Mercer</h3>
                 </div>
                 <span class="profile-status" id="talent-detail-availability">Available</span>
@@ -683,8 +698,8 @@
                   <span class="profile-role" id="talent-detail-role">Main Event / Technical / Veteran</span>
                   <dl class="profile-reads compact-reads">
                     <div><dt>Roster fit</dt><dd id="talent-detail-fit">Men's division, world title and midcard title eligible.</dd></div>
-                    <div><dt>Scout note</dt><dd id="talent-detail-read">Scouting preview. Make Pick uses local in-memory draft only when eligible.</dd></div>
-                    <div><dt>Pick preview</dt><dd id="talent-detail-preview-status">Ready for in-memory Make Pick</dd></div>
+                    <div><dt>Scout note</dt><dd id="talent-detail-read">Draft board report. Make Pick signs eligible talent to your roster.</dd></div>
+                    <div><dt>Pick status</dt><dd id="talent-detail-preview-status">Ready to make pick</dd></div>
                   </dl>
                 </div>
               </div>
@@ -721,91 +736,49 @@
                   <strong id="talent-detail-confidence">Strong</strong>
                 </div>
               </div>
+
+              <div class="pick-confirmation">
+                <p class="kicker">Draft Slip</p>
+                <h3>Pick Preview</h3>
+                <div class="confirmation-steps">
+                  <span id="intent-preview-candidate">Ace Mercer selected</span>
+                  <span id="intent-preview-brand">Raw on the clock</span>
+                  <span id="intent-preview-pick">Round 1 / Pick 1</span>
+                  <span id="intent-preview-status">Ready to make pick</span>
+                  <span id="finance-preview-starting-budget">Starting Budget: 120</span>
+                  <span id="finance-preview-remaining-budget">Remaining Budget: 120</span>
+                  <span id="finance-preview-tier">Signing Tier: Franchise</span>
+                  <span id="finance-preview-cost">Signing Cost: 18</span>
+                  <span id="finance-preview-after-signing">Budget After Signing: 102</span>
+                  <span id="finance-preview-affordability">Expensive but affordable</span>
+                  <span id="finance-preview-reserve">Booking reserve protected after signing</span>
+                </div>
+                <p class="quiet-note" id="intent-preview-note">Make Pick signs this superstar to your draft roster and updates the budget.</p>
+              </div>
             </article>
 
-            <article class="scouting-panel">
+            <article class="draft-signed-panel">
               <div class="panel-title">
-                <p class="kicker">Best Available</p>
-                <h3>Scouting Feed</h3>
+                <p class="kicker">Right Rail</p>
+                <h3>Signed Roster</h3>
               </div>
-              <div class="talent-list" aria-label="Read-only projected candidate feed">
-                <button class="talent-row selected" type="button" aria-pressed="true" data-candidate-id="candidate-ace-mercer" data-draft-rank="01" data-availability="Available" data-talent-name="Ace Mercer" data-talent-role="Main Event / Technical / Veteran" data-talent-style="Star Power: High | Ring Work: Elite" data-talent-read="Scouting preview. Draft actions remain locked." data-talent-fit="Men's division, world title and midcard title eligible." data-star-power="High" data-star-power-value="90" data-ring-work="Elite" data-ring-work-value="94" data-promo="Strong" data-promo-value="82" data-durability="Durable" data-durability-value="88" data-risk="Low" data-risk-value="28" data-confidence="Strong" data-confidence-value="84">
-                  <span class="mini-portrait">AM</span>
-                  <strong>Ace Mercer</strong>
-                  <small>01 | Available | Main Event</small>
-                </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-bruno-vale" data-draft-rank="02" data-availability="Available" data-talent-name="Bruno Vale" data-talent-role="Upper Card / Powerhouse / Veteran" data-talent-style="Star Power: Strong | Ring Work: Solid" data-talent-read="Heavy presence and title-scene posture. Draft actions remain locked." data-talent-fit="Men's division, world title and tag team title eligible." data-star-power="Strong" data-star-power-value="84" data-ring-work="Solid" data-ring-work-value="78" data-promo="Steady" data-promo-value="76" data-durability="Durable" data-durability-value="91" data-risk="Low" data-risk-value="24" data-confidence="Strong" data-confidence-value="80">
-                  <span class="mini-portrait">BV</span>
-                  <strong>Bruno Vale</strong>
-                  <small>02 | Available | Upper Card</small>
-                </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-cassian-ryde" data-draft-rank="03" data-availability="Available" data-talent-name="Cassian Ryde" data-talent-role="Midcard / High Flyer / Prospect" data-talent-style="Star Power: Rising | Ring Work: Flashy" data-talent-read="Explosive highlight profile with upside. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible." data-star-power="Rising" data-star-power-value="72" data-ring-work="Flashy" data-ring-work-value="86" data-promo="Developing" data-promo-value="66" data-durability="Steady" data-durability-value="74" data-risk="Medium" data-risk-value="46" data-confidence="Developing" data-confidence-value="68">
-                  <span class="mini-portrait">CR</span>
-                  <strong>Cassian Ryde</strong>
-                  <small>03 | Available | Prospect</small>
-                </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-dante-cross" data-draft-rank="04" data-availability="Available" data-talent-name="Dante Cross" data-talent-role="Midcard / Tag Specialist / Technical" data-talent-style="Star Power: Steady | Tag Fit: Elite" data-talent-read="Clean mechanics and tag scene leverage. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible." data-star-power="Steady" data-star-power-value="68" data-ring-work="Solid" data-ring-work-value="83" data-promo="Developing" data-promo-value="62" data-durability="Durable" data-durability-value="82" data-risk="Low" data-risk-value="30" data-confidence="Strong" data-confidence-value="78">
-                  <span class="mini-portrait">DC</span>
-                  <strong>Dante Cross</strong>
-                  <small>04 | Available | Tag Specialist</small>
-                </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-elena-voss" data-draft-rank="05" data-availability="Available" data-talent-name="Elena Voss" data-talent-role="Main Event / Promo Specialist / Veteran" data-talent-style="Star Power: Elite | Promo: Elite" data-talent-read="Instant microphone gravity and title presence. Draft actions remain locked." data-talent-fit="Women's division, women's world title eligible." data-star-power="Elite" data-star-power-value="92" data-ring-work="Strong" data-ring-work-value="80" data-promo="Elite" data-promo-value="95" data-durability="Steady" data-durability-value="79" data-risk="Low" data-risk-value="26" data-confidence="Elite" data-confidence-value="90">
-                  <span class="mini-portrait">EV</span>
-                  <strong>Elena Voss</strong>
-                  <small>05 | Available | Main Event</small>
-                </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-fiona-hale" data-draft-rank="06" data-availability="Available" data-talent-name="Fiona Hale" data-talent-role="Upper Card / Technical / Tag Specialist" data-talent-style="Ring Work: Elite | Durability: Durable" data-talent-read="Reliable bell-to-bell engine with tag upside. Draft actions remain locked." data-talent-fit="Women's division, women's world and tag team title eligible." data-star-power="Strong" data-star-power-value="76" data-ring-work="Elite" data-ring-work-value="91" data-promo="Steady" data-promo-value="69" data-durability="Durable" data-durability-value="90" data-risk="Low" data-risk-value="22" data-confidence="Strong" data-confidence-value="82">
-                  <span class="mini-portrait">FH</span>
-                  <strong>Fiona Hale</strong>
-                  <small>06 | Available | Technical</small>
-                </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-gia-stone" data-draft-rank="07" data-availability="Available" data-talent-name="Gia Stone" data-talent-role="Midcard / Powerhouse / Prospect" data-talent-style="Star Power: Rising | Durability: Durable" data-talent-read="Power prospect with room for breakout heat. Draft actions remain locked." data-talent-fit="Women's division, women's world title eligible." data-star-power="Rising" data-star-power-value="70" data-ring-work="Solid" data-ring-work-value="74" data-promo="Developing" data-promo-value="64" data-durability="Durable" data-durability-value="88" data-risk="Medium" data-risk-value="42" data-confidence="Developing" data-confidence-value="66">
-                  <span class="mini-portrait">GS</span>
-                  <strong>Gia Stone</strong>
-                  <small>07 | Available | Prospect</small>
-                </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-hana-reyes" data-draft-rank="08" data-availability="Available" data-talent-name="Hana Reyes" data-talent-role="Midcard / High Flyer / Tag Specialist" data-talent-style="Ring Work: Flashy | Tag Fit: Elite" data-talent-read="Fast pace, tag chemistry, and crowd spark. Draft actions remain locked." data-talent-fit="Women's division, women's world and tag team title eligible." data-star-power="Steady" data-star-power-value="71" data-ring-work="Flashy" data-ring-work-value="84" data-promo="Developing" data-promo-value="67" data-durability="Steady" data-durability-value="76" data-risk="Medium" data-risk-value="39" data-confidence="Solid" data-confidence-value="72">
-                  <span class="mini-portrait">HR</span>
-                  <strong>Hana Reyes</strong>
-                  <small>08 | Available | High Flyer</small>
-                </button>
-                <button class="talent-row unavailable" type="button" aria-pressed="false" data-candidate-id="candidate-ivan-north" data-draft-rank="09" data-availability="Unavailable" data-talent-name="Ivan North" data-talent-role="Upper Card / Promo Specialist / Powerhouse" data-talent-style="Promo: Elite | Availability blocked" data-talent-read="Marked unavailable in this board preview. Make Pick stays locked." data-talent-fit="Men's division, currently blocked for draft preview." data-star-power="Strong" data-star-power-value="82" data-ring-work="Solid" data-ring-work-value="70" data-promo="Elite" data-promo-value="90" data-durability="Limited" data-durability-value="72" data-risk="High" data-risk-value="72" data-confidence="Unclear" data-confidence-value="48">
-                  <span class="mini-portrait">IN</span>
-                  <strong>Ivan North</strong>
-                  <small>09 | Unavailable | Blocked</small>
-                </button>
-                <button class="talent-row" type="button" aria-pressed="false" data-candidate-id="candidate-jules-kade" data-draft-rank="10" data-availability="Available" data-talent-name="Jules Kade" data-talent-role="Midcard / Tag Specialist / Prospect" data-talent-style="Star Power: Developing | Tag Fit: Strong" data-talent-read="Developmental tag prospect with steady upside. Draft actions remain locked." data-talent-fit="Men's division, midcard and tag team title eligible." data-star-power="Developing" data-star-power-value="62" data-ring-work="Solid" data-ring-work-value="76" data-promo="Developing" data-promo-value="58" data-durability="Steady" data-durability-value="80" data-risk="Medium" data-risk-value="44" data-confidence="Developing" data-confidence-value="64">
-                  <span class="mini-portrait">JK</span>
-                  <strong>Jules Kade</strong>
-                  <small>10 | Available | Prospect</small>
-                </button>
+              <div class="draft-signed-summary">
+                <span id="draft-signed-roster-count">0/16 Signed</span>
+                <strong>Minimum Roster</strong>
               </div>
-            </article>
-
-            <article class="pick-confirmation">
-              <p class="kicker">Pick Preview</p>
-              <h3>Selection intent preview</h3>
-              <div class="confirmation-steps">
-                <span id="intent-preview-candidate">Ace Mercer selected</span>
-                <span id="intent-preview-brand">Raw local preview</span>
-                <span id="intent-preview-pick">Round 1 / Pick 1 placeholder</span>
-                <span id="intent-preview-status">Ready for in-memory Make Pick</span>
-                <span id="finance-preview-starting-budget">Starting Budget: 120</span>
-                <span id="finance-preview-remaining-budget">Remaining Budget: 120</span>
-                <span id="finance-preview-tier">Projected Cost Tier: Franchise</span>
-                <span id="finance-preview-cost">Projected Signing Cost: 18</span>
-                <span id="finance-preview-after-signing">Budget After Signing: 102</span>
-                <span id="finance-preview-affordability">Expensive but affordable</span>
-                <span id="finance-preview-reserve">Booking reserve protected after signing</span>
+              <div id="draft-signed-roster-list" class="draft-signed-roster-list" aria-label="Signed roster so far">
+                <p class="empty-signed-roster">No picks yet. Make Pick to add your first signing.</p>
               </div>
-              <p class="quiet-note" id="intent-preview-note">Make Pick will run the approved Real Draft System v1 in memory only and spend local draft budget after success.</p>
             </article>
           </div>
 
-          <div class="screen-actions">
+          <div class="screen-actions draft-action-bar">
             <button class="ghost-button" type="button" data-go-to="select-brand">Back to Brand Select</button>
+            <button class="panel-button" type="button" data-make-pick-action disabled aria-disabled="true">Make Pick Locked</button>
+            <button class="panel-button" type="button" data-auto-fill-minimum-roster disabled aria-disabled="true">Auto-Fill Locked</button>
+            <button class="panel-button" type="button" data-finish-local-draft disabled aria-disabled="true">Finish Locked</button>
             <div class="draft-action-cluster">
-              <button class="ghost-button qa-preview-button" type="button" data-preview-go-to="draft-recap">QA Preview: Mock Draft Recap</button>
+              <button class="ghost-button qa-preview-button" type="button" data-preview-go-to="draft-recap">Preview Recap</button>
               <button class="hero-cta small" type="button" data-local-recap-action disabled aria-disabled="true">Draft Recap Locked</button>
             </div>
           </div>
@@ -829,7 +802,7 @@
 
           <div class="recap-layout">
             <article class="recap-hero">
-              <p class="kicker">QA Preview Path</p>
+              <p class="kicker">Preview Path</p>
               <h3 id="draft-recap-roster">Raw mock roster placeholder</h3>
               <p id="draft-recap-copy">This screen is available for shell QA. It does not mean a pick, roster, or draft completion occurred.</p>
               <dl class="meta-grid mock-recap-meta" aria-label="Draft recap preview context">

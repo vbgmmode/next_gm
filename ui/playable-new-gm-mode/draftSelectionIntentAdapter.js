@@ -88,9 +88,9 @@ export function createDraftSelectionIntentPreview({
         ? `${candidate.name} selected`
         : "No candidate selected",
       brandLine: brand.hasBrand
-        ? `${brand.brandLabel} local preview`
+        ? `${brand.brandLabel} on the clock`
         : "Brand missing",
-      pickLine: `${slot.roundLabel} / ${slot.pickLabel} placeholder`,
+      pickLine: `${slot.roundLabel} / ${slot.pickLabel}`,
       statusLine: statusLabel,
       noteLine: createNoteLine(status),
     }),
@@ -166,7 +166,7 @@ function createBlockedReasonIds(status) {
 
 function createStatusLabel(status) {
   if (status === DRAFT_SELECTION_INTENT_PREVIEW_STATUS.READY) {
-    return "Ready for in-memory Make Pick";
+    return "Ready to make pick";
   }
 
   if (status === DRAFT_SELECTION_INTENT_PREVIEW_STATUS.MISSING_CANDIDATE) {
@@ -182,7 +182,7 @@ function createStatusLabel(status) {
 
 function createNoteLine(status) {
   if (status === DRAFT_SELECTION_INTENT_PREVIEW_STATUS.READY) {
-    return "Selection intent ready. Make Pick creates a local-only in-memory result.";
+    return "Make Pick signs this wrestler to your draft roster.";
   }
 
   if (status === DRAFT_SELECTION_INTENT_PREVIEW_STATUS.CANDIDATE_UNAVAILABLE) {

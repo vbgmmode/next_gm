@@ -466,6 +466,7 @@ body.is-landing .game-hud {
 .scouting-panel,
 .selected-profile,
 .pick-confirmation,
+.draft-signed-panel,
 .recap-hero,
 .division-card,
 .roster-board-panel,
@@ -1152,6 +1153,7 @@ dd {
 .scouting-panel,
 .selected-profile,
 .pick-confirmation,
+.draft-signed-panel,
 .recap-hero,
 .division-card,
 .gm-alerts,
@@ -1189,6 +1191,7 @@ dd {
 .scouting-panel,
 .selected-profile,
 .pick-confirmation,
+.draft-signed-panel,
 .recap-hero,
 .division-card,
 .gm-alerts,
@@ -1601,8 +1604,8 @@ dd {
 
 .draft-composition {
   display: grid;
-  grid-template-columns: minmax(218px, 0.62fr) minmax(430px, 1.32fr) minmax(290px, 0.84fr);
-  grid-template-rows: minmax(0, 1fr) minmax(132px, 0.32fr);
+  grid-template-columns: minmax(210px, 0.62fr) minmax(520px, 1.55fr) minmax(290px, 0.86fr);
+  grid-template-rows: minmax(0, 1fr) minmax(156px, 0.36fr);
   gap: 8px;
   min-width: 0;
   min-height: 0;
@@ -1613,7 +1616,7 @@ dd {
   display: grid;
   grid-column: 1;
   grid-row: 1;
-  align-content: start;
+  align-content: stretch;
   gap: 9px;
   border-top: 5px solid var(--brand-primary);
   background:
@@ -1646,7 +1649,7 @@ dd {
 
 .draft-budget-board {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 5px;
   min-width: 0;
   overflow: hidden;
@@ -1689,18 +1692,23 @@ dd {
 
 .scouting-panel {
   display: grid;
-  grid-column: 3;
-  grid-row: 1;
-  grid-template-rows: auto minmax(0, 1fr);
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  grid-template-rows: auto auto minmax(0, 1fr);
   gap: 8px;
+  border-top: 5px solid color-mix(in srgb, var(--brand-accent) 62%, var(--brand-primary));
+  background:
+    radial-gradient(circle at 50% 120%, color-mix(in srgb, var(--brand-primary) 18%, transparent), transparent 55%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 18px),
+    var(--bg-surface);
 }
 
 .selected-profile {
   display: grid;
-  grid-column: 2;
+  grid-column: 3;
   grid-row: 1;
-  grid-template-rows: auto minmax(0, 0.9fr) auto;
-  gap: 10px;
+  grid-template-rows: auto minmax(0, 0.68fr) auto auto;
+  gap: 8px;
   border-top: 5px solid var(--brand-primary);
   border-color: color-mix(in srgb, var(--brand-primary) 52%, var(--border-subtle));
   background:
@@ -1712,30 +1720,41 @@ dd {
 
 .pick-confirmation {
   display: grid;
-  grid-column: 2 / 4;
-  grid-row: 2;
-  grid-template-columns: minmax(170px, 0.24fr) minmax(0, 1fr);
-  grid-template-rows: 34px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
   align-content: stretch;
-  gap: 6px 8px;
-  border-top: 5px solid color-mix(in srgb, var(--brand-accent) 62%, var(--brand-primary));
+  gap: 5px;
+  min-height: 0;
+  overflow: hidden;
+  border-top: 4px solid color-mix(in srgb, var(--brand-accent) 62%, var(--brand-primary));
+  padding: 8px;
 }
 
 .pick-confirmation h3 {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: end;
   margin: 0;
-  font-size: clamp(0.86rem, 1vw, 1.08rem);
+  font-size: clamp(0.78rem, 0.88vw, 0.98rem);
   line-height: 0.95;
   white-space: normal;
 }
 
 .pick-confirmation .kicker {
-  grid-column: 1;
-  grid-row: 1;
-  align-self: start;
   margin: 0;
+}
+
+.draft-signed-panel {
+  display: grid;
+  grid-column: 3;
+  grid-row: 2;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: 7px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-top: 5px solid color-mix(in srgb, var(--brand-primary) 48%, var(--brand-accent));
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--brand-soft) 78%, transparent), transparent 64%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 18px),
+    var(--bg-surface);
 }
 
 .panel-title {
@@ -1774,12 +1793,40 @@ dd {
   padding-right: 2px;
 }
 
-.pick-confirmation .confirmation-steps {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  align-content: start;
+.talent-board-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(50px, 0.3fr) minmax(74px, 0.42fr) minmax(72px, 0.38fr) minmax(94px, 0.5fr);
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
   overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 34%, var(--border-subtle));
+  border-left: 5px solid var(--brand-primary);
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-primary) 18%, transparent), transparent 72%),
+    var(--surface-deep);
+  padding: 6px 8px 6px 50px;
+}
+
+.talent-board-head span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 0.64rem;
+  font-weight: 950;
+  font-family: var(--font-data);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pick-confirmation .confirmation-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 5px;
+  min-height: 0;
+  overflow: hidden auto;
 }
 
 .board-row {
@@ -1842,8 +1889,7 @@ dd {
 
 .talent-row {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  grid-template-rows: auto auto;
+  grid-template-columns: 34px minmax(0, 1fr) minmax(50px, 0.3fr) minmax(74px, 0.42fr) minmax(72px, 0.38fr) minmax(94px, 0.5fr);
   column-gap: 8px;
   align-items: center;
   min-width: 0;
@@ -1882,14 +1928,16 @@ dd {
 }
 
 .mini-portrait {
-  grid-row: 1 / span 2;
   width: 34px;
   height: 34px;
   font-size: 0.7rem;
 }
 
 .talent-row strong,
-.talent-row small {
+.talent-row small,
+.talent-row .talent-cost,
+.talent-row .talent-tier,
+.talent-row .talent-division {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1906,6 +1954,20 @@ dd {
   font-size: 0.72rem;
   font-weight: 850;
   font-family: var(--font-data);
+}
+
+.talent-row .talent-cost,
+.talent-row .talent-tier,
+.talent-row .talent-division {
+  color: var(--text-secondary);
+  font-size: 0.68rem;
+  font-weight: 900;
+  font-family: var(--font-data);
+  text-transform: uppercase;
+}
+
+.talent-row .talent-cost {
+  color: var(--brand-accent);
 }
 
 .large-portrait {
@@ -1958,7 +2020,7 @@ dd {
 
 .spotlight-stage {
   display: grid;
-  grid-template-columns: minmax(150px, 0.44fr) minmax(0, 0.56fr);
+  grid-template-columns: minmax(116px, 0.38fr) minmax(0, 0.62fr);
   gap: 10px;
   min-width: 0;
   min-height: 0;
@@ -1967,7 +2029,7 @@ dd {
 .spotlight-portrait {
   position: relative;
   isolation: isolate;
-  min-height: 160px;
+  min-height: 128px;
   overflow: hidden;
   align-content: end;
   justify-content: start;
@@ -2042,22 +2104,22 @@ dd {
 .spotlight-stat-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 7px;
+  gap: 5px;
   min-width: 0;
   min-height: 0;
 }
 
 .spotlight-stat {
   display: grid;
-  grid-template-columns: minmax(96px, 0.58fr) minmax(0, 1fr) minmax(42px, auto);
-  gap: 8px;
+  grid-template-columns: minmax(74px, 0.54fr) minmax(0, 1fr) minmax(34px, auto);
+  gap: 6px;
   align-items: center;
   min-width: 0;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-left: 4px solid color-mix(in srgb, var(--brand-primary) 60%, transparent);
   background: rgba(0, 0, 0, 0.26);
-  padding: 7px 8px;
+  padding: 5px 6px;
 }
 
 .spotlight-stat span:first-child,
@@ -2116,9 +2178,7 @@ dd {
 }
 
 .pick-confirmation .quiet-note {
-  grid-column: 1;
-  grid-row: 2;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
 }
 
 .screen-actions {
@@ -2138,6 +2198,114 @@ dd {
 
 .qa-preview-button {
   border-style: dashed;
+}
+
+.draft-signed-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 34%, var(--border-subtle));
+  border-left: 5px solid var(--brand-primary);
+  background: rgba(0, 0, 0, 0.24);
+  padding: 7px 8px;
+}
+
+.draft-signed-summary span,
+.draft-signed-summary strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.68rem;
+  font-weight: 950;
+  font-family: var(--font-data);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.draft-signed-summary span {
+  color: var(--brand-accent);
+}
+
+.draft-signed-summary strong {
+  color: var(--text-secondary);
+}
+
+.draft-signed-roster-list {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden auto;
+  padding-right: 2px;
+}
+
+.draft-signed-item {
+  display: grid;
+  grid-template-columns: minmax(24px, auto) minmax(0, 1fr);
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid color-mix(in srgb, var(--brand-primary) 58%, var(--border-subtle));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-soft) 58%, transparent), transparent),
+    rgba(255, 255, 255, 0.035);
+  padding: 7px;
+}
+
+.draft-signed-item span,
+.draft-signed-item strong,
+.draft-signed-item em {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.draft-signed-item span {
+  color: var(--brand-accent);
+  font-size: 0.68rem;
+  font-weight: 950;
+  font-family: var(--font-data);
+}
+
+.draft-signed-item strong {
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.draft-signed-item em {
+  grid-column: 2;
+  color: var(--text-muted);
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 850;
+  font-family: var(--font-data);
+  text-transform: uppercase;
+}
+
+.empty-signed-roster {
+  margin: 0;
+  border: 1px dashed color-mix(in srgb, var(--brand-primary) 34%, var(--border-subtle));
+  color: var(--text-muted);
+  padding: 8px;
+  font-size: 0.72rem;
+  font-family: var(--font-data);
+  text-transform: uppercase;
+}
+
+.draft-action-bar {
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 34%, var(--border-subtle));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-soft) 74%, transparent), transparent 70%),
+    var(--surface-deep);
+  padding: 7px;
 }
 
 .settings-screen {
@@ -2766,8 +2934,8 @@ dd {
   }
 
   .draft-composition {
-    grid-template-columns: minmax(205px, 0.62fr) minmax(390px, 1.28fr) minmax(250px, 0.82fr);
-    grid-template-rows: minmax(0, 1fr) minmax(124px, 0.3fr);
+    grid-template-columns: minmax(190px, 0.58fr) minmax(450px, 1.45fr) minmax(250px, 0.82fr);
+    grid-template-rows: minmax(0, 1fr) minmax(142px, 0.34fr);
   }
 
   .on-clock {
@@ -2781,18 +2949,17 @@ dd {
   }
 
   .selected-profile {
-    grid-column: 2;
-    grid-row: 1;
-  }
-
-  .scouting-panel {
     grid-column: 3;
     grid-row: 1;
   }
 
-  .pick-confirmation {
-    display: grid;
-    grid-column: 2 / 4;
+  .scouting-panel {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .draft-signed-panel {
+    grid-column: 3;
     grid-row: 2;
   }
 
@@ -2882,7 +3049,8 @@ dd {
   .board-panel,
   .scouting-panel,
   .selected-profile,
-  .pick-confirmation {
+  .pick-confirmation,
+  .draft-signed-panel {
     padding: 8px;
   }
 
@@ -2906,12 +3074,12 @@ dd {
   }
 
   .spotlight-stage {
-    grid-template-columns: minmax(132px, 0.38fr) minmax(0, 0.62fr);
+    grid-template-columns: minmax(104px, 0.34fr) minmax(0, 0.66fr);
     gap: 8px;
   }
 
   .spotlight-portrait {
-    min-height: 146px;
+    min-height: 112px;
   }
 
   .spotlight-stat-grid {
@@ -2929,13 +3097,8 @@ dd {
     font-size: 0.7rem;
   }
 
-  .pick-confirmation {
-    grid-template-columns: minmax(145px, 0.22fr) minmax(0, 1fr);
-    gap: 5px 6px;
-  }
-
   .pick-confirmation .confirmation-steps {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .portrait-frame {
@@ -3046,7 +3209,7 @@ dd {
   }
 
   .draft-composition {
-    grid-template-rows: auto minmax(260px, 1fr) minmax(180px, 0.72fr) minmax(120px, auto);
+    grid-template-rows: auto minmax(320px, 1fr) minmax(260px, 0.82fr) minmax(150px, auto) minmax(140px, auto);
     overflow: hidden auto;
   }
 
@@ -3054,7 +3217,8 @@ dd {
   .selected-profile,
   .scouting-panel,
   .board-panel,
-  .pick-confirmation {
+  .pick-confirmation,
+  .draft-signed-panel {
     grid-column: 1;
   }
 
@@ -3062,11 +3226,11 @@ dd {
     grid-row: 1;
   }
 
-  .selected-profile {
+  .scouting-panel {
     grid-row: 2;
   }
 
-  .scouting-panel {
+  .selected-profile {
     grid-row: 3;
   }
 
@@ -3074,7 +3238,7 @@ dd {
     grid-row: 4;
   }
 
-  .pick-confirmation {
+  .draft-signed-panel {
     grid-row: 5;
   }
 

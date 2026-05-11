@@ -61,7 +61,7 @@ describe("Playable New GM Mode Auto-Fill Minimum Roster", () => {
     assert.deepEqual(result.blockedReasonIds, []);
     assert.equal(
       result.displayLabels.noteLine,
-      "Auto-Fill stopped at 16 and preserved the local-only draft boundary."
+      "Auto-Fill stopped at 16 and kept the booking reserve protected."
     );
   });
 

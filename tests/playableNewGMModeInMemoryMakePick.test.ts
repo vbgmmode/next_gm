@@ -295,7 +295,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.equal(result.projection.displayLabels.pickLine, "Draft still open: 3 signed");
     assert.equal(
       result.projection.displayLabels.noteLine,
-      "Local-only draft result. No save, persistence, Week 1 initialization, booking, or gameplay start occurred."
+      "Not saved yet. Week 1, booking, and gameplay start remain locked."
     );
   });
 
@@ -336,7 +336,7 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     const controllerSource = readPlayableUiFile("inMemoryDraftActionController.js");
 
     assert.match(html, /Mock Draft Recap - no draft executed/);
-    assert.match(html, /QA Preview: Mock Draft Recap/);
+    assert.match(html, /Preview Recap/);
     assert.match(controllerSource, /Draft Finished Locally/);
     assert.match(controllerSource, /local-finance-limited-draft-recap-projection/);
   });
@@ -351,10 +351,10 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
     assert.match(html, /Signed Superstars: 0/);
     assert.match(html, /Minimum Viable Roster: 16/);
     assert.match(html, /Booking Reserve Target: 20/);
-    assert.match(html, /Projected Cost Tier: Franchise/);
-    assert.match(html, /Projected Signing Cost: 18/);
+    assert.match(html, /Signing Tier: Franchise/);
+    assert.match(html, /Signing Cost: 18/);
     assert.match(html, /Budget After Signing: 102/);
-    assert.match(html, /spend local draft budget after success/);
+    assert.match(html, /updates the budget/);
     assert.match(appSource, /createNewGMModeDraftFinanceProjection/);
     assert.doesNotMatch(appSource, /budgetDeducted|mutateBudget/);
   });

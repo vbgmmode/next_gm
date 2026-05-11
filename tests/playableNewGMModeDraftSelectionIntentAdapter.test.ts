@@ -92,7 +92,7 @@ describe("Playable New GM Mode draft selection intent adapter", () => {
     });
     assert.equal(
       preview.displayLabels.statusLine,
-      "Ready for in-memory Make Pick"
+      "Ready to make pick"
     );
   });
 

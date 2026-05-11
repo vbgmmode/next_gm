@@ -152,7 +152,7 @@ export function createInitialMiniDraftProgress({
       budgetLine: "Budget remaining: 120",
       viabilityLine: "Minimum roster not viable: 0 of 16",
       reserveLine: "Booking reserve protected",
-      noteLine: "Local preview only. Reload resets draft progress.",
+      noteLine: "Not Saved Yet. Reload resets draft progress.",
     }),
   });
 }
@@ -187,7 +187,7 @@ export function executeInMemoryMakePick(input = {}, services = DEFAULT_SERVICES)
           buttonLabel: "Make Pick Locked",
           statusLine: "Make Pick blocked - candidate reference missing",
           noteLine:
-            "The UI selection could not be matched to the Real Draft System v1 candidate set.",
+            "The selected wrestler is no longer available on this draft board.",
         }),
       })
     );
@@ -385,7 +385,7 @@ export function executeAutoFillMinimumRoster(
         ? "Auto-Fill reached minimum roster viability"
         : "Auto-Fill stopped before minimum roster viability",
       noteLine: reachedMinimum
-        ? "Auto-Fill stopped at 16 and preserved the local-only draft boundary."
+        ? "Auto-Fill stopped at 16 and kept the booking reserve protected."
         : "Auto-Fill stopped rather than dipping into booking reserve or signing unavailable talent.",
     }),
     capabilityFlags: createBlockedCapabilityFlags(),
@@ -591,20 +591,20 @@ function createDraftRecapProjection({
       recapStatusLine: localDraftFinished
         ? "Draft Finished Locally"
         : "Draft still open",
-      pathLine: "Real in-memory draft path",
-      titleLine: `${brandLabel} finance-limited draft recap`,
+      pathLine: "Draft Results",
+      titleLine: `${brandLabel} draft recap`,
       rosterLine: completedInMemory
-        ? `${pickCount} local superstar${pickCount === 1 ? "" : "s"} signed`
-        : `${brandLabel} local draft preview empty`,
+        ? `${pickCount} superstar${pickCount === 1 ? "" : "s"} signed`
+        : `${brandLabel} draft board empty`,
       copyLine: completedInMemory
-        ? "This recap is backed by approved Real Draft System v1 in-memory signing results. It is not saved, not a persisted roster, and resets on reload."
-        : "No local in-memory picks have been made yet. The mock QA recap remains available for shell checks.",
+        ? "This recap shows signed draft results from this session. It is not saved and resets on reload."
+        : "No picks have been made yet. Preview Recap remains available for shell checks.",
       gmLine: gmName,
-      brandLine: `${brandLabel} local in-memory result`,
+      brandLine: `${brandLabel} draft results`,
       candidateLine: pickList,
       budgetLine: `Budget: ${budgetSummary.remainingDraftBudget} remaining / ${budgetSummary.budgetSpent} spent / reserve ${budgetSummary.bookingReserveBudget}`,
       pickLine: localDraftFinished
-        ? `Draft finished locally: ${pickCount} signed`
+        ? `Draft finished: ${pickCount} signed`
         : `Draft still open: ${pickCount} signed`,
       draftResultStatusLine: localDraftFinished
         ? "Draft Finished Locally"
@@ -616,16 +616,16 @@ function createDraftRecapProjection({
         ? "Booking reserve protected"
         : "Booking reserve dipped",
       noteLine:
-        "Local-only draft result. No save, persistence, Week 1 initialization, booking, or gameplay start occurred.",
+        "Not saved yet. Week 1, booking, and gameplay start remain locked.",
       dashboardLine: localDraftFinished
         ? "Draft Finished Locally. Week 1 setup, booking, gameplay, and saving remain locked."
         : progress.minimumRosterViable
-          ? "Draft is minimum viable but still open. Finish Draft locally when ready."
+          ? "Draft is minimum viable but still open. Finish Draft when ready."
           : "Finance-limited draft in progress. Week 1 gameplay and saving remain locked.",
     }),
     blockedCapabilityLabels: Object.freeze([
       "Auto-Fill stops at 16 in v0.1",
-      "No save payload",
+      "Save Not Active",
       "No SQLite write",
       "No Week 1 initialization",
       "No gameplay start",
@@ -828,7 +828,7 @@ function createFinishDraftStatusLine(actionStatus) {
 
 function createFinishDraftNoteLine(actionStatus, progress) {
   if (actionStatus === LOCAL_FINISH_DRAFT_STATUS.READY) {
-    return "Finish Draft will unlock the local recap only. Week 1 setup remains locked.";
+    return "Finish Draft opens the recap. Week 1 setup remains locked.";
   }
 
   if (actionStatus === LOCAL_FINISH_DRAFT_STATUS.BLOCKED_MINIMUM_NOT_VIABLE) {
@@ -836,7 +836,7 @@ function createFinishDraftNoteLine(actionStatus, progress) {
   }
 
   if (actionStatus === LOCAL_FINISH_DRAFT_STATUS.BLOCKED_ALREADY_FINISHED) {
-    return "This draft is not saved yet. Reload resets local draft progress.";
+    return "This draft is not saved yet. Reload resets draft progress.";
   }
 
   return "Select a brand before finishing the draft.";
@@ -864,7 +864,7 @@ function createBlockedButtonLabel(actionStatus) {
 
 function createReadinessStatusLine(actionStatus) {
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.READY) {
-    return "Ready for in-memory Make Pick";
+    return "Ready to make pick";
   }
 
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_UNAVAILABLE_CANDIDATE) {
@@ -884,11 +884,11 @@ function createReadinessStatusLine(actionStatus) {
   }
 
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_LOCAL_DRAFT_FINISHED) {
-    return "Draft finished locally";
+    return "Draft finished";
   }
 
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_NO_DRAFT_CONTINUATION) {
-    return "Draft cannot continue - no affordable available candidates";
+    return "Draft cannot continue - no affordable wrestlers remain";
   }
 
   return "Make Pick blocked - selection incomplete";
@@ -908,7 +908,7 @@ function createReadinessNoteLine(
       return "This signing dips into your booking reserve. You can still sign, but Week 1 booking funds may be tight.";
     }
 
-    return "Make Pick will run the approved Real Draft System v1 in memory only and spend local draft budget after success.";
+    return "Make Pick signs this wrestler to your draft roster and updates the budget.";
   }
 
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_UNAVAILABLE_CANDIDATE) {
@@ -916,7 +916,7 @@ function createReadinessNoteLine(
   }
 
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_ALREADY_DRAFTED) {
-    return "Choose another available candidate for the next local pick.";
+    return "Choose another available wrestler for the next pick.";
   }
 
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_UNAFFORDABLE_CANDIDATE) {
@@ -933,11 +933,11 @@ function createReadinessNoteLine(
   }
 
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_LOCAL_DRAFT_FINISHED) {
-    return "Draft Finished Locally. This draft is not saved yet, and Week 1 setup remains locked.";
+    return "Draft finished. This draft is not saved yet, and Week 1 setup remains locked.";
   }
 
   if (actionStatus === IN_MEMORY_MAKE_PICK_STATUS.BLOCKED_NO_DRAFT_CONTINUATION) {
-    return "No available affordable candidates remain in this local draft board.";
+    return "No available affordable wrestlers remain on this draft board.";
   }
 
   return "Select an available candidate and brand before making a pick.";

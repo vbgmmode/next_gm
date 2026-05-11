@@ -56,6 +56,10 @@ import {
     viability: document.getElementById("draft-budget-viability"),
     reserveStatus: document.getElementById("draft-budget-reserve-status"),
   };
+  const draftSignedRosterTargets = {
+    count: document.getElementById("draft-signed-roster-count"),
+    list: document.getElementById("draft-signed-roster-list"),
+  };
   const brandNameTargets = Array.from(document.querySelectorAll(".js-brand-name"));
   const intentPreviewTargets = {
     candidate: document.getElementById("intent-preview-candidate"),
@@ -403,13 +407,15 @@ import {
     );
     setText(
       financePreviewTargets.tier,
-      candidateProjection?.displayLabels.tierLine ||
-        "Projected Cost Tier: Locked pending rules"
+      candidateProjection
+        ? `Signing Tier: ${candidateProjection.projectedSigningTier}`
+        : "Signing Tier: Locked"
     );
     setText(
       financePreviewTargets.cost,
-      candidateProjection?.displayLabels.costLine ||
-        "Projected Signing Cost: Locked pending rules"
+      candidateProjection
+        ? `Signing Cost: ${candidateProjection.projectedSigningCost}`
+        : "Signing Cost: Locked"
     );
     setText(
       financePreviewTargets.afterSigning,
@@ -455,6 +461,59 @@ import {
       draftBudgetTargets.reserveStatus,
       progress.bookingReserveProtected ? "Booking reserve protected" : "Booking reserve dipped"
     );
+    updateDraftSignedRosterPanel();
+  }
+
+  function updateDraftSignedRosterPanel() {
+    const progress = uiState.miniDraftProgress;
+    const minimumTarget =
+      progress.minimumViableRosterCount ??
+      progress.minimumRosterTarget ??
+      NEW_GM_MODE_DRAFT_FINANCE_MINIMUM_ROSTER_TARGET_PLACEHOLDER;
+
+    setText(
+      draftSignedRosterTargets.count,
+      `${progress.signedTalentCount}/${minimumTarget} Signed`
+    );
+
+    if (!draftSignedRosterTargets.list) {
+      return;
+    }
+
+    if (!progress.completedPickSummaries.length) {
+      const empty = document.createElement("p");
+      empty.className = "empty-signed-roster";
+      empty.textContent = "No picks yet. Make Pick to add your first signing.";
+      draftSignedRosterTargets.list.replaceChildren(empty);
+      return;
+    }
+
+    draftSignedRosterTargets.list.replaceChildren(
+      ...progress.completedPickSummaries.map((summary) =>
+        createDraftSignedRosterItem(summary)
+      )
+    );
+  }
+
+  function createDraftSignedRosterItem(summary) {
+    const item = document.createElement("article");
+    item.className = "draft-signed-item";
+
+    const pick = document.createElement("span");
+    pick.textContent = `#${summary.pickNumber}`;
+
+    const name = document.createElement("strong");
+    name.textContent = summary.candidateName || "Signed Superstar";
+
+    const meta = document.createElement("em");
+    meta.textContent = [
+      summary.pickSource === "auto-fill" ? "Auto-Filled" : "Manual",
+      summary.signingTier,
+      `Cost ${summary.signingCost}`,
+    ].filter(Boolean).join(" / ");
+
+    item.append(pick, name, meta);
+    return item;
   }
 
   function updateFinanceCandidateRows() {
@@ -497,6 +556,15 @@ import {
           `Cost ${candidateProjection.projectedSigningCost}`,
         ].join(" | ");
       }
+
+      setText(
+        row.querySelector(".talent-cost"),
+        `Cost ${candidateProjection?.projectedSigningCost ?? "--"}`
+      );
+      setText(
+        row.querySelector(".talent-tier"),
+        candidateProjection?.projectedSigningTier || "Tier Locked"
+      );
     });
   }
 
@@ -510,7 +578,7 @@ import {
 
   function updateMockDraftRecapPreview(preview) {
     setText(draftRecapTargets.badge, preview.displayLabels.recapStatusLine);
-    setText(draftRecapTargets.path, "QA Preview Path");
+    setText(draftRecapTargets.path, "Preview Path");
     setText(draftRecapTargets.title, `${getBrandLabel()} mock draft recap`);
     setText(
       draftRecapTargets.copy,
@@ -767,7 +835,7 @@ import {
     }
 
     if (candidateProjection.affordabilityStatus === "already-drafted-signed") {
-      return "Already drafted in this local preview";
+      return "Already drafted";
     }
 
     if (candidateProjection.affordabilityStatus === "expensive-but-affordable") {
@@ -881,9 +949,9 @@ import {
     setText(talentDetail.availability, result.miniDraftProgress.displayLabels.progressLine);
     talentDetail.availability?.classList.remove("blocked");
     setText(talentDetail.read, result.miniDraftProgress.localDraftFinished
-      ? "Draft Finished Locally. Review the local recap."
-      : "Choose another available candidate to continue the local draft.");
-    setText(talentDetail.fit, "Local-only draft preview. Reload resets progress.");
+      ? "Draft finished. Review the recap."
+      : "Choose another available wrestler to continue the draft.");
+    setText(talentDetail.fit, "Not Saved Yet. Reload resets progress.");
     setText(talentDetail.previewStatus, result.miniDraftProgress.displayLabels.statusLine);
     setText(talentDetail.starPower, "--");
     setText(talentDetail.ringWork, "--");
@@ -1154,7 +1222,7 @@ function createTalentRow({ candidate, candidateProjection, draftRank }) {
   )} / ${sourceRosterPool}`;
   row.dataset.talentStyle = `Roster Pool: ${sourceRosterPool} | Cost ${projectedSigningCost}`;
   row.dataset.talentRead =
-    "Static v0.1 roster seed. Finance tiers are placeholder and local-only.";
+    "Draft board report. Signing cost reflects your current draft budget.";
   row.dataset.talentFit = `${formatDivisionCategory(
     divisionCategory
   )}, ${sourceRosterPool} source roster pool.`;
@@ -1168,7 +1236,7 @@ function createTalentRow({ candidate, candidateProjection, draftRank }) {
   row.dataset.durabilityValue = rating.durabilityValue;
   row.dataset.risk = rating.risk;
   row.dataset.riskValue = rating.riskValue;
-  row.dataset.confidence = "Static Seed";
+  row.dataset.confidence = "Strong";
   row.dataset.confidenceValue = "74";
 
   const portrait = document.createElement("span");
@@ -1178,6 +1246,18 @@ function createTalentRow({ candidate, candidateProjection, draftRank }) {
   const name = document.createElement("strong");
   name.textContent = displayName;
 
+  const cost = document.createElement("span");
+  cost.className = "talent-cost";
+  cost.textContent = `Cost ${projectedSigningCost}`;
+
+  const tier = document.createElement("span");
+  tier.className = "talent-tier";
+  tier.textContent = projectedSigningTier;
+
+  const division = document.createElement("span");
+  division.className = "talent-division";
+  division.textContent = formatDivisionCategory(divisionCategory);
+
   const meta = document.createElement("small");
   meta.textContent = [
     row.dataset.draftRank,
@@ -1186,7 +1266,7 @@ function createTalentRow({ candidate, candidateProjection, draftRank }) {
     `Cost ${projectedSigningCost}`,
   ].join(" | ");
 
-  row.append(portrait, name, meta);
+  row.append(portrait, name, cost, tier, division, meta);
   return row;
 }
 

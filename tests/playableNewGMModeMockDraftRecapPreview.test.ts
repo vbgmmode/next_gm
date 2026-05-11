@@ -81,7 +81,7 @@ describe("Playable New GM Mode mock draft recap preview", () => {
     );
     assert.match(
       html,
-      /<button class="ghost-button qa-preview-button" type="button" data-preview-go-to="draft-recap">QA Preview: Mock Draft Recap<\/button>/
+      /<button class="ghost-button qa-preview-button" type="button" data-preview-go-to="draft-recap">Preview Recap<\/button>/
     );
   });
 

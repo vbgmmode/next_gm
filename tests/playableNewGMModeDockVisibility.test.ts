@@ -141,7 +141,7 @@ describe("Playable New GM Mode dock visibility", () => {
       /<button class="panel-button" type="button" data-finish-local-draft disabled aria-disabled="true">Finish Locked<\/button>/
     );
     assert.equal(preview.status, "ready-preview-selection-intent-locked");
-    assert.equal(preview.displayLabels.statusLine, "Ready for in-memory Make Pick");
+    assert.equal(preview.displayLabels.statusLine, "Ready to make pick");
   });
 
   it("does not add forbidden storage, network, or generated-output surfaces to changed UI shell files", () => {
