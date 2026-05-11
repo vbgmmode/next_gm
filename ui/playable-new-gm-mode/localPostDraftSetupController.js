@@ -433,7 +433,7 @@ export function createWeekOneHqProjection({
         ? "Week 1 HQ is open. Booking is coming next."
         : "Finish draft setup to unlock Week 1 HQ.",
       localOnlyLine: "Local Session Only / Not Saved Yet",
-      bookingLine: "Book Week 1 Show - Coming Next",
+      bookingLine: unlocked ? "Book Week 1 Show" : "Booking Locked",
     }),
   });
 }

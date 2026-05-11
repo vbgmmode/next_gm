@@ -475,7 +475,11 @@ body.is-landing .game-hud {
 .gm-alerts,
 .week-checklist,
 .hq-tile,
-.brand-dashboard-hero {
+.brand-dashboard-hero,
+.booking-control-panel,
+.booking-card-panel,
+.booking-summary-panel,
+.show-card-segment {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-panel);
   box-shadow: 0 18px 46px var(--shadow);
@@ -3194,6 +3198,204 @@ dd {
   font-size: 2.4rem;
 }
 
+.booking-screen {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.booking-builder-layout {
+  display: grid;
+  grid-template-columns: minmax(265px, 0.58fr) minmax(0, 1fr) minmax(250px, 0.54fr);
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.booking-control-panel,
+.booking-card-panel,
+.booking-summary-panel {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 112%, color-mix(in srgb, var(--brand-primary) 14%, transparent), transparent 62%),
+    linear-gradient(112deg, var(--brand-soft), transparent 64%),
+    var(--surface-plate);
+  padding: 12px;
+}
+
+.booking-control-panel {
+  grid-template-rows: auto auto minmax(0, auto) auto auto;
+  border-left: 7px solid var(--brand-primary);
+}
+
+.booking-card-panel {
+  grid-template-rows: auto minmax(0, 1fr);
+  border-top: 4px solid color-mix(in srgb, var(--brand-primary) 62%, var(--border-subtle));
+}
+
+.booking-summary-panel {
+  grid-template-rows: auto auto minmax(0, 0.8fr) minmax(0, 0.58fr) auto;
+  border-top: 4px solid color-mix(in srgb, var(--brand-accent) 54%, var(--border-subtle));
+}
+
+.booking-select-grid,
+.booking-status-strip,
+.booking-summary-list {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.booking-select-grid {
+  grid-template-columns: 1fr;
+}
+
+.booking-status-strip {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.booking-status-strip span,
+.booking-mini-list span {
+  overflow: hidden;
+  border-left: 4px solid color-mix(in srgb, var(--brand-primary) 54%, transparent);
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.016) 0 1px, transparent 1px 6px),
+    rgba(255, 255, 255, 0.028);
+  color: var(--text-secondary);
+  padding: 8px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  font-family: var(--font-data);
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.show-card-list,
+.booking-mini-list {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden auto;
+  padding-right: 2px;
+}
+
+.show-card-segment {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) minmax(86px, auto) auto;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  border-left: 6px solid color-mix(in srgb, var(--brand-primary) 62%, transparent);
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.014) 0 1px, transparent 1px 18px),
+    linear-gradient(90deg, var(--brand-soft), transparent 58%),
+    rgba(0, 0, 0, 0.42);
+  padding: 10px;
+}
+
+.show-card-segment.main-event {
+  border-left-color: var(--brand-accent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 18px var(--brand-glow);
+}
+
+.show-card-segment.empty {
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-content: center;
+}
+
+.show-card-segment span,
+.show-card-segment strong,
+.show-card-segment em,
+.show-card-segment small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.show-card-segment span {
+  color: var(--brand-accent);
+  font-size: 0.9rem;
+  font-weight: 950;
+  font-family: var(--font-data);
+}
+
+.show-card-segment strong {
+  display: block;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.show-card-segment em,
+.show-card-segment small {
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 850;
+  font-family: var(--font-ticker);
+  text-transform: uppercase;
+}
+
+.show-card-segment small {
+  color: var(--brand-accent);
+  font-family: var(--font-data);
+}
+
+.show-card-remove {
+  min-height: 30px;
+  padding: 0 9px;
+  font-size: 0.62rem;
+}
+
+.booking-summary-list {
+  margin: 0;
+}
+
+.booking-summary-list div {
+  display: grid;
+  grid-template-columns: minmax(84px, 0.45fr) minmax(0, 1fr);
+  gap: 8px;
+  min-width: 0;
+  border-left: 4px solid color-mix(in srgb, var(--brand-primary) 54%, transparent);
+  background: rgba(255, 255, 255, 0.028);
+  padding: 8px;
+}
+
+.booking-summary-list dt,
+.booking-summary-list dd {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-family: var(--font-data);
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.booking-summary-list dt {
+  color: var(--text-muted);
+  font-weight: 950;
+}
+
+.booking-summary-list dd {
+  color: var(--text-primary);
+  font-weight: 900;
+}
+
 @media (max-width: 1180px) and (min-width: 761px) {
   .bottom-nav-dock:not(.dock-collapsed):hover .nav-tab,
   .bottom-nav-dock:not(.dock-collapsed):focus-within .nav-tab {
@@ -3464,6 +3666,7 @@ dd {
   .recap-layout,
   .roster-hub-layout,
   .dashboard-layout,
+  .booking-builder-layout,
   .brand-dashboard-hero,
   .settings-layout {
     grid-template-columns: 1fr;

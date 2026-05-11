@@ -249,7 +249,7 @@ describe("Playable New GM Mode local post-draft setup flow", () => {
     assert.equal(unlockedProjection.signedRosterCount, 16);
     assert.equal(unlockedProjection.champions.length, 4);
     assert.equal(unlockedProjection.rivalries.length, 1);
-    assert.equal(unlockedProjection.displayLabels.bookingLine, "Book Week 1 Show - Coming Next");
+    assert.equal(unlockedProjection.displayLabels.bookingLine, "Book Week 1 Show");
   });
 
   it("exposes brand-specific title sets for every playable brand", () => {

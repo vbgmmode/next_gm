@@ -106,7 +106,7 @@ describe("Playable New GM Mode draft recap preview", () => {
     assert.match(html, /Assign Champions/);
     assert.match(html, /Create Rivalries/);
     assert.match(html, /Week 1 HQ/);
-    assert.match(html, /Booking Coming Next/);
+    assert.match(html, /Book Week 1 Show|Booking Locked/);
   });
 
   it("keeps the dock hidden until Brand Dashboard", () => {

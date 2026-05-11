@@ -26,6 +26,13 @@ import {
   updateLocalRivalrySlot,
 } from "./localPostDraftSetupController.js";
 import {
+  LOCAL_WEEK_ONE_SEGMENT_TYPES,
+  addLocalWeekOneBookingSegment,
+  createInitialLocalWeekOneBookingState,
+  createWeekOneBookingProjection,
+  removeLocalWeekOneBookingSegment,
+} from "./localWeekOneBookingController.js";
+import {
   createNewGMModeDraftPickCandidateObjects,
   createNewGMModeDraftFinanceProjection,
   NEW_GM_MODE_DRAFT_FINANCE_BOOKING_RESERVE_PLACEHOLDER,
@@ -190,6 +197,9 @@ import {
     setupStatus: document.getElementById("week-one-hq-setup-status"),
     local: document.getElementById("week-one-hq-local"),
     bookingAction: document.getElementById("week-one-hq-booking-action"),
+    bookingState: document.getElementById("week-one-hq-booking-state"),
+    bookingNote: document.getElementById("week-one-hq-booking-note"),
+    bookingTile: document.getElementById("week-one-hq-booking-tile"),
     champions: document.getElementById("week-one-hq-champions"),
     rivalries: document.getElementById("week-one-hq-rivalries"),
     statusCard: document.getElementById("week-one-hq-status-card"),
@@ -197,6 +207,29 @@ import {
     budgetTile: document.getElementById("week-one-hq-budget-tile"),
     championTile: document.getElementById("week-one-hq-champion-tile"),
     rivalryTile: document.getElementById("week-one-hq-rivalry-tile"),
+  };
+  const bookingTargets = {
+    title: document.getElementById("week-one-booking-title"),
+    status: document.getElementById("week-one-booking-status"),
+    message: document.getElementById("booking-builder-message"),
+    segmentType: document.getElementById("booking-segment-type"),
+    wrestlerA: document.getElementById("booking-wrestler-a"),
+    wrestlerB: document.getElementById("booking-wrestler-b"),
+    promoWrestler: document.getElementById("booking-promo-wrestler"),
+    matchFields: Array.from(document.querySelectorAll(".booking-match-field")),
+    promoFields: Array.from(document.querySelectorAll(".booking-promo-field")),
+    addSegment: document.getElementById("add-week-one-segment"),
+    segmentCount: document.getElementById("booking-segment-count"),
+    mainEventStatus: document.getElementById("booking-main-event-status"),
+    readyStatus: document.getElementById("booking-ready-status"),
+    showCardList: document.getElementById("week-one-show-card-list"),
+    summaryBrand: document.getElementById("booking-summary-brand"),
+    summaryRoster: document.getElementById("booking-summary-roster"),
+    summaryBudget: document.getElementById("booking-summary-budget"),
+    summaryChampions: document.getElementById("booking-summary-champions"),
+    summaryRivalries: document.getElementById("booking-summary-rivalries"),
+    runShow: document.getElementById("booking-run-show-action"),
+    runShowFooter: document.getElementById("booking-run-show-footer-action"),
   };
   const talentDetail = {
     panel: document.querySelector(".selected-profile"),
@@ -232,6 +265,7 @@ import {
     "championship-setup",
     "rivalry-setup",
     "brand-dashboard",
+    "week-one-booking",
   ];
 
   const sectionNavMap = {
@@ -249,6 +283,7 @@ import {
     "championship-setup": "roster",
     "rivalry-setup": "roster",
     "brand-dashboard": "dashboard",
+    "week-one-booking": "booking",
   };
 
   const brandLabels = {
@@ -266,6 +301,7 @@ import {
     mockDraftRecapPreview: undefined,
     miniDraftProgress: createInitialMiniDraftProgress(),
     localPostDraftSetup: createInitialLocalPostDraftSetupState(),
+    localWeekOneBooking: createInitialLocalWeekOneBookingState(),
   };
   let dockCollapseTimer;
 
@@ -391,6 +427,10 @@ import {
 
     if (resolvedTargetId === "brand-dashboard") {
       updateWeekOneHqSurface();
+    }
+
+    if (resolvedTargetId === "week-one-booking") {
+      updateWeekOneBookingSurface();
     }
   }
 
@@ -1069,6 +1109,27 @@ import {
       weekOneHqTargets.rivalryTile,
       projection.unlocked ? "Setup Complete" : "Locked"
     );
+    setText(
+      weekOneHqTargets.bookingTile,
+      projection.unlocked ? "Book Week 1 Show" : "Booking Locked"
+    );
+    setText(
+      weekOneHqTargets.bookingState,
+      projection.unlocked ? "Available" : "Locked"
+    );
+    setText(
+      weekOneHqTargets.bookingNote,
+      projection.unlocked ? "No show created" : "Complete setup first"
+    );
+
+    if (weekOneHqTargets.bookingAction) {
+      weekOneHqTargets.bookingAction.disabled = !projection.unlocked;
+      weekOneHqTargets.bookingAction.classList.toggle("enabled", projection.unlocked);
+      weekOneHqTargets.bookingAction.setAttribute(
+        "aria-disabled",
+        String(!projection.unlocked)
+      );
+    }
 
     if (weekOneHqTargets.champions) {
       weekOneHqTargets.champions.replaceChildren(
@@ -1101,6 +1162,188 @@ import {
     }
 
     updatePostDraftSetupCards();
+  }
+
+  function updateWeekOneBookingSurface(statusLine) {
+    const projection = createWeekOneBookingProjection({
+      selectedBrand: getSelectedBrandDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+      bookingState: uiState.localWeekOneBooking,
+    });
+
+    setText(bookingTargets.title, `${projection.brandLabel} ${projection.displayLabels.titleLine}`);
+    setText(bookingTargets.status, projection.displayLabels.statusLine);
+    setText(bookingTargets.message, statusLine || projection.displayLabels.statusLine);
+    setText(bookingTargets.segmentCount, projection.displayLabels.segmentCountLine);
+    setText(bookingTargets.mainEventStatus, projection.displayLabels.mainEventLine);
+    setText(bookingTargets.readyStatus, projection.displayLabels.readyLine);
+    setText(bookingTargets.summaryBrand, projection.brandLabel);
+    setText(bookingTargets.summaryRoster, `${projection.signedRosterCount} Signed`);
+    setText(bookingTargets.summaryBudget, `${projection.remainingDraftBudget} Remaining`);
+
+    renderBookingRosterControls(projection);
+    renderBookingSummary(projection);
+    renderShowCardSegments(projection);
+    updateBookingSegmentControlVisibility();
+
+    if (bookingTargets.addSegment) {
+      bookingTargets.addSegment.disabled = projection.locked;
+      bookingTargets.addSegment.classList.toggle("enabled", !projection.locked);
+      bookingTargets.addSegment.setAttribute("aria-disabled", String(projection.locked));
+    }
+
+    [bookingTargets.runShow, bookingTargets.runShowFooter]
+      .filter(Boolean)
+      .forEach((button) => {
+        button.disabled = true;
+        button.textContent = projection.status.readyToRunComingNext
+          ? "Ready to Run: Coming Next"
+          : projection.displayLabels.runShowLabel;
+        button.setAttribute("aria-disabled", "true");
+      });
+  }
+
+  function renderBookingRosterControls(projection) {
+    renderRosterSelectOptions({
+      select: bookingTargets.wrestlerA,
+      rosterOptions: projection.rosterOptions,
+      selectedId: bookingTargets.wrestlerA?.value,
+      placeholder: "Choose Signed Talent",
+    });
+    renderRosterSelectOptions({
+      select: bookingTargets.wrestlerB,
+      rosterOptions: projection.rosterOptions,
+      selectedId: bookingTargets.wrestlerB?.value,
+      placeholder: "Choose Signed Talent",
+    });
+    renderRosterSelectOptions({
+      select: bookingTargets.promoWrestler,
+      rosterOptions: projection.rosterOptions,
+      selectedId: bookingTargets.promoWrestler?.value,
+      placeholder: "Choose Signed Talent",
+    });
+    renderTextSelectOptions({
+      select: bookingTargets.segmentType,
+      options: LOCAL_WEEK_ONE_SEGMENT_TYPES.map((type) => type.segmentType),
+      selectedValue: bookingTargets.segmentType?.value,
+    });
+
+    Array.from(
+      [
+        bookingTargets.segmentType,
+        bookingTargets.wrestlerA,
+        bookingTargets.wrestlerB,
+        bookingTargets.promoWrestler,
+      ].filter(Boolean)
+    ).forEach((select) => {
+      select.disabled = projection.locked;
+    });
+
+    if (bookingTargets.segmentType) {
+      Array.from(bookingTargets.segmentType.options).forEach((option) => {
+        const segmentType = LOCAL_WEEK_ONE_SEGMENT_TYPES.find(
+          (type) => type.segmentType === option.value
+        );
+        if (segmentType) {
+          option.textContent = segmentType.label;
+        }
+      });
+    }
+  }
+
+  function renderBookingSummary(projection) {
+    if (bookingTargets.summaryChampions) {
+      bookingTargets.summaryChampions.replaceChildren(
+        ...projection.champions.map((champion) =>
+          createBookingMiniLine(champion.label, champion.displayName)
+        )
+      );
+    }
+
+    if (bookingTargets.summaryRivalries) {
+      bookingTargets.summaryRivalries.replaceChildren(
+        ...(projection.rivalries.length
+          ? projection.rivalries.map((rivalry) =>
+              createBookingMiniLine(
+                `${rivalry.rivalryType} / ${rivalry.intensity}`,
+                `${rivalry.wrestlerALabel} vs ${rivalry.wrestlerBLabel}`
+              )
+            )
+          : [createTextSpan("Rivalries locked")])
+      );
+    }
+  }
+
+  function renderShowCardSegments(projection) {
+    if (!bookingTargets.showCardList) {
+      return;
+    }
+
+    bookingTargets.showCardList.replaceChildren(
+      ...(projection.segments.length
+        ? projection.segments.map((segment) => createShowCardSegment(segment))
+        : [createEmptyShowCardSegment()])
+    );
+  }
+
+  function createShowCardSegment(segment) {
+    const item = document.createElement("article");
+    item.className = segment.mainEvent
+      ? "show-card-segment main-event"
+      : "show-card-segment";
+
+    const number = document.createElement("span");
+    number.textContent = String(segment.segmentNumber).padStart(2, "0");
+
+    const content = document.createElement("div");
+    const title = document.createElement("strong");
+    title.textContent = segment.typeLabel;
+    const talent = document.createElement("em");
+    talent.textContent = segment.talentLine;
+    content.append(title, talent);
+
+    const badge = document.createElement("small");
+    badge.textContent = segment.mainEvent ? "Main Event" : "Segment";
+
+    const remove = document.createElement("button");
+    remove.className = "ghost-button show-card-remove";
+    remove.type = "button";
+    remove.dataset.removeBookingSegment = segment.segmentId;
+    remove.textContent = "Remove";
+
+    item.append(number, content, badge, remove);
+    return item;
+  }
+
+  function createEmptyShowCardSegment() {
+    const item = document.createElement("article");
+    item.className = "show-card-segment empty";
+    const number = document.createElement("span");
+    number.textContent = "01";
+    const title = document.createElement("strong");
+    title.textContent = "No segments booked";
+    const note = document.createElement("em");
+    note.textContent = "Add a match, promo, and main event from signed talent.";
+    item.append(number, title, note);
+    return item;
+  }
+
+  function createBookingMiniLine(label, value) {
+    const item = document.createElement("span");
+    item.textContent = `${label}: ${value}`;
+    return item;
+  }
+
+  function updateBookingSegmentControlVisibility() {
+    const isPromo = bookingTargets.segmentType?.value === "promo";
+
+    bookingTargets.matchFields.forEach((field) => {
+      field.hidden = isPromo;
+    });
+    bookingTargets.promoFields.forEach((field) => {
+      field.hidden = !isPromo;
+    });
   }
 
   function renderRosterSelectOptions({
@@ -1573,6 +1816,46 @@ import {
     });
     uiState.localPostDraftSetup = result.setupState;
     updateRivalrySetupSurface();
+  });
+
+  bookingTargets.segmentType?.addEventListener("change", () => {
+    updateBookingSegmentControlVisibility();
+  });
+
+  bookingTargets.addSegment?.addEventListener("click", () => {
+    if (bookingTargets.addSegment.disabled) {
+      return;
+    }
+
+    const segmentType = bookingTargets.segmentType?.value || "singles-match";
+    const result = addLocalWeekOneBookingSegment({
+      selectedBrand: getSelectedBrandDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+      setupState: uiState.localPostDraftSetup,
+      bookingState: uiState.localWeekOneBooking,
+      segmentInput: {
+        segmentType,
+        wrestlerAId: bookingTargets.wrestlerA?.value,
+        wrestlerBId: bookingTargets.wrestlerB?.value,
+        featuredWrestlerId: bookingTargets.promoWrestler?.value,
+      },
+    });
+    uiState.localWeekOneBooking = result.bookingState;
+    updateWeekOneBookingSurface(result.displayLabels.statusLine);
+  });
+
+  bookingTargets.showCardList?.addEventListener("click", (event) => {
+    const removeButton = event.target?.closest?.("[data-remove-booking-segment]");
+
+    if (!removeButton) {
+      return;
+    }
+
+    uiState.localWeekOneBooking = removeLocalWeekOneBookingSegment({
+      bookingState: uiState.localWeekOneBooking,
+      segmentId: removeButton.dataset.removeBookingSegment,
+    });
+    updateWeekOneBookingSurface("Segment removed from the Week 1 show card.");
   });
 
   previewControls.forEach((control) => {

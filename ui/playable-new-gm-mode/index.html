@@ -16,7 +16,7 @@
             <span class="nav-icon">DB</span>
             <span class="nav-label">Dashboard</span>
           </button>
-          <button class="nav-tab" type="button" data-nav-target="brand-dashboard" data-nav-section="booking" data-nav-label="Booking" aria-label="Booking section">
+          <button class="nav-tab" type="button" data-nav-target="week-one-booking" data-nav-section="booking" data-nav-label="Booking" aria-label="Booking section">
             <span class="nav-icon">BK</span>
             <span class="nav-label">Booking</span>
           </button>
@@ -1111,12 +1111,12 @@
               </article>
               <article class="command-monitor urgent">
                 <span>Booking</span>
-                <strong>Coming Next</strong>
-                <em>No show created</em>
+                <strong id="week-one-hq-booking-state">Locked</strong>
+                <em id="week-one-hq-booking-note">Complete setup first</em>
               </article>
             </div>
             <div class="hero-actions">
-              <button class="hero-cta" id="week-one-hq-booking-action" type="button" disabled>Book Week 1 Show - Coming Next</button>
+              <button class="hero-cta" id="week-one-hq-booking-action" type="button" data-go-to="week-one-booking" disabled>Booking Locked</button>
               <button class="ghost-button" type="button" data-go-to="draft-recap">Back to Draft Recap</button>
             </div>
           </div>
@@ -1156,8 +1156,104 @@
               <article class="hq-tile"><strong>Remaining Budget</strong><span id="week-one-hq-budget-tile">120 remaining</span></article>
               <article class="hq-tile"><strong>Championship Setup</strong><span id="week-one-hq-champion-tile">Locked</span></article>
               <article class="hq-tile"><strong>Rivalry Setup</strong><span id="week-one-hq-rivalry-tile">Locked</span></article>
-              <article class="hq-tile"><strong>Booking</strong><span>Booking Coming Next</span></article>
+              <article class="hq-tile"><strong>Booking</strong><span id="week-one-hq-booking-tile">Booking Locked</span></article>
             </section>
+          </div>
+        </section>
+
+        <section
+          id="week-one-booking"
+          class="screen booking-screen"
+          data-screen-title="Week 1 Booking"
+          data-flow-phase="Week 1 Booking"
+          aria-labelledby="week-one-booking-title"
+          hidden
+        >
+          <div class="screen-header">
+            <div>
+              <p class="kicker">Week 1 Show Card</p>
+              <h2 id="week-one-booking-title"><span class="js-brand-name">Raw</span> Week 1 Booking</h2>
+            </div>
+            <span class="header-badge" id="week-one-booking-status">Complete setup before booking.</span>
+          </div>
+
+          <div class="booking-builder-layout">
+            <section class="booking-control-panel" aria-labelledby="booking-control-title">
+              <div class="panel-title">
+                <p class="kicker">Add Segment</p>
+                <h3 id="booking-control-title">Booking Desk</h3>
+              </div>
+              <p class="setup-message" id="booking-builder-message">Complete draft setup before booking Week 1.</p>
+
+              <div class="booking-select-grid">
+                <label class="setup-field" for="booking-segment-type">
+                  <span>Segment Type</span>
+                  <select id="booking-segment-type">
+                    <option value="singles-match">Singles Match</option>
+                    <option value="promo">Promo</option>
+                    <option value="main-event-singles-match">Main Event Singles Match</option>
+                  </select>
+                </label>
+                <label class="setup-field booking-match-field" for="booking-wrestler-a">
+                  <span>Wrestler A</span>
+                  <select id="booking-wrestler-a"></select>
+                </label>
+                <label class="setup-field booking-match-field" for="booking-wrestler-b">
+                  <span>Wrestler B</span>
+                  <select id="booking-wrestler-b"></select>
+                </label>
+                <label class="setup-field booking-promo-field" for="booking-promo-wrestler">
+                  <span>Featured Wrestler</span>
+                  <select id="booking-promo-wrestler"></select>
+                </label>
+              </div>
+
+              <button class="hero-cta small" type="button" id="add-week-one-segment">Add Segment</button>
+
+              <div class="booking-status-strip" aria-label="Show card status">
+                <span id="booking-segment-count">Segments 0</span>
+                <span id="booking-main-event-status">Main Event Needed</span>
+                <span id="booking-ready-status">Run Show Locked</span>
+              </div>
+            </section>
+
+            <section class="booking-card-panel" aria-labelledby="booking-card-title">
+              <div class="panel-title">
+                <p class="kicker">Show Card</p>
+                <h3 id="booking-card-title">Week 1 Card</h3>
+              </div>
+              <div class="show-card-list" id="week-one-show-card-list" aria-label="Local Week 1 show card">
+                <article class="show-card-segment empty">
+                  <span>01</span>
+                  <strong>No segments booked</strong>
+                  <em>Add a match, promo, and main event from signed talent.</em>
+                </article>
+              </div>
+            </section>
+
+            <aside class="booking-summary-panel" aria-label="Week 1 booking summary">
+              <div class="panel-title">
+                <p class="kicker">Local Session Only</p>
+                <h3>Week 1 HQ</h3>
+              </div>
+              <dl class="booking-summary-list">
+                <div><dt>Brand</dt><dd id="booking-summary-brand">Raw</dd></div>
+                <div><dt>Signed Roster</dt><dd id="booking-summary-roster">0 Signed</dd></div>
+                <div><dt>Remaining</dt><dd id="booking-summary-budget">120</dd></div>
+              </dl>
+              <div class="booking-mini-list" id="booking-summary-champions" aria-label="Champions summary">
+                <span>Champions locked</span>
+              </div>
+              <div class="booking-mini-list" id="booking-summary-rivalries" aria-label="Rivalries summary">
+                <span>Rivalries locked</span>
+              </div>
+              <button class="hero-cta small" id="booking-run-show-action" type="button" disabled>Run Show - Coming Next</button>
+            </aside>
+          </div>
+
+          <div class="screen-actions">
+            <button class="ghost-button" type="button" data-go-to="brand-dashboard">Back to Week 1 HQ</button>
+            <button class="hero-cta small" type="button" id="booking-run-show-footer-action" disabled>Run Show - Coming Next</button>
           </div>
         </section>
       </main>

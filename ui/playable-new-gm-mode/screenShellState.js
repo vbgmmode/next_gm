@@ -13,6 +13,7 @@ export const PRE_GAME_SCREEN_IDS = Object.freeze([
 
 export const GAME_SHELL_SCREEN_IDS = Object.freeze([
   "brand-dashboard",
+  "week-one-booking",
 ]);
 
 export const GAME_SHELL_CONTEXT_SCREEN_IDS = Object.freeze([
