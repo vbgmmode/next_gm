@@ -20,7 +20,7 @@
             <span class="nav-icon">BK</span>
             <span class="nav-label">Booking</span>
           </button>
-          <button class="nav-tab" type="button" data-nav-target="brand-dashboard" data-nav-section="roster" data-nav-label="Roster" aria-label="Roster section">
+          <button class="nav-tab" type="button" data-nav-target="roster-hub" data-nav-section="roster" data-nav-label="Roster" aria-label="Roster section">
             <span class="nav-icon">RS</span>
             <span class="nav-label">Roster</span>
           </button>
@@ -879,6 +879,80 @@
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="draft-room">Back to Draft</button>
+            <div class="draft-action-cluster">
+              <button class="ghost-button" type="button" data-go-to="roster-hub">View Roster Hub</button>
+              <button class="hero-cta small" type="button" data-go-to="brand-dashboard">Continue to Brand Dashboard Preview</button>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="roster-hub"
+          class="screen roster-hub-screen"
+          data-screen-title="Roster"
+          data-flow-phase="Post-Draft Roster"
+          aria-labelledby="roster-hub-title"
+          hidden
+        >
+          <div class="screen-header">
+            <div>
+              <p class="kicker">Post-Draft Roster</p>
+              <h2 id="roster-hub-title"><span class="js-brand-name">Raw</span> roster locked</h2>
+            </div>
+            <span class="header-badge" id="roster-hub-status">Finish the draft to view your roster.</span>
+          </div>
+
+          <div class="roster-hub-layout">
+            <section class="roster-board-panel" aria-labelledby="post-draft-roster-list-title">
+              <div class="panel-title">
+                <p class="kicker">Signed Talent</p>
+                <h3 id="post-draft-roster-list-title">Local Draft Roster</h3>
+              </div>
+              <p class="roster-lock-message" id="roster-hub-lock">Finish the draft to view your roster.</p>
+              <div class="post-draft-roster-list locked" id="post-draft-roster-list" aria-label="Signed local draft roster"></div>
+            </section>
+
+            <aside class="roster-summary-panel" aria-label="Roster summary">
+              <div class="panel-title">
+                <p class="kicker">Roster Control</p>
+                <h3>Launch Status</h3>
+              </div>
+              <div class="roster-summary-grid">
+                <span id="roster-summary-signed-count">Signed Superstars: 0</span>
+                <span id="roster-summary-minimum">Minimum Viable Roster: 16</span>
+                <span id="roster-summary-minimum-status">Minimum roster not viable</span>
+                <span id="roster-summary-starting-budget">Starting Budget: 120</span>
+                <span id="roster-summary-budget-spent">Budget Spent: 0</span>
+                <span id="roster-summary-remaining-budget">Remaining Budget: 120</span>
+                <span id="roster-summary-booking-reserve">Booking Reserve Target: 20</span>
+                <span id="roster-summary-reserve-status">Booking reserve protected</span>
+                <span id="roster-summary-local-only">Local-only / not saved</span>
+                <span id="roster-summary-week-one">Week 1 locked</span>
+              </div>
+            </aside>
+
+            <section class="locked-setup-panel" aria-label="Locked post-draft setup">
+              <article class="locked-setup-card">
+                <strong>Championship Setup</strong>
+                <span>Locked</span>
+              </article>
+              <article class="locked-setup-card">
+                <strong>Rivalry Setup</strong>
+                <span>Locked</span>
+              </article>
+              <article class="locked-setup-card">
+                <strong>Week 1 Booking</strong>
+                <span>Locked</span>
+              </article>
+              <article class="locked-setup-card">
+                <strong>Save/Persistence</strong>
+                <span>Not active</span>
+              </article>
+            </section>
+          </div>
+
+          <div class="screen-actions">
+            <button class="ghost-button" type="button" data-go-to="draft-recap">Back to Draft Recap</button>
             <button class="hero-cta small" type="button" data-go-to="brand-dashboard">Continue to Brand Dashboard Preview</button>
           </div>
         </section>
@@ -953,8 +1027,8 @@
                 <span class="portrait-frame roster-frame" aria-hidden="true">RS</span>
                 <div>
                   <p class="kicker">Roster Hub</p>
-                  <h3>Roster, Rivalries, Titles</h3>
-                  <p>Roster-adjacent systems stay grouped after the draft recap.</p>
+                  <h3>Signed roster review</h3>
+                  <p>Review the local post-draft roster before future setup unlocks.</p>
                 </div>
               </article>
               <article class="hq-tile"><strong>Championships</strong><span>Manual assignment first. Recommendations are ask-only.</span></article>

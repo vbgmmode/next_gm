@@ -8,6 +8,7 @@ import {
   createFinishDraftReadiness,
   createInitialMiniDraftProgress,
   createMakePickReadiness,
+  createPostDraftRosterHubProjection,
   executeAutoFillMinimumRoster,
   executeInMemoryMakePick,
   executeLocalFinishDraft,
@@ -89,6 +90,22 @@ import {
     dashboard: document.getElementById("dashboard-preview-note"),
     dashboardMiniDraftState: document.getElementById("dashboard-mini-draft-state"),
   };
+  const rosterHubTargets = {
+    title: document.getElementById("roster-hub-title"),
+    status: document.getElementById("roster-hub-status"),
+    lock: document.getElementById("roster-hub-lock"),
+    list: document.getElementById("post-draft-roster-list"),
+    signedCount: document.getElementById("roster-summary-signed-count"),
+    minimumRoster: document.getElementById("roster-summary-minimum"),
+    minimumStatus: document.getElementById("roster-summary-minimum-status"),
+    startingBudget: document.getElementById("roster-summary-starting-budget"),
+    budgetSpent: document.getElementById("roster-summary-budget-spent"),
+    remainingBudget: document.getElementById("roster-summary-remaining-budget"),
+    bookingReserve: document.getElementById("roster-summary-booking-reserve"),
+    bookingReserveStatus: document.getElementById("roster-summary-reserve-status"),
+    localOnly: document.getElementById("roster-summary-local-only"),
+    weekOneLocked: document.getElementById("roster-summary-week-one"),
+  };
   const talentDetail = {
     initials: document.getElementById("talent-detail-initials"),
     name: document.getElementById("talent-detail-name"),
@@ -133,6 +150,7 @@ import {
     "select-brand": undefined,
     "draft-room": "booking",
     "draft-recap": "roster",
+    "roster-hub": "roster",
     "brand-dashboard": "dashboard",
   };
 
@@ -253,6 +271,9 @@ import {
       phaseLabel.textContent = target.dataset.flowPhase || "Preview";
     }
 
+    if (targetId === "roster-hub") {
+      updatePostDraftRosterHub();
+    }
   }
 
   function getBrandLabel() {
@@ -551,6 +572,82 @@ import {
     );
   }
 
+  function updatePostDraftRosterHub() {
+    const projection = createPostDraftRosterHubProjection({
+      selectedBrand: getSelectedBrandDisplay(),
+      miniDraftProgress: uiState.miniDraftProgress,
+    });
+
+    setText(rosterHubTargets.title, projection.displayLabels.titleLine);
+    setText(rosterHubTargets.status, projection.displayLabels.statusLine);
+    setText(rosterHubTargets.lock, projection.displayLabels.emptyRosterLine);
+    setText(rosterHubTargets.signedCount, projection.displayLabels.signedCountLine);
+    setText(rosterHubTargets.minimumRoster, projection.displayLabels.minimumRosterLine);
+    setText(rosterHubTargets.minimumStatus, projection.displayLabels.minimumRosterStatusLine);
+    setText(rosterHubTargets.startingBudget, projection.displayLabels.startingBudgetLine);
+    setText(rosterHubTargets.budgetSpent, projection.displayLabels.budgetSpentLine);
+    setText(rosterHubTargets.remainingBudget, projection.displayLabels.remainingBudgetLine);
+    setText(rosterHubTargets.bookingReserve, projection.displayLabels.bookingReserveLine);
+    setText(
+      rosterHubTargets.bookingReserveStatus,
+      projection.displayLabels.bookingReserveStatusLine
+    );
+    setText(rosterHubTargets.localOnly, projection.displayLabels.localOnlyLine);
+    setText(rosterHubTargets.weekOneLocked, projection.displayLabels.weekOneLockedLine);
+
+    rosterHubTargets.lock?.classList.toggle("hidden", !projection.locked);
+    rosterHubTargets.list?.classList.toggle("locked", projection.locked);
+
+    if (rosterHubTargets.list) {
+      rosterHubTargets.list.replaceChildren(
+        ...(projection.locked
+          ? []
+          : projection.signedTalent.map((talent) =>
+              createPostDraftRosterCard(talent)
+            ))
+      );
+    }
+  }
+
+  function createPostDraftRosterCard(talent) {
+    const card = document.createElement("article");
+    card.className = "post-draft-roster-card";
+
+    const portrait = document.createElement("span");
+    portrait.className = "mini-portrait roster-card-portrait";
+    portrait.textContent = createInitials(talent.displayName);
+
+    const content = document.createElement("div");
+    content.className = "roster-card-copy";
+
+    const eyebrow = document.createElement("p");
+    eyebrow.className = "kicker";
+    eyebrow.textContent = `${talent.sourceRosterPool} / ${talent.pickSource}`;
+
+    const title = document.createElement("h3");
+    title.textContent = talent.displayName;
+
+    const meta = document.createElement("div");
+    meta.className = "roster-card-meta";
+
+    [
+      `Pick ${talent.pickNumber}`,
+      talent.signingTier,
+      `Cost ${talent.signingCost}`,
+      talent.divisionCategory,
+      talent.signedStatus,
+      talent.bookingReserveStatus,
+    ].forEach((label) => {
+      const chip = document.createElement("span");
+      chip.textContent = label;
+      meta.append(chip);
+    });
+
+    content.append(eyebrow, title, meta);
+    card.append(portrait, content);
+    return card;
+  }
+
   function updateMiniDraftPickBadge() {
     if (miniDraftPickBadge) {
       miniDraftPickBadge.textContent = uiState.miniDraftProgress.localDraftFinished
@@ -600,6 +697,7 @@ import {
     updateMiniDraftPickBadge();
     updateDraftBudgetPanel();
     updateFinanceCandidateRows();
+    updatePostDraftRosterHub();
     updateAutoFillControl();
     updateFinishDraftControl();
     updateRecapControl();
@@ -898,6 +996,7 @@ import {
     }
 
     updateMakePickControl();
+    updatePostDraftRosterHub();
 
   });
 
@@ -926,6 +1025,7 @@ import {
     setText(intentPreviewTargets.status, result.displayLabels?.statusLine);
     setText(intentPreviewTargets.note, result.displayLabels?.noteLine);
     updateMakePickControl();
+    updatePostDraftRosterHub();
   });
 
   finishDraftControl?.addEventListener("click", () => {
@@ -948,6 +1048,7 @@ import {
     setText(intentPreviewTargets.status, result.displayLabels?.statusLine);
     setText(intentPreviewTargets.note, result.displayLabels?.noteLine);
     updateMakePickControl();
+    updatePostDraftRosterHub();
 
     if (result.actionStatus === "local-draft-finished") {
       showSection("draft-recap");

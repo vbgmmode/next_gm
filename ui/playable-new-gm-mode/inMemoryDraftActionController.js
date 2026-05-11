@@ -475,6 +475,76 @@ export function executeLocalFinishDraft(input = {}) {
   });
 }
 
+export function createPostDraftRosterHubProjection({
+  selectedBrand,
+  miniDraftProgress,
+} = {}) {
+  const progress = normalizeMiniDraftProgress(miniDraftProgress);
+  const brandLabel =
+    readString(selectedBrand?.brandLabel) ||
+    progress.selectedBrandReference.brandLabel ||
+    "Selected brand";
+  const signedTalent = progress.completedPickSummaries.map((summary, index) =>
+    createPostDraftRosterTalentCard(summary, index)
+  );
+  const localDraftFinished = progress.localDraftFinished;
+
+  return Object.freeze({
+    projectionKind: "post-draft-local-roster-hub-projection",
+    version: "0.1",
+    localOnly: true,
+    inMemoryOnly: true,
+    persisted: false,
+    localDraftFinished,
+    locked: !localDraftFinished,
+    brandLabel,
+    signedTalent: Object.freeze(signedTalent),
+    summary: Object.freeze({
+      signedTalentCount: progress.signedTalentCount,
+      minimumViableRosterCount: progress.minimumViableRosterCount,
+      minimumRosterViable: progress.minimumRosterViable,
+      startingDraftBudget: progress.startingDraftBudget,
+      budgetSpent: progress.budgetSpent,
+      remainingDraftBudget: progress.remainingDraftBudget,
+      bookingReserveBudget: progress.bookingReserveBudget,
+      bookingReserveProtected: progress.bookingReserveProtected,
+      localOnly: true,
+      weekOneLocked: true,
+      persisted: false,
+    }),
+    lockedSetupCards: Object.freeze([
+      createLockedSetupCard("Championship Setup", "Locked"),
+      createLockedSetupCard("Rivalry Setup", "Locked"),
+      createLockedSetupCard("Week 1 Booking", "Locked"),
+      createLockedSetupCard("Save/Persistence", "Not Active"),
+    ]),
+    capabilityFlags: createBlockedCapabilityFlags(),
+    displayLabels: Object.freeze({
+      titleLine: localDraftFinished
+        ? `${brandLabel} roster hub`
+        : `${brandLabel} roster locked`,
+      statusLine: localDraftFinished
+        ? "Local roster visible"
+        : "Finish the draft to view your roster.",
+      signedCountLine: `Signed Superstars: ${progress.signedTalentCount}`,
+      minimumRosterLine: `Minimum Viable Roster: ${progress.minimumViableRosterCount}`,
+      minimumRosterStatusLine: progress.minimumRosterViable
+        ? "Minimum roster viable"
+        : "Minimum roster not viable",
+      startingBudgetLine: `Starting Budget: ${progress.startingDraftBudget}`,
+      budgetSpentLine: `Budget Spent: ${progress.budgetSpent}`,
+      remainingBudgetLine: `Remaining Budget: ${progress.remainingDraftBudget}`,
+      bookingReserveLine: `Booking Reserve Target: ${progress.bookingReserveBudget}`,
+      bookingReserveStatusLine: progress.bookingReserveProtected
+        ? "Booking reserve protected"
+        : "Booking reserve dipped",
+      localOnlyLine: "Local-only / not saved",
+      weekOneLockedLine: "Week 1 locked",
+      emptyRosterLine: "Finish the draft to view your roster.",
+    }),
+  });
+}
+
 function createDraftRecapProjection({
   selectedBrand,
   selectedGm,
@@ -1111,6 +1181,10 @@ function createPickSummary({
     pickNumber,
     signingTier,
     signingCost,
+    sourceRosterPool:
+      readString(financeProjection?.sourceRosterPool) || "Roster",
+    divisionCategory:
+      formatDivisionCategoryLabel(financeProjection?.divisionCategory),
     pickSource: source,
     budgetBeforeSigning: budgetBefore,
     budgetAfterSigning,
@@ -1124,6 +1198,38 @@ function createPickSummary({
     displayStatusLine: completedInMemory
       ? "Pick recorded locally"
       : "Pick blocked locally",
+  });
+}
+
+function createPostDraftRosterTalentCard(summary, index) {
+  const pickNumber = readPositiveNumber(summary?.pickNumber, index + 1);
+  const pickSource = readString(summary?.pickSource) === "auto-fill"
+    ? "Auto-Filled"
+    : "Manual";
+
+  return Object.freeze({
+    displayName: readString(summary?.candidateName) || "Signed superstar",
+    sourceRosterPool: readString(summary?.sourceRosterPool) || "Roster",
+    signingTier: readString(summary?.signingTier) || "Locked pending rules",
+    signingCost: readPositiveOrZeroNumber(summary?.signingCost, 0),
+    pickSource,
+    pickNumber,
+    pickLabel: readString(summary?.pickLabel) || `Pick ${pickNumber}`,
+    divisionCategory:
+      readString(summary?.divisionCategory) || "Men's division",
+    signedStatus: "Signed",
+    bookingReserveStatus: summary?.bookingReserveAfterSigning
+      ? "Reserve protected"
+      : "Reserve dipped",
+  });
+}
+
+function createLockedSetupCard(label, status) {
+  return Object.freeze({
+    label,
+    status,
+    displayOnly: true,
+    locked: true,
   });
 }
 
@@ -1251,6 +1357,18 @@ function createUiCandidateIdFromDomainCandidate(candidate) {
     /^fixture-wrestler-\d+-/,
     ""
   )}`;
+}
+
+function formatDivisionCategoryLabel(divisionCategory) {
+  if (divisionCategory === "women") {
+    return "Women's division";
+  }
+
+  if (divisionCategory === "tag") {
+    return "Tag category";
+  }
+
+  return "Men's division";
 }
 
 function isValidDraftSlot(draftSlot) {
