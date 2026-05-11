@@ -68,10 +68,14 @@ The player experience starts with Save Selection, not Dashboard.
 Required early flow:
 
 1. Save Selection.
-2. New GM Setup.
-3. Setup Review.
-4. Initial Draft.
-5. Post-Draft Brand HQ.
+2. New Game / Contract Signing.
+3. Setup Basics.
+4. Optional Assistant Setup.
+5. Choose GM.
+6. Select Brand.
+7. Draft Dynamics / Initial Draft.
+8. Draft Recap.
+9. Brand Dashboard / Week 1 Setup.
 
 Save Selection requirements:
 
@@ -137,13 +141,16 @@ The shell should feel like a game HUD, not a website header.
 
 Required shell qualities:
 
-- Compact top presence with brand, show identity, week/phase, budget, fans, and deadline.
+- Compact top presence with brand/show identity plus week/date or phase.
 - Strong visual identity using wrestling broadcast treatments.
-- Hidden or hover-revealed command navigation near the left edge.
+- A compact top icon rail, not a side rail.
+- Collapsed/default nav shows small icons plus the active section label.
+- Hover/focus expands into a subtle overlay that shows icons and section names only.
 - Current player goal visible within two seconds.
 - No stacked header/status/flow bands that consume the play area.
 - No "static demo shell" wording in player-facing UI.
 - No chunky always-visible sidebar that steals screen space.
+- Budget, fans, health, deadline, and alerts belong in the dashboard hero or screen-specific command areas, not the expanded nav.
 
 Preferred treatments:
 
@@ -164,29 +171,39 @@ Required nav behavior and appearance:
 
 - No clipped labels in collapsed state.
 - Default state maximizes screen space.
-- Prefer hidden/hover navigation near the left edge.
-- Collapsed or resting state is icon-first, minimal, or tucked away.
-- Hover or focus reveals polished labels through an expanded rail, overlay label, radial command strip, or equivalent game-overlay treatment.
+- Primary navigation is a thin top icon rail.
+- Collapsed/default state is icon-first and shows the active section label.
+- Hover or focus reveals polished top-overlay labels with subtle blur/dim behind the nav.
 - Active section is unmistakable through color, glow, marker, or physical selection treatment.
 - Navigation should not look broken when narrow.
 - Labels must stay short and player-facing.
-- Avoid a dominant top nav that consumes vertical space.
-- Avoid a chunky always-visible sidebar.
+- Avoid status labels, numbers, metrics, alert text, budget, or fan counts inside expanded nav.
+- Avoid breadcrumbs and chunky side rails.
 
 Primary nav items:
 
 - Dashboard.
-- Save Selection.
-- New GM Setup.
-- Setup Review.
-- Draft Room.
+- Booking.
 - Roster.
-- Rivalries.
-- Championships.
+- Scouting.
 - Calendar.
-- IWC.
-- Analytics.
+- Management.
 - Settings.
+
+## Brand Palette Contract
+
+Playable New GM Mode uses one cohesive base UI system with brand palette classes for Raw, SmackDown, NXT, and AEW. Brand colors affect hero lighting, selected states, active nav, major CTAs, borders, and section identity. They must not turn each brand into a different app.
+
+Required CSS token direction:
+
+- Base tokens for app background, surfaces, glass, borders, text, warning, danger, success, and info.
+- `body.brand-raw`, `body.brand-smackdown`, `body.brand-nxt`, and `body.brand-aew`.
+- Raw: red/black prime-time energy.
+- SmackDown: blue sports-broadcast polish.
+- NXT: black/gold developmental pressure.
+- AEW: black/gold premium fight-card tone.
+
+Do not use full-screen solid brand-color backgrounds, unreadable glowing text, official logos without approved local assets, or scattered hardcoded random colors.
 
 ## Dashboard Composition Contract
 
@@ -221,7 +238,7 @@ Composition guidance:
 
 Player-facing examples:
 
-- "Voltage Draft Night"
+- "Raw Draft Night"
 - "Enter Draft Room"
 - "Brand Heat"
 - "Momentum"
@@ -473,7 +490,8 @@ Before future UI changes are accepted, Codex should verify:
 - Roster/Rivalries/Championships feel like connected game hubs.
 - IWC/Analytics/Calendar feel like game systems.
 - Save Selection is the entry point.
-- Early flow is Save Selection -> New GM Setup -> Setup Review -> Initial Draft -> Post-Draft Brand HQ.
+- Early flow is Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Draft Dynamics -> Draft Recap -> Brand Dashboard.
+- Raw/SmackDown/NXT/AEW brand palettes are tokenized and body-class driven.
 - Draft Preview is limited to pre-draft or active-draft presentation.
 - Post-draft state shifts toward Brand HQ and Week 1 preparation.
 - Labels are short, polished, and player-facing.

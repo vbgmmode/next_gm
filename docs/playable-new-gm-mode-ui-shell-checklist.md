@@ -36,6 +36,7 @@ Manual verification target:
 
 - Confirm the UI does not look "Codex coded" or like an AI-generated dashboard skin.
 - Confirm the visual system does not overuse circles, pills, bubbly cards, soft blobs, or decorative glow.
+- Confirm cards read as sharp sports-broadcast rectangles, not oversized rounded SaaS cards.
 - Confirm tags, badges, and lock states read as compact broadcast labels instead of rounded SaaS pills.
 - Confirm panels use sharper sports TV geometry, hard frames, bars, plates, and lower-third treatments.
 - Confirm Save Selection feels like a real sports/wrestling game campaign entry screen.
@@ -44,6 +45,20 @@ Manual verification target:
 - Confirm selected talent reads as a broadcast profile card, not a generic info card.
 - Confirm Post-Draft Brand HQ centers Week 1 Setup, Book Show, Roster, Rivalries, Championships, Calendar, IWC Pulse, and Analytics instead of Draft Preview.
 - Confirm visual accents feel purposeful and brand-driven, not random decorative shapes.
+- Confirm the screen does not read as a generic SaaS/admin dashboard.
+
+## Brand Palette QA
+
+- Confirm the static UI defines base CSS tokens for app background, surfaces, glass, borders, text, warning, danger, success, and info colors.
+- Confirm `body.brand-raw`, `body.brand-smackdown`, `body.brand-nxt`, and `body.brand-aew` exist.
+- Confirm Raw uses red/black prime-time energy.
+- Confirm SmackDown uses blue electric sports-broadcast polish.
+- Confirm NXT uses high-contrast black/gold energy.
+- Confirm AEW uses premium black/gold fight-card energy.
+- Confirm brand selection changes only color/presentation flavor in the static UI, not starting money, prestige, resources, or difficulty.
+- Confirm dense screens remain neutral/dark with brand accents instead of becoming full-screen solid brand-color pages.
+- Confirm no official logos are used unless approved local assets exist.
+- Confirm colors are driven by CSS variables/tokens rather than scattered one-off hardcoded colors.
 
 ## Navigation QA
 
@@ -65,6 +80,8 @@ Manual verification target:
 - Confirm the draft board and scouting feed use contained scrolling.
 - Confirm long save names, wrestler names, labels, pills, buttons, and metadata truncate or wrap safely inside their boxes.
 - Confirm no text spills outside cards, panels, buttons, pills, or board rows.
+- Confirm cards do not stretch endlessly to create a scrolling webpage feel.
+- Confirm long nav labels appear only in the expanded top overlay and do not clip in collapsed state.
 
 ## Static/Mock Boundary QA
 
@@ -101,3 +118,5 @@ Manual verification target:
 - Reject if nav labels clip or the nav feels like an enterprise sidebar.
 - Reject if the desktop/laptop page scrolls instead of containing overflow inside panels.
 - Reject if the UI feels corporate, cramped, ugly, or generic.
+- Reject if cards become bubbly/circle-heavy, pill-heavy, or look like a generic SaaS template.
+- Reject if future Codex work adds hardcoded random colors instead of the Raw/SmackDown/NXT/AEW token system.

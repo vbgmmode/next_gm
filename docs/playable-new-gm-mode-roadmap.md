@@ -20,6 +20,14 @@
 7. Read-only integration only after approval.
 8. Real mutations only after explicit approval.
 
+The visual doctrine locks the prototype to a premium dark wrestling/sports-broadcast identity:
+
+1. Raw, SmackDown, NXT, and AEW brand palettes are implemented through CSS variables and `body.brand-*` classes.
+2. The app keeps one shared layout, typography, navigation, and component system across all brands.
+3. Brand colors affect hero lighting, selected states, active nav, major CTAs, borders, and screen identity.
+4. Dense management screens stay neutral/dark with brand accents.
+5. Anti-botch rules are hard requirements: no full-page scrolling, no text overflow, no bubbly/circle-heavy cards, no pill overload, no generic SaaS look, and no scattered hardcoded colors.
+
 `docs/new-gm-real-draft-system-architecture.md` establishes the draft boundary:
 
 1. The Real Draft System v1.0 is approved real domain behavior only inside pure deterministic in-memory flow.
@@ -36,6 +44,9 @@ The safest first implementation slice is UI shell-only, static/mock-first:
 - Add a static Draft Dynamics / Initial Draft surface using mock talent, pick order, roster needs, and confirmation preview.
 - Add a static Draft Recap surface focused on the player's grouped roster.
 - Add a static Brand Dashboard / Week 1 Setup surface with the guided checklist.
+- Add a tokenized Raw / SmackDown / NXT / AEW visual palette system.
+- Keep all screens viewport-first with contained scrolling only.
+- Use sharper sports-broadcast/glass panels instead of bubbly dashboard cards.
 - Do not call draft services from UI.
 - Do not create routes until separately approved.
 - Do not create save payload persistence.
@@ -54,6 +65,20 @@ Select Brand is a fantasy/story choice only. All brands begin with the same mone
 Draft Preview is only pre-draft/during-draft language. After the initial draft, the correct surface is Draft Recap first, then Brand Dashboard / Week 1 Setup.
 
 This slice proves player-facing structure without crossing into gameplay execution.
+
+Future Codex UI work must preserve the anti-botch visual rules:
+
+- No text overflow.
+- No full-page scrolling.
+- No bubbly cards.
+- No circle-heavy UI.
+- No pill overload.
+- No generic SaaS look.
+- Use viewport-first contained panels.
+- Use CSS variables/tokens.
+- Preserve premium wrestling/sports broadcast identity.
+- Use Raw/SmackDown/NXT/AEW brand palettes.
+- Avoid hardcoded random colors.
 
 ## Roadmap From 20/100 To 100/100
 
@@ -76,6 +101,7 @@ This slice proves player-facing structure without crossing into gameplay executi
 - Build static/mock New GM Setup.
 - Include invalid/corrupt save visual states as mock-only.
 - Keep all data fake or fixture-labeled.
+- Normalize static UI colors through base and brand CSS variables.
 
 ### 50/100: Static Setup Review And Draft-Night Preview
 
@@ -83,6 +109,7 @@ This slice proves player-facing structure without crossing into gameplay executi
 - Add draft-night preview shell.
 - Show transition affordance without draft execution.
 - Keep draft action disabled or mock-only.
+- Ensure Draft Preview language appears only before or during draft, never after Draft Recap.
 
 ### 60/100: Read-Only Domain Adapter Planning
 

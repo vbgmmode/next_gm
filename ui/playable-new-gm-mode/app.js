@@ -4,9 +4,13 @@
   const flowCards = Array.from(document.querySelectorAll("[data-flow-target]"));
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
   const talentRows = Array.from(document.querySelectorAll("[data-talent-name]"));
+  const brandControls = Array.from(document.querySelectorAll("[data-brand]"));
   const activeLabel = document.getElementById("active-screen-label");
   const railActiveLabel = document.getElementById("rail-active-label");
+  const railBrandMark = document.getElementById("rail-brand-mark");
+  const brandBug = document.getElementById("brand-bug");
   const phaseLabel = document.getElementById("phase-label");
+  const brandNameTargets = Array.from(document.querySelectorAll(".js-brand-name"));
   const talentDetail = {
     initials: document.getElementById("talent-detail-initials"),
     name: document.getElementById("talent-detail-name"),
@@ -27,6 +31,25 @@
     "draft-recap",
     "brand-dashboard",
   ];
+
+  const sectionNavMap = {
+    "save-selection": "settings",
+    "contract-signing": "settings",
+    "setup-basics": "settings",
+    "ai-setup": "settings",
+    "choose-gm": "settings",
+    "select-brand": "settings",
+    "draft-room": "booking",
+    "draft-recap": "roster",
+    "brand-dashboard": "dashboard",
+  };
+
+  const brandLabels = {
+    raw: { label: "Raw", mark: "RAW" },
+    smackdown: { label: "SmackDown", mark: "SD" },
+    nxt: { label: "NXT", mark: "NXT" },
+    aew: { label: "AEW", mark: "AEW" },
+  };
 
   function getSection(targetId) {
     return sections.find((section) => section.id === targetId);
@@ -60,7 +83,7 @@
     });
 
     navItems.forEach((item) => {
-      const isActive = item.dataset.navTarget === targetId;
+      const isActive = item.dataset.navSection === sectionNavMap[targetId];
       item.classList.toggle("active", isActive);
       if (isActive) {
         item.setAttribute("aria-current", "page");
@@ -88,6 +111,33 @@
     }
   }
 
+  function setBrand(brandId) {
+    const brand = brandLabels[brandId];
+
+    if (!brand) {
+      return;
+    }
+
+    document.body.classList.remove("brand-raw", "brand-smackdown", "brand-nxt", "brand-aew");
+    document.body.classList.add(`brand-${brandId}`);
+
+    brandControls.forEach((control) => {
+      control.classList.toggle("selected", control.dataset.brand === brandId);
+    });
+
+    if (railBrandMark) {
+      railBrandMark.textContent = brand.mark;
+    }
+
+    if (brandBug) {
+      brandBug.textContent = brand.mark;
+    }
+
+    brandNameTargets.forEach((target) => {
+      target.textContent = brand.label;
+    });
+  }
+
   navItems.forEach((item) => {
     item.addEventListener("click", () => {
       showSection(item.dataset.navTarget);
@@ -105,6 +155,12 @@
       if (!control.disabled) {
         showSection(control.dataset.goTo);
       }
+    });
+  });
+
+  brandControls.forEach((control) => {
+    control.addEventListener("click", () => {
+      setBrand(control.dataset.brand);
     });
   });
 
@@ -142,5 +198,6 @@
   });
 
   const initialTarget = window.location.hash ? window.location.hash.slice(1) : "save-selection";
+  setBrand("raw");
   showSection(getSection(initialTarget) ? initialTarget : "save-selection");
 })();

@@ -14,6 +14,14 @@ Early UI must not create real save mutation, gameplay execution, week advancemen
 
 These decisions are binding for the Playable New GM Mode prototype and future implementation prompts unless the product owner explicitly changes them.
 
+### Art Direction / Visual Authenticity
+
+Next GM should read as a serious premium wrestling GM management game, not a generic web dashboard. The visual blend is WWE 2K-style wrestling mode familiarity, ESPN/NFL Draft-style broadcast polish, and premium sports franchise menu clarity.
+
+The base UI mood is dark, polished, readable, and management-focused. Everyday management screens should be calm and usable. Big moments such as draft night, PLEs, title changes, rivalry turns, show recaps, and major IWC/social fallout should receive stronger dramatic staging.
+
+Avoid SaaS dashboard tells: bubbly cards, soft blob decoration, oversized rounded cards, pill overload, random color accents, full-page scrolling, and equal-weight card walls. Use sharp sports-broadcast rectangles, lower-third language, glass-panel surfaces, LED/titantron texture, controlled glow, and brand-led lighting.
+
 ### App Shell And Navigation
 
 - Primary navigation is a compact top icon rail, not a side rail.
@@ -111,6 +119,48 @@ Save Selection must feel like a clean sports/wrestling game mode and save-slot s
   - PLE/title/rivalry moments: poster-style cutouts.
   - Early UI: intentional premium silhouettes/placeholders are acceptable.
 
+### Brand Palette System
+
+The initial playable brand palettes are Raw, SmackDown, NXT, and AEW. These are brand-inspired UI palettes for static/mock UI and later implementation. They must share the same layout system, typography system, navigation behavior, core components, and interaction patterns.
+
+Base UI tokens:
+
+- `--bg-app: #080A0F`
+- `--bg-surface: #10141D`
+- `--bg-surface-2: #171D29`
+- `--bg-glass: rgba(18, 24, 36, 0.72)`
+- `--border-subtle: rgba(255, 255, 255, 0.10)`
+- `--border-strong: rgba(255, 255, 255, 0.22)`
+- `--text-primary: #F4F7FB`
+- `--text-secondary: #AAB4C3`
+- `--text-muted: #6F7A8A`
+- `--warning: #F5B942`
+- `--danger: #E5484D`
+- `--success: #35C46A`
+- `--info: #4DB4FF`
+
+Brand classes:
+
+- `body.brand-raw`: `--brand-primary: #D71920`, `--brand-secondary: #8B0000`, `--brand-accent: #FFB3B3`.
+- `body.brand-smackdown`: `--brand-primary: #005BFF`, `--brand-secondary: #003A99`, `--brand-accent: #58A6FF`.
+- `body.brand-nxt`: `--brand-primary: #F5C518`, `--brand-secondary: #111827`, `--brand-accent: #FFFFFF`.
+- `body.brand-aew`: `--brand-primary: #C9A227`, `--brand-secondary: #111111`, `--brand-accent: #F8E7A1`.
+
+Brand color should strongly affect hero lighting, active navigation, card headers, selected states, borders, major CTA accents, and major screen identity. Dense screens stay mostly neutral/dark with brand accents. Do not use full-screen solid brand-color backgrounds, unreadable glowing text, official logos without approved local assets, or scattered hardcoded random colors.
+
+### Anti-Botch Visual Rules
+
+- No text overflow outside cards, buttons, nav items, table rows, draft rows, save slots, or panels.
+- No full-page scrolling for major player-facing screens.
+- Use viewport-first app shell regions and contained panel scrolling.
+- No bubbly cards, circle-heavy UI, pill overload, random blobs, or generic SaaS grids.
+- Use CSS variables/tokens before adding heavy CSS.
+- Preserve premium wrestling/sports broadcast identity on every screen.
+- Keep glow moderate and purposeful.
+- Use truncation, line clamping, and contained overflow for long names, show titles, labels, and wrestler names.
+- Draft Preview is pre-draft only; Draft Recap is post-draft only.
+- Early UI remains static/mock-first and must not wire gameplay, persistence, draft execution, roster mutation, week advancement, generated text, or GenAI.
+
 ## 2. Product Experience North Star
 
 Next GM should feel like a living wrestling broadcast universe. The player is not filling out forms in a generic management app. The player is running a wrestling brand inside a universe that has ratings pressure, social heat, locker room tension, rival brands, business tradeoffs, and unpredictable audience reaction.
@@ -174,13 +224,12 @@ Navigation should use a hover-revealed top navigation or compact hidden navigati
 
 Do not use breadcrumbs. Use strong screen headers, tabs, and explicit back buttons instead. Navigation should feel like a game hub, not an enterprise admin app.
 
-The global app header should always make these visible:
+The global app header should stay lightweight and should always make only these basics visible:
 
-- Current week, season, and date.
-- Brand name.
-- Budget.
-- Fan count.
-- Next show or deadline.
+- Brand logo/name or placeholder mark.
+- Current week, season, or date.
+
+Budget, fan count, next show/deadline, brand health, and major alerts belong mostly inside the Brand Dashboard hero or screen-specific command areas.
 
 Sub-section organization:
 
@@ -316,15 +365,17 @@ Phase 3: Draft Night Preview:
 Default look:
 
 - Dark mode first.
-- Light mode supported.
+- Light mode is not an early prototype requirement.
 - Premium broadcast command center.
 - Sports graphic energy.
-- Clean card-based information structure.
+- Clean sports-broadcast panel structure.
 - Light glassmorphism as an accent.
 - Selective neon.
-- No major background gradients.
+- No full-screen solid brand-color backgrounds.
 - Brand color used moderately.
 - Contextual hero areas, not mandatory hero areas everywhere.
+- Raw, SmackDown, NXT, and AEW palettes are implemented through CSS variables and body classes.
+- Avoid scattered hardcoded colors; extend tokens instead.
 
 Typography:
 
