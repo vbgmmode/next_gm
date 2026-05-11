@@ -4,6 +4,31 @@ Manual verification target:
 
 `C:\Users\vinni\OneDrive\Documents\next_gm\ui\playable-new-gm-mode\index.html`
 
+Local preview target:
+
+`npm run preview:playable-ui`
+
+Expected local URL style:
+
+`http://localhost:5173/ui/playable-new-gm-mode/`
+
+## Local Preview And Reporting QA
+
+- Confirm `npm run preview:playable-ui` starts a local static preview server.
+- Confirm the actual local preview URL is reported after the UI slice.
+- Confirm opening the local preview URL starts on Save Selection.
+- Confirm no browser storage, URL routing, backend call, or persistence is used to remember the active screen.
+- Confirm the future UI update report includes:
+  - Local Preview command.
+  - Local Preview URL.
+  - First screen.
+  - Browser/manual QA.
+  - Git branch.
+  - Commit.
+  - Ahead/behind origin.
+  - Worktree clean.
+  - Push status.
+
 ## Flow QA
 
 - Confirm the first screen is Save Selection, not Dashboard or Brand HQ.
@@ -67,13 +92,13 @@ Manual verification target:
 
 ## Navigation QA
 
-- Confirm the primary nav is a compact macOS Dock-inspired top dock, not a side rail.
-- Confirm the dock remains visible in collapsed/default state as a thin glass control surface.
-- Confirm collapsed/default state shows compact icons and the active top-level section label.
+- Confirm the primary nav is a compact macOS Dock-inspired bottom dock, not a top rail or side rail.
+- Confirm the dock remains visible in collapsed/default state as a compact bottom-centered glass control surface.
+- Confirm collapsed/default state is icon-first and the active top-level section remains clear.
 - Confirm hover/focus expands the dock into icon plus section name only.
 - Confirm expanded labels do not overflow, wrap, or clip at laptop widths.
-- Confirm the expanded dock overlays the screen and does not push content down.
-- Confirm the top overlay subtly dims or blurs the app behind it.
+- Confirm the expanded dock overlays the screen and does not push content up or down.
+- Confirm the overlay subtly dims or blurs the app behind it.
 - Confirm keyboard focus expands the dock and has a visible focus state.
 - Confirm selecting a dock item by pointer switches sections and immediately collapses the dock.
 - Confirm activating a dock item by keyboard Enter or Space switches sections and immediately collapses the dock.
@@ -82,7 +107,8 @@ Manual verification target:
 - Confirm clicking the main screen can collapse the dock, but is not required after selecting a dock item.
 - Confirm active nav state is obvious without relying only on color.
 - Confirm the dock remains usable at smaller laptop width.
-- Confirm the top dock does not cover critical controls in a broken way.
+- Confirm the dock does not cover Save Selection actions or other critical bottom controls.
+- Confirm bottom safe-area spacing remains sufficient on laptop widths.
 - Confirm nav actions switch between Save Selection, Contract Signing, Setup Basics, Assistant Setup, Choose GM, Select Brand, Initial Draft, Draft Recap, and Brand Dashboard without page reload.
 - Confirm the dock never shows budget, fan count, alerts, mini metrics, breadcrumbs, long descriptions, notification text, or status copy.
 - Confirm breadcrumbs are absent.
@@ -90,7 +116,7 @@ Manual verification target:
 ## Viewport And Overflow QA
 
 - Confirm the page itself does not vertically scroll at desktop/laptop sizes.
-- Confirm the app shell, header, and top nav remain stable.
+- Confirm the app shell, header, and bottom dock remain stable.
 - Confirm each active screen fits inside the visible viewport at common laptop sizes, including roughly 1366x768 and 1280x720.
 - Confirm 1366x768, 1280x800, and 1440x900 do not introduce full-page scroll.
 - Confirm only contained panels scroll when needed.
@@ -98,7 +124,7 @@ Manual verification target:
 - Confirm long save names, wrestler names, labels, pills, buttons, and metadata truncate or wrap safely inside their boxes.
 - Confirm no text spills outside cards, panels, buttons, pills, or board rows.
 - Confirm cards do not stretch endlessly to create a scrolling webpage feel.
-- Confirm long nav labels appear only in the expanded top overlay and do not clip in collapsed state.
+- Confirm long nav labels appear only in the expanded overlay and do not clip in collapsed state.
 - Confirm nav label, card, hero, and button text does not overflow at 1366x768, 1280x800, or 1440x900.
 
 ## Static/Mock Boundary QA
@@ -122,8 +148,8 @@ Manual verification target:
 - Reject if the game starts directly on a generic Dashboard.
 - Reject if Save Selection feels like just another dashboard card.
 - Reject if the primary navigation is a side rail or uses breadcrumbs.
-- Reject if the top rail clips labels or consumes too much vertical screen space.
-- Reject if budget/fans/deadline/health overwhelm the top shell instead of living in Dashboard command areas.
+- Reject if the dock clips labels, wraps into multiple lines, covers critical CTAs, or consumes too much usable screen space.
+- Reject if budget/fans/deadline/health appear in the dock instead of living in Dashboard command areas.
 - Reject if setup is compressed into one generic form screen instead of a multi-screen game flow.
 - Reject if brands imply different starting money, prestige, resources, or baseline difficulty.
 - Reject if Draft Room looks like another dashboard tab rather than a draft broadcast.

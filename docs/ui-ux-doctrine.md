@@ -24,16 +24,17 @@ Avoid SaaS dashboard tells: bubbly cards, soft blob decoration, oversized rounde
 
 ### App Shell And Navigation
 
-- Primary navigation is a compact macOS Dock-inspired top dock, not a side rail.
-- The dock should appear as a thin always-visible top glass control surface, not a full-width website menu strip.
-- Collapsed/default state shows compact icons plus the active top-level section label.
+- Primary navigation is a compact macOS Dock-inspired bottom dock, not a top rail or side rail.
+- The dock should appear as a bottom-centered always-visible glass control surface, not a full-width website menu strip.
+- Collapsed/default state is icon-first and may show the active top-level section label inside or just above the dock.
 - Hover/focus state may expand to show icon plus section names only.
-- Expanded navigation should overlay the screen with subtle blur or dim behind it and must not push content down.
+- Expanded navigation should overlay the screen with subtle blur or dim behind it and must not push content up or down.
 - Icons may lift, scale, or glow slightly on hover/focus, but the treatment should stay premium and restrained.
 - Navigation should adapt by screen size and must never clip labels.
 - Do not use breadcrumbs for the player-facing game flow.
 - Header/status shell should stay lightweight: brand logo/name plus current week/date.
-- Budget, fans, next show/deadline, brand health, and major alerts belong mostly inside the Brand Dashboard hero or screen-specific command areas, not the top rail.
+- Budget, fans, next show/deadline, brand health, and major alerts belong mostly inside the Brand Dashboard hero or screen-specific command areas, not the dock.
+- The shell must reserve enough bottom safe-area space that the overlay dock does not cover critical CTAs or controls.
 - No full-page scrolling. Screens must be viewport-first, with scrolling only inside contained panels.
 
 ### Locked Game Start Flow
@@ -48,7 +49,7 @@ The early flow is:
 4. Optional Assistant / LLM Setup.
 5. Choose GM.
 6. Select Brand.
-7. Draft Dynamics / Initial Draft.
+7. Initial Draft.
 8. Draft Recap.
 9. Brand Dashboard / Week 1 Setup.
 
@@ -62,7 +63,7 @@ Save Selection must feel like a clean sports/wrestling game mode and save-slot s
 - No key persistence or GenAI calls are approved in static/mock UI.
 - Choose GM should use fictionalized real-world-inspired GM archetypes, not real people.
 - Select Brand is a story/fantasy choice only. All brands start with the same money, prestige, resources, and baseline difficulty.
-- Draft Dynamics begin only after the setup flow.
+- Initial Draft begins only after the setup flow.
 
 ### Dashboard And GM Alerts
 
@@ -85,7 +86,7 @@ Save Selection must feel like a clean sports/wrestling game mode and save-slot s
 
 ### Draft And Post-Draft Flow
 
-- Draft Dynamics should feel like a sports draft broadcast on top, with GM war room controls underneath.
+- Initial Draft should feel like a sports draft broadcast on top, with GM war room controls underneath.
 - The draft screen should keep visible: best available talent, roster needs by division, pick order, and rival brand picks.
 - Draft picks should expose clear traits, notes, and uncertainty/ranges rather than exact hidden values.
 - Player pick confirmation should be dramatic but quick: select wrestler, broadcast-style confirmation, roster fit summary, confirm pick, then immediately move to the next pick.
@@ -224,11 +225,11 @@ The locked top-level sections are:
 6. Management
 7. Settings
 
-Navigation should use a hover-revealed top navigation or compact hidden navigation pattern to preserve usable screen space. Main movement should also happen through dashboard cards and screen-specific actions.
+Navigation should use a hover/focus-revealed bottom dock or compact hidden navigation pattern to preserve usable screen space. Main movement should also happen through dashboard cards and screen-specific actions.
 
 Do not use breadcrumbs. Use strong screen headers, tabs, and explicit back buttons instead. Navigation should feel like a game hub, not an enterprise admin app.
 
-Playable New GM Mode uses a top-positioned dock pattern: compact glass capsule, icon-first collapsed state, active section label, and hover/focus expansion to icon plus section name. The dock must not show budget, fan count, alerts, metrics, breadcrumbs, long descriptions, or notification copy. It should remain viewport-first on 11-13 inch laptop screens and should never become a side rail or full-width SaaS navbar.
+Playable New GM Mode uses a bottom-positioned macOS Dock-inspired pattern: compact glass capsule, icon-first collapsed state, active section label inside or just above the dock, and hover/focus expansion to icon plus section name. The dock overlays the viewport and must not push layout up. Reserve bottom safe-area spacing so it does not cover critical controls. The dock must not show budget, fan count, alerts, metrics, breadcrumbs, long descriptions, or notification copy. It should remain viewport-first on 11-13 inch laptop screens and should never become a top nav, side rail, or full-width SaaS navbar.
 
 The global app header should stay lightweight and should always make only these basics visible:
 
@@ -958,7 +959,7 @@ Do not overbuild generic primitives too early.
 Early shared components:
 
 - App shell/header.
-- Hover-revealed top nav.
+- Hover/focus-revealed bottom dock.
 - Save card.
 - Poster thumbnail frame.
 - Setup option card.

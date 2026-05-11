@@ -9,11 +9,8 @@
   </head>
   <body class="brand-raw">
     <div class="app-shell">
-      <nav class="top-icon-rail" aria-label="Playable New GM Mode top dock">
-        <div class="nav-status">
-          <span class="rail-brand" id="rail-brand-mark">RAW</span>
-          <span class="rail-active-label" id="rail-active-label">Settings</span>
-        </div>
+      <nav class="bottom-nav-dock dock-collapsed" aria-label="Playable New GM Mode primary dock">
+        <span class="dock-active-label" id="rail-active-label">Settings</span>
         <div class="nav-items">
           <button class="nav-tab" type="button" data-nav-target="brand-dashboard" data-nav-section="dashboard" data-nav-label="Dashboard" aria-label="Dashboard section">
             <span class="nav-icon">DB</span>
@@ -165,7 +162,7 @@
                 <div><dt>Money</dt><dd>Equal baseline</dd></div>
                 <div><dt>Prestige</dt><dd>Equal baseline</dd></div>
                 <div><dt>Difficulty</dt><dd>Player choice</dd></div>
-                <div><dt>First Event</dt><dd>Draft Dynamics</dd></div>
+                <div><dt>First Event</dt><dd>Initial Draft</dd></div>
               </dl>
             </aside>
           </div>
@@ -220,7 +217,7 @@
               </article>
               <article class="mode-tile">
                 <span>04</span>
-                <strong>Draft Dynamics</strong>
+                <strong>Initial Draft</strong>
                 <p>War room opens after brand select.</p>
               </article>
             </div>
@@ -396,14 +393,14 @@
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="choose-gm">Back</button>
-            <button class="hero-cta small" type="button" data-go-to="draft-room">Begin Draft Dynamics</button>
+            <button class="hero-cta small" type="button" data-go-to="draft-room">Begin Initial Draft</button>
           </div>
         </section>
 
         <section
           id="draft-room"
           class="screen draft-screen"
-          data-screen-title="Draft Dynamics"
+          data-screen-title="Initial Draft"
           data-flow-phase="Active Draft"
           aria-labelledby="draft-room-title"
           hidden

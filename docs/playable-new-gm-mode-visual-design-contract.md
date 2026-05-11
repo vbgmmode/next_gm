@@ -74,7 +74,7 @@ Required early flow:
 4. Optional Assistant Setup.
 5. Choose GM.
 6. Select Brand.
-7. Draft Dynamics / Initial Draft.
+7. Initial Draft.
 8. Draft Recap.
 9. Brand Dashboard / Week 1 Setup.
 
@@ -144,11 +144,12 @@ Required shell qualities:
 
 - Compact top presence with brand/show identity plus week/date or phase.
 - Strong visual identity using wrestling broadcast treatments.
-- A compact top icon rail, not a side rail.
-- Collapsed/default nav shows small icons plus the active section label.
+- A compact bottom-centered dock, not a top rail or side rail.
+- Collapsed/default nav is icon-first and may show the active section label inside or just above the dock.
 - Hover/focus expands into a subtle overlay that shows icons and section names only.
-- The top nav should feel like a macOS Dock adapted into a premium wrestling GM control dock: compact, glassy, icon-first, and top-positioned.
-- Dock expansion must overlay the viewport with subtle blur/dim treatment and must not push screen content downward.
+- The nav should feel like a macOS Dock adapted into a premium wrestling GM control dock: compact, glassy, icon-first, and bottom-positioned.
+- Dock expansion must overlay the viewport with subtle blur/dim treatment and must not push screen content upward or downward.
+- The shell must reserve enough bottom safe-area spacing that the dock does not cover critical bottom controls.
 - Current player goal visible within two seconds.
 - No stacked header/status/flow bands that consume the play area.
 - No "static demo shell" wording in player-facing UI.
@@ -174,9 +175,9 @@ Required nav behavior and appearance:
 
 - No clipped labels in collapsed state.
 - Default state maximizes screen space.
-- Primary navigation is a thin top icon rail.
+- Primary navigation is a compact bottom dock.
 - Collapsed/default state is icon-first and shows the active section label.
-- Hover or focus reveals polished top-overlay labels with subtle blur/dim behind the nav.
+- Hover or focus reveals polished overlay labels with subtle blur/dim behind the nav.
 - Hover/focus may scale, lift, or glow icons slightly, similar to macOS Dock behavior, but the motion must stay subtle and premium.
 - Active section is unmistakable through color, glow, marker, or physical selection treatment.
 - Navigation should not look broken when narrow.
@@ -496,7 +497,7 @@ Before future UI changes are accepted, Codex should verify:
 - Roster/Rivalries/Championships feel like connected game hubs.
 - IWC/Analytics/Calendar feel like game systems.
 - Save Selection is the entry point.
-- Early flow is Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Draft Dynamics -> Draft Recap -> Brand Dashboard.
+- Early flow is Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard.
 - Raw/SmackDown/NXT/AEW brand palettes are tokenized and body-class driven.
 - Draft Preview is limited to pre-draft or active-draft presentation.
 - Post-draft state shifts toward Brand HQ and Week 1 preparation.

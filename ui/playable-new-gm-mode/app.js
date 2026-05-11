@@ -1,6 +1,6 @@
 (() => {
   const sections = Array.from(document.querySelectorAll("[data-screen-title]"));
-  const topDock = document.querySelector(".top-icon-rail");
+  const navDock = document.querySelector(".bottom-nav-dock");
   const navItems = Array.from(document.querySelectorAll("[data-nav-target]"));
   const flowCards = Array.from(document.querySelectorAll("[data-flow-target]"));
   const jumpControls = Array.from(document.querySelectorAll("[data-go-to]"));
@@ -8,7 +8,6 @@
   const brandControls = Array.from(document.querySelectorAll("[data-brand]"));
   const activeLabel = document.getElementById("active-screen-label");
   const railActiveLabel = document.getElementById("rail-active-label");
-  const railBrandMark = document.getElementById("rail-brand-mark");
   const brandBug = document.getElementById("brand-bug");
   const phaseLabel = document.getElementById("phase-label");
   const brandNameTargets = Array.from(document.querySelectorAll(".js-brand-name"));
@@ -62,12 +61,12 @@
 
   function collapseDock() {
     clearDockCollapseTimer();
-    topDock?.classList.add("dock-collapsed");
+    navDock?.classList.add("dock-collapsed");
   }
 
   function releaseDockCollapse() {
     clearDockCollapseTimer();
-    topDock?.classList.remove("dock-collapsed");
+    navDock?.classList.remove("dock-collapsed");
   }
 
   function scheduleDockCollapse() {
@@ -133,9 +132,6 @@
       phaseLabel.textContent = target.dataset.flowPhase || "Preview";
     }
 
-    if (window.location.hash !== `#${targetId}`) {
-      window.history.replaceState(null, "", `#${targetId}`);
-    }
   }
 
   function setBrand(brandId) {
@@ -151,10 +147,6 @@
     brandControls.forEach((control) => {
       control.classList.toggle("selected", control.dataset.brand === brandId);
     });
-
-    if (railBrandMark) {
-      railBrandMark.textContent = brand.mark;
-    }
 
     if (brandBug) {
       brandBug.textContent = brand.mark;
@@ -172,14 +164,14 @@
     });
   });
 
-  if (topDock) {
-    topDock.addEventListener("pointerenter", releaseDockCollapse);
-    topDock.addEventListener("pointerleave", scheduleDockCollapse);
-    topDock.addEventListener("focusin", releaseDockCollapse);
+  if (navDock) {
+    navDock.addEventListener("pointerenter", releaseDockCollapse);
+    navDock.addEventListener("pointerleave", scheduleDockCollapse);
+    navDock.addEventListener("focusin", releaseDockCollapse);
   }
 
   document.addEventListener("click", (event) => {
-    if (topDock && !topDock.contains(event.target)) {
+    if (navDock && !navDock.contains(event.target)) {
       collapseDock();
     }
   });
@@ -243,7 +235,6 @@
     });
   });
 
-  const initialTarget = window.location.hash ? window.location.hash.slice(1) : "save-selection";
   setBrand("raw");
-  showSection(getSection(initialTarget) ? initialTarget : "save-selection");
+  showSection("save-selection");
 })();

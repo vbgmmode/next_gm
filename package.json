@@ -7,6 +7,7 @@
     "node": ">=24.0.0"
   },
   "scripts": {
+    "preview:playable-ui": "node dev/tools/playable-ui-preview-server.js",
     "test": "node --test --experimental-strip-types \"tests/**/*.test.ts\""
   }
 }

@@ -11,10 +11,10 @@
 
 `docs/ui-ux-doctrine.md` establishes the first player-facing path:
 
-1. Compact macOS Dock-inspired top dock, not a side rail or full-width website navbar.
+1. Compact macOS Dock-inspired bottom dock, not a top rail, side rail, or full-width website navbar.
 2. Save Selection as the first screen, not Dashboard.
 3. Multi-screen New Game setup: Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, Select Brand.
-4. Draft Dynamics / Initial Draft as the active draft broadcast surface.
+4. Initial Draft as the active draft broadcast surface.
 5. Draft Recap as the first post-draft surface.
 6. Brand Dashboard / Week 1 Setup as the post-draft home base.
 7. Read-only integration only after approval.
@@ -38,11 +38,11 @@ The visual doctrine locks the prototype to a premium dark wrestling/sports-broad
 
 The safest first implementation slice is UI shell-only, static/mock-first:
 
-- Create a minimal viewport-first app shell with the compact top icon rail.
-- Refine the top rail into a compact glass top dock that keeps icons visible, shows the active section label, expands on hover/focus, and never pushes content down.
+- Create a minimal viewport-first app shell with the compact bottom dock.
+- Refine the dock into a compact bottom-centered glass control surface that keeps icons visible, shows the active section label, expands on hover/focus, overlays the viewport, and never pushes content up or down.
 - Add static Save Selection screen affordances using clearly fake save-card data.
 - Add static Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, and Select Brand placeholders.
-- Add a static Draft Dynamics / Initial Draft surface using mock talent, pick order, roster needs, and confirmation preview.
+- Add a static Initial Draft surface using mock talent, pick order, roster needs, and confirmation preview.
 - Add a static Draft Recap surface focused on the player's grouped roster.
 - Add a static Brand Dashboard / Week 1 Setup surface with the guided checklist.
 - Add a tokenized Raw / SmackDown / NXT / AEW visual palette system.
@@ -52,12 +52,13 @@ The safest first implementation slice is UI shell-only, static/mock-first:
 - Do not create routes until separately approved.
 - Do not create save payload persistence.
 - Do not mutate gameplay state.
+- Add or use `npm run preview:playable-ui` for local static preview and report the URL, first screen, manual/browser QA, Git branch, commit, ahead/behind origin, worktree state, and push status after every UI slice.
 
 ## Locked Static Flow Direction
 
 Current static UI work must preserve this order:
 
-Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Draft Dynamics -> Draft Recap -> Brand Dashboard / Week 1 Setup.
+Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard / Week 1 Setup.
 
 The Assistant Setup step is optional and skippable. It may preview assistant activation and privacy controls, but it must not call AI services or persist keys.
 
