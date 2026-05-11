@@ -306,32 +306,38 @@ This means `createNewGMModeInMemoryDraftFlow()` is a domain pipeline, not a play
 
 ## Next Playable New GM Mode Entry Points
 
+The static Playable New GM Mode shell is visually stable. The next phase is controlled playable draft wiring, not a Real Draft System rebuild.
+
 The safest path from the completed Real Draft System v1.0 toward Playable New GM Mode is:
 
-1. Save selection/read-only setup screen planning
-   - Use the existing identity-only persistence boundary.
-   - Do not introduce gameplay save payload persistence.
-   - Keep save selection and setup screen plans read-only until explicitly approved.
+1. Read-only draft room adapter
+   - Project existing static candidate/readiness data into a UI-safe draft-board view model.
+   - Display eligibility, availability, roster needs, and blocked reasons without creating a pick, executing a pick, assigning a roster, or creating roster state.
+   - Do not call `createNewGMModeInMemoryDraftFlow()` in this slice.
 
-2. New GM setup domain-to-UI handoff
-   - Define what setup data the UI can safely display.
-   - Keep setup state non-mutating unless a separate setup persistence slice is approved.
+2. Local-only setup state controller
+   - Track only ephemeral screen/session state needed to move from Landing through Select Brand into Initial Draft.
+   - Keep selected GM, selected brand, setup basics, assistant choice, and current flow step in memory only.
+   - Do not create save payloads, browser storage, SQLite writes, routes, or backend calls.
 
-3. Static/mock Draft Board UI using `docs/ui-ux-doctrine.md`
-   - Build draft-board layout and interaction affordances with mock/dev fixture data.
-   - Do not wire real draft execution from UI yet.
+3. Selection intent preview
+   - Convert a UI candidate click into an in-memory `Draft Selection Intent` preview.
+   - Validate the intent only through the existing v1 validation service path after that slice is explicitly approved.
+   - Keep validation output as a UI-safe status; do not execute the draft pick yet.
 
-4. Read-only domain-backed Draft Board
-   - Read from the static candidate object set and readiness summaries.
-   - Display candidate availability and eligibility without mutating draft state.
+4. Explicit in-memory draft action
+   - Invoke the existing Real Draft System v1.0 pipeline from one approved player action.
+   - Prefer `createNewGMModeInMemoryDraftFlow()` for the one-shot local draft path, or compose the v1 services in the documented order if the UI needs a step-by-step draft loop.
+   - Keep the result local to the page lifetime.
 
-5. Player-triggered selection intent wiring
-   - Convert a UI selection into a `Draft Selection Intent` object.
-   - Keep the result in memory unless persistence is explicitly approved.
+5. Draft Recap projection
+   - Transition from Initial Draft to Draft Recap only after the in-memory draft completion summary reports the approved completed-draft status.
+   - Render the player's drafted roster from the in-memory roster state object and roster assignment result projection.
+   - Group the roster by safe display buckets such as men's division, women's division, tag teams, prospects, and unassigned/TBD only when those buckets are available from approved static metadata.
 
-6. In-memory draft flow button/action
-   - Invoke `createNewGMModeInMemoryDraftFlow()` from an explicitly approved UI action.
-   - Keep gameplay start, Week 1 initialization, persistence, generated text, and GenAI blocked.
+6. Blocked post-recap handoff
+   - Brand Dashboard / Week 1 Setup may show a blocked next-step state.
+   - Gameplay start, Week 1 initialization, booking, show execution, fan/social/business systems, persistence, generated text, GenAI, championship assignment, and division assignment remain blocked until separately approved.
 
 ## Do Not Rebuild
 
@@ -349,8 +355,27 @@ The completed v1.0 path already reuses the guardrail object layer and extends it
 
 If a future feature needs a broader flow, add a narrow orchestration layer around the existing services instead of introducing a second draft-system model.
 
-## Git Snapshot Recommendation
+## Minimum Local-Only Draft State
 
-The current worktree has many modified and untracked files across docs, domain code, engines, persistence, tests, skills, and package metadata. Before starting a major new implementation phase, stage or snapshot the current Real Draft System work so future changes can be reviewed against a stable baseline.
+The first playable draft wiring should keep state minimal and disposable:
 
-This is especially important before UI work, playable-mode wiring, or any persistence-adjacent slice.
+- `flowStep`: current screen, current setup step, and whether the player is in setup, draft, recap, or blocked post-draft handoff.
+- `setupDraft`: selected GM archetype ID, selected brand ID, setup basics choices, assistant setup choice, and local-only draft session label.
+- `draftBoard`: candidate IDs, availability/eligibility projection, roster need hints, selected candidate ID, and validation status.
+- `draftResult`: completed pick result, roster assignment projection, in-memory roster state object, and draft completion summary after the approved action runs.
+- `uiOnly`: filters, focused row, confirmation modal state, and non-persisted presentation toggles.
+
+All of this state resets on reload. It must not use URL hash state, `localStorage`, `sessionStorage`, `indexedDB`, save payload mutation, SQLite, or backend calls.
+
+## First Recommended Implementation Slice
+
+Build a read-only draft room adapter and UI projection.
+
+That slice should:
+
+- Reuse existing static candidate/readiness data.
+- Produce a UI-safe draft-board model for Initial Draft.
+- Prove through focused tests that the adapter does not execute picks, assign rosters, create roster state, write saves, call storage, call backend APIs, or call GenAI.
+- Leave all player draft actions disabled or preview-only.
+
+It should not call `createNewGMModeInMemoryDraftFlow()` yet. The one-shot in-memory draft action should wait for a separate explicitly approved slice.

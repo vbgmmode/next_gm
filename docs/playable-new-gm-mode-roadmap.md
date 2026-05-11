@@ -4,8 +4,9 @@
 
 - Foundation is snapshotted and stable at 100/100.
 - Real Draft System v1.0 is snapshotted and stable at 100/100.
-- Playable New GM Mode starts from 20/100 after the baseline commit.
-- The next work must remain static/mock-first until read-only integration is explicitly approved.
+- Playable New GM Mode now has a visually stable static/mock shell.
+- The current branch includes the landing/title screen flow, expanded GM archetypes, dashboard command hero, bottom dock shell, and dark broadcast typography pass.
+- The next work must move through controlled read-only and local-only draft wiring before any player-triggered in-memory draft action is approved.
 
 ## Source Doctrine
 
@@ -35,9 +36,9 @@ The visual doctrine locks the prototype to a premium dark wrestling/sports-broad
 2. Playable mode must not treat draft completion as approval for gameplay start, Week 1, persistence payloads, UI wiring, generated text, or GenAI.
 3. Future work should compose the existing draft services instead of rebuilding draft objects or parallel services.
 
-## First Safe Vertical Slice
+## Completed Static Shell Baseline
 
-The safest first implementation slice is UI shell-only, static/mock-first:
+The first safe UI shell slice is complete and remains the player-facing baseline:
 
 - Create a minimal viewport-first app shell with the compact bottom dock.
 - Refine the dock into a compact bottom-centered glass control surface that keeps icons visible, shows the active section label, expands on hover/focus, overlays the viewport, and never pushes content up or down.
@@ -58,13 +59,94 @@ The safest first implementation slice is UI shell-only, static/mock-first:
 - Do not mutate gameplay state.
 - Add or use `npm run preview:playable-ui` for local static preview and report the URL, first screen, manual/browser QA, Git branch, commit, ahead/behind origin, worktree state, and push status after every UI slice.
 
-## Locked Static Flow Direction
+## Next Phase: Controlled Playable Draft Wiring Plan
 
-Current static UI work must preserve this order:
+The next phase should consume Real Draft System v1.0 in stages. It must not rebuild the draft system and must not jump directly from static UI into persistence, gameplay start, or Week 1 behavior.
 
-Game Landing / Title Screen -> Select Save / Continue -> Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard / Week 1 Setup.
+### Existing Services To Reuse
 
-Start New Game from the title screen may go directly to Contract Signing. The player must be able to start a new game without an existing save.
+Future implementation should compose these existing services:
+
+- `createNewGMModeDraftPickValidationService()`
+- `createNewGMModeDraftPickCreationService()`
+- `createNewGMModeDraftPickExecutionService()`
+- `createNewGMModeDraftPickRosterAssignmentService()`
+- `createNewGMModeRosterStateCreationService()`
+- `createNewGMModeDraftCompletionSummary()`
+- `createNewGMModeInMemoryDraftFlow()`
+
+`createNewGMModeInMemoryDraftFlow()` is the canonical one-shot in-memory draft pipeline. It should be used only after the UI has a safe local-only draft session boundary and the slice explicitly approves a player-triggered in-memory draft action.
+
+### Screens That Become State-Aware First
+
+1. Contract Signing, Setup Basics, Assistant Setup, Choose GM, and Select Brand should become local setup-state screens before draft execution is introduced.
+2. Initial Draft should become state-aware as a read-only draft board first: candidate rows, eligibility, availability, roster need hints, selected candidate preview, and blocked action status.
+3. Draft Recap should become a projection target for the in-memory draft completion result only after the approved draft action exists.
+4. Brand Dashboard / Week 1 Setup should remain a blocked post-draft handoff until gameplay start is separately approved.
+
+Landing, Save Selection, and Settings can remain static/mock during the first playable wiring slice. Save Selection must not become real save/load behavior.
+
+### Minimum In-Memory State
+
+The first playable wiring phase needs only disposable local state:
+
+- `flowStep`: current screen and whether the player is in setup, draft, recap, or blocked post-draft handoff.
+- `setupDraft`: selected GM archetype ID, selected brand ID, setup basics choices, assistant setup choice, and local-only draft session label.
+- `draftBoard`: candidate IDs, availability/eligibility projection, roster need hints, selected candidate ID, and validation status.
+- `draftResult`: completed pick result, roster assignment projection, in-memory roster state object, and draft completion summary after the approved action runs.
+- `uiOnly`: focused row, filter toggles, confirmation modal state, and presentation-only selections.
+
+This state must reset on reload. It must not use URL routing, URL hash state, `localStorage`, `sessionStorage`, `indexedDB`, save payload mutation, SQLite, or backend calls.
+
+### What Stays Mock Or Blocked First
+
+The first playable wiring slice should keep these static, disabled, or blocked:
+
+- Real Save Selection / Continue behavior.
+- Settings persistence and API key persistence.
+- Assistant behavior, generated text, GenAI, or OpenAI calls.
+- Budget/fans/momentum calculations.
+- Championship assignment, division assignment, rivalries, promises, injuries, morale, and contracts.
+- Week 1 initialization, booking, show execution, match engine, fan reaction, social discourse, finance, business, calendar, and progression.
+- Any roster mutation outside the approved local in-memory draft result.
+
+### Initial Draft To Draft Recap Transition
+
+Initial Draft should transition to Draft Recap only after an approved local-only in-memory draft action returns a draft completion summary with the completed in-memory roster-created status.
+
+Draft Recap should display the player's drafted roster grouped by safe display buckets:
+
+- Men's division.
+- Women's division.
+- Tag teams.
+- Prospects/developmental.
+- Unassigned/TBD when approved static metadata does not support a cleaner grouping.
+
+The recap may show pick order, wrestler/candidate identity, role, brand fit, and roster need coverage from approved static/domain data. It must not assign championships, initialize divisions, start Week 1, create a save payload, or persist the roster.
+
+### Recommended First Implementation Slice
+
+Build a read-only draft room adapter and Initial Draft UI projection.
+
+The slice should:
+
+- Reuse existing static candidate/readiness data.
+- Produce a UI-safe draft-board view model.
+- Replace mock Initial Draft rows with read-only projected candidate rows.
+- Keep player selection disabled or preview-only.
+- Add focused tests proving no draft execution, roster assignment, roster state creation, save writes, browser storage, backend calls, or GenAI calls occur.
+
+The slice should not call `createNewGMModeInMemoryDraftFlow()` yet. That belongs in a later explicit in-memory draft action slice.
+
+## Locked Flow Direction
+
+Playable New GM Mode must preserve these entry paths:
+
+- Landing / Title Screen -> Start New Game -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard / Week 1 Setup.
+- Landing / Title Screen -> Select Save / Continue -> Save Selection.
+- Landing / Title Screen -> Settings -> Settings.
+
+The player must be able to start a new game without an existing save.
 
 The Assistant Setup step is optional and skippable. It may preview assistant activation and privacy controls, but it must not call AI services or persist keys.
 
@@ -88,7 +170,7 @@ Future Codex UI work must preserve the anti-botch visual rules:
 - Use Raw/SmackDown/NXT/AEW brand palettes.
 - Avoid hardcoded random colors.
 
-## Roadmap From 20/100 To 100/100
+## Roadmap To Playable New GM Mode v0
 
 ### 25/100: Static Playable Flow Plan
 
@@ -119,9 +201,9 @@ Future Codex UI work must preserve the anti-botch visual rules:
 - Keep draft action disabled or mock-only.
 - Ensure Draft Preview language appears only before or during draft, never after Draft Recap.
 
-### 60/100: Read-Only Domain Adapter Planning
+### 60/100: Read-Only Draft Room Adapter
 
-- Define a narrow adapter contract for safe display data.
+- Define and implement a narrow adapter contract for safe display data.
 - Allow only read-only projection from existing setup/readiness/static candidate data.
 - Do not call draft execution services yet.
 - Do not persist gameplay payloads.
@@ -149,33 +231,6 @@ Future Codex UI work must preserve the anti-botch visual rules:
 - Complete the approved in-memory new-GM setup to draft completion path.
 - Provide a clear blocked state after draft completion.
 - Do not advance week, initialize booking, persist gameplay payloads, or run show/fan/social/business systems until separately approved.
-
-## Existing Real Draft Services To Consume Later
-
-Future implementation must reuse these services and must not recreate parallel versions:
-
-- `createNewGMModeDraftPickValidationService()`
-- `createNewGMModeDraftPickCreationService()`
-- `createNewGMModeDraftPickExecutionService()`
-- `createNewGMModeDraftPickRosterAssignmentService()`
-- `createNewGMModeRosterStateCreationService()`
-- `createNewGMModeDraftCompletionSummary()`
-- `createNewGMModeInMemoryDraftFlow()`
-
-## Recommended Next Slice
-
-The next slice should be UI shell-only.
-
-Recommended file targets, subject to existing app structure discovery:
-
-- Static app shell entry point.
-- Static Save Selection screen.
-- Static New GM Setup screen.
-- Static setup review or draft-night preview screen.
-- Shared mock data file for clearly fake save/setup states.
-- A short manual verification note or checklist if no test harness exists for UI yet.
-
-The next slice should not touch backend source, tests, persistence, draft services, or gameplay systems unless discovery shows a minimal frontend boundary file is required.
 
 ## Blocked Until Later Approval
 
