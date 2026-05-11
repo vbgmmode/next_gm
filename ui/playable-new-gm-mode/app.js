@@ -33,7 +33,9 @@
   ];
 
   const sectionNavMap = {
+    "game-landing": undefined,
     "save-selection": "settings",
+    "settings-screen": "settings",
     "contract-signing": "settings",
     "setup-basics": "settings",
     "ai-setup": "settings",
@@ -119,6 +121,7 @@
     });
 
     updateFlow(targetId);
+    document.body.classList.toggle("is-landing", targetId === "game-landing");
 
     if (activeLabel) {
       activeLabel.textContent = target.dataset.screenTitle;
@@ -236,5 +239,5 @@
   });
 
   setBrand("raw");
-  showSection("save-selection");
+  showSection("game-landing");
 })();

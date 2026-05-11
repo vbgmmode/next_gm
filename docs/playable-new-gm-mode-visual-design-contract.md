@@ -64,23 +64,34 @@ If a screen can be mistaken for a business dashboard with wrestling labels, it f
 
 Playable New GM Mode must feel like a guided game flow, not a static dashboard with tabs.
 
-The player experience starts with Save Selection, not Dashboard.
+The player experience starts with Game Landing / Title Screen, not Save Selection or Dashboard.
 
 Required early flow:
 
-1. Save Selection.
-2. New Game / Contract Signing.
-3. Setup Basics.
-4. Optional Assistant Setup.
-5. Choose GM.
-6. Select Brand.
-7. Initial Draft.
-8. Draft Recap.
-9. Brand Dashboard / Week 1 Setup.
+1. Game Landing / Title Screen.
+2. Select Save / Continue -> Save Selection.
+3. Start New Game -> Contract Signing.
+4. Setup Basics.
+5. Optional Assistant Setup.
+6. Choose GM.
+7. Select Brand.
+8. Initial Draft.
+9. Draft Recap.
+10. Brand Dashboard / Week 1 Setup.
+
+Landing requirements:
+
+- It is the startup screen for local preview and future playable mode entry.
+- It should show Next GM identity/logo text prominently.
+- It should feel like a premium wrestling GM game title screen, not a dashboard.
+- Start New Game goes directly to Contract Signing.
+- Select Save / Continue goes to Save Selection.
+- Settings goes to Settings.
+- A player can start a new game without an existing save file.
 
 Save Selection requirements:
 
-- It is the entry screen into the game.
+- It is the save-management screen reached from Select Save / Continue.
 - It should feel like a premium game start surface, not a card inside Dashboard.
 - Continue, create, and empty save states should feel like mode-entry choices.
 - After choosing or creating a save, the player moves into a new screen or flow step.
@@ -496,8 +507,8 @@ Before future UI changes are accepted, Codex should verify:
 - Navigation defaults to hidden/hover or compact game-overlay behavior rather than a chunky sidebar.
 - Roster/Rivalries/Championships feel like connected game hubs.
 - IWC/Analytics/Calendar feel like game systems.
-- Save Selection is the entry point.
-- Early flow is Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard.
+- Game Landing / Title Screen is the entry point.
+- Early flow is Game Landing / Title Screen -> Select Save / Continue -> Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard.
 - Raw/SmackDown/NXT/AEW brand palettes are tokenized and body-class driven.
 - Draft Preview is limited to pre-draft or active-draft presentation.
 - Post-draft state shifts toward Brand HQ and Week 1 preparation.

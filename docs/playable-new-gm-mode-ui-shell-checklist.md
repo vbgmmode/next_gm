@@ -16,7 +16,8 @@ Expected local URL style:
 
 - Confirm `npm run preview:playable-ui` starts a local static preview server.
 - Confirm the actual local preview URL is reported after the UI slice.
-- Confirm opening the local preview URL starts on Save Selection.
+- Confirm opening the local preview URL starts on Game Landing / Title Screen.
+- Confirm Save Selection is not the default startup screen.
 - Confirm no browser storage, URL routing, backend call, or persistence is used to remember the active screen.
 - Confirm the future UI update report includes:
   - Local Preview command.
@@ -31,9 +32,15 @@ Expected local URL style:
 
 ## Flow QA
 
-- Confirm the first screen is Save Selection, not Dashboard or Brand HQ.
-- Confirm Save Selection feels like the game entry screen with large campaign/save-slot panels.
-- Confirm the visible early flow is Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard.
+- Confirm the first screen is Game Landing / Title Screen, not Save Selection, Dashboard, or Brand HQ.
+- Confirm Landing shows the Next GM game identity/logo text prominently.
+- Confirm Landing feels like a premium wrestling GM title screen, not a SaaS/admin dashboard.
+- Confirm Start New Game goes directly to Contract Signing.
+- Confirm Select Save / Continue goes to Save Selection.
+- Confirm Settings goes to the Settings screen/section.
+- Confirm a player can start a new game without an existing save file.
+- Confirm Save Selection feels like a save-management screen with large campaign/save-slot panels.
+- Confirm the visible early flow is Game Landing / Title Screen -> Select Save / Continue -> Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard.
 - Confirm choosing static controls only switches visible mock sections.
 - Confirm Contract Signing feels like a league office / GM office launch moment.
 - Confirm Setup Basics includes difficulty, save name, and optional assistant setup without saving anything.
@@ -108,6 +115,7 @@ Expected local URL style:
 - Confirm active nav state is obvious without relying only on color.
 - Confirm the dock remains usable at smaller laptop width.
 - Confirm the dock does not cover Save Selection actions or other critical bottom controls.
+- Confirm the dock is hidden or minimal on Landing and does not cover Landing CTAs.
 - Confirm bottom safe-area spacing remains sufficient on laptop widths.
 - Confirm nav actions switch between Save Selection, Contract Signing, Setup Basics, Assistant Setup, Choose GM, Select Brand, Initial Draft, Draft Recap, and Brand Dashboard without page reload.
 - Confirm the dock never shows budget, fan count, alerts, mini metrics, breadcrumbs, long descriptions, notification text, or status copy.
@@ -130,6 +138,7 @@ Expected local URL style:
 ## Static/Mock Boundary QA
 
 - Confirm Continue Save and Empty Slot remain locked/mock-only.
+- Confirm Landing actions do not load a save, create a save, or persist a startup choice.
 - Confirm invalid/corrupt save recovery remains a mock visual state only.
 - Confirm setup choices are hardcoded visual placeholders.
 - Confirm assistant setup does not save keys, make calls, or activate live AI.

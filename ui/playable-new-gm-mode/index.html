@@ -36,7 +36,7 @@
             <span class="nav-icon">MG</span>
             <span class="nav-label">Management</span>
           </button>
-          <button class="nav-tab active" type="button" data-nav-target="save-selection" data-nav-section="settings" data-nav-label="Settings" aria-label="Settings section" aria-current="page">
+          <button class="nav-tab active" type="button" data-nav-target="settings-screen" data-nav-section="settings" data-nav-label="Settings" aria-label="Settings section" aria-current="page">
             <span class="nav-icon">ST</span>
             <span class="nav-label">Settings</span>
           </button>
@@ -60,11 +60,41 @@
         </header>
 
         <section
+          id="game-landing"
+          class="screen landing-screen active-screen"
+          data-screen-title="Game Landing"
+          data-flow-phase="Title Screen"
+          aria-labelledby="game-landing-title"
+        >
+          <div class="landing-stage">
+            <div class="landing-copy">
+              <p class="kicker">Procedural Wrestling Management</p>
+              <h2 id="game-landing-title">Next GM</h2>
+              <p>Run the room, read the crowd, and build a wrestling brand in an unstable attention economy.</p>
+            </div>
+
+            <div class="landing-actions" aria-label="Title screen actions">
+              <button class="hero-cta landing-primary" type="button" data-go-to="contract-signing">Start New Game</button>
+              <button class="ghost-button landing-secondary" type="button" data-go-to="save-selection">Select Save / Continue</button>
+              <button class="ghost-button landing-secondary" type="button" data-go-to="settings-screen">Settings</button>
+            </div>
+
+            <div class="landing-signal-grid" aria-label="Static title screen signals">
+              <span>Booker Vision</span>
+              <span>Draft Night</span>
+              <span>Brand Pressure</span>
+              <span>No Save Required</span>
+            </div>
+          </div>
+        </section>
+
+        <section
           id="save-selection"
-          class="screen save-screen active-screen"
+          class="screen save-screen"
           data-screen-title="Save Selection"
           data-flow-phase="Pre-Draft"
           aria-labelledby="save-selection-title"
+          hidden
         >
           <div class="entry-hero campaign-hero">
             <div class="broadcast-tag">Default Entry</div>
@@ -134,6 +164,48 @@
                 <button class="panel-button" type="button" disabled>Recovery Locked</button>
               </div>
             </article>
+          </div>
+        </section>
+
+        <section
+          id="settings-screen"
+          class="screen settings-screen"
+          data-screen-title="Settings"
+          data-flow-phase="Title Options"
+          aria-labelledby="settings-screen-title"
+          hidden
+        >
+          <div class="screen-header">
+            <div>
+              <p class="kicker">Game Options</p>
+              <h2 id="settings-screen-title">Settings</h2>
+            </div>
+            <span class="header-badge">Static Preview</span>
+          </div>
+
+          <div class="settings-layout">
+            <article class="settings-panel">
+              <p class="kicker">Display</p>
+              <h3>Broadcast cockpit</h3>
+              <div class="field-strip"><span>Theme</span><strong>Dark arena</strong></div>
+              <div class="field-strip"><span>Motion</span><strong>System setting</strong></div>
+              <div class="field-strip"><span>Density</span><strong>Laptop first</strong></div>
+            </article>
+            <article class="settings-panel">
+              <p class="kicker">Static Boundary</p>
+              <h3>Preview only</h3>
+              <div class="lock-stack">
+                <span>No save file loaded</span>
+                <span>No storage written</span>
+                <span>No backend call</span>
+                <span>No key saved</span>
+              </div>
+            </article>
+          </div>
+
+          <div class="screen-actions">
+            <button class="ghost-button" type="button" data-go-to="game-landing">Back to Title</button>
+            <button class="hero-cta small" type="button" data-go-to="contract-signing">Start New Game</button>
           </div>
         </section>
 

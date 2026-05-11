@@ -12,13 +12,14 @@
 `docs/ui-ux-doctrine.md` establishes the first player-facing path:
 
 1. Compact macOS Dock-inspired bottom dock, not a top rail, side rail, or full-width website navbar.
-2. Save Selection as the first screen, not Dashboard.
-3. Multi-screen New Game setup: Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, Select Brand.
-4. Initial Draft as the active draft broadcast surface.
-5. Draft Recap as the first post-draft surface.
-6. Brand Dashboard / Week 1 Setup as the post-draft home base.
-7. Read-only integration only after approval.
-8. Real mutations only after explicit approval.
+2. Game Landing / Title Screen as the first screen, not Save Selection or Dashboard.
+3. Title-screen actions: Start New Game -> Contract Signing, Select Save / Continue -> Save Selection, Settings -> Settings.
+4. Multi-screen New Game setup: Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, Select Brand.
+5. Initial Draft as the active draft broadcast surface.
+6. Draft Recap as the first post-draft surface.
+7. Brand Dashboard / Week 1 Setup as the post-draft home base.
+8. Read-only integration only after approval.
+9. Real mutations only after explicit approval.
 
 The visual doctrine locks the prototype to a premium dark wrestling/sports-broadcast identity:
 
@@ -40,6 +41,7 @@ The safest first implementation slice is UI shell-only, static/mock-first:
 
 - Create a minimal viewport-first app shell with the compact bottom dock.
 - Refine the dock into a compact bottom-centered glass control surface that keeps icons visible, shows the active section label, expands on hover/focus, overlays the viewport, and never pushes content up or down.
+- Add a static Game Landing / Title Screen as the default startup screen.
 - Add static Save Selection screen affordances using clearly fake save-card data.
 - Add static Contract Signing, Setup Basics, optional Assistant Setup, Choose GM, and Select Brand placeholders.
 - Add a static Initial Draft surface using mock talent, pick order, roster needs, and confirmation preview.
@@ -58,7 +60,9 @@ The safest first implementation slice is UI shell-only, static/mock-first:
 
 Current static UI work must preserve this order:
 
-Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard / Week 1 Setup.
+Game Landing / Title Screen -> Select Save / Continue -> Save Selection -> Contract Signing -> Setup Basics -> Assistant Setup -> Choose GM -> Select Brand -> Initial Draft -> Draft Recap -> Brand Dashboard / Week 1 Setup.
+
+Start New Game from the title screen may go directly to Contract Signing. The player must be able to start a new game without an existing save.
 
 The Assistant Setup step is optional and skippable. It may preview assistant activation and privacy controls, but it must not call AI services or persist keys.
 

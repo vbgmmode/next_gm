@@ -6,7 +6,7 @@ UI/UX planning is complete enough to begin durable documentation. This document 
 
 The project is not ready for live gameplay screens yet. The next UI work should move in this order: documentation first, static/mock screens second, read-only integration only after approval, and real mutations only after explicit approval.
 
-The first player-facing screens should be Save Selection and New GM Setup. All early UI work must use mock data, dev fixture data, or clearly labeled fake states only.
+The first player-facing screen should be Game Landing / Title Screen, followed by Save Selection or New GM Setup depending on the player's title-screen choice. All early UI work must use mock data, dev fixture data, or clearly labeled fake states only.
 
 Early UI must not create real save mutation, gameplay execution, week advancement, draft execution, roster assignment, match state, show state, week state, persistence payloads, SQLite writes, or GenAI calls. The UI can show the intended shape of those experiences, but it cannot start them.
 
@@ -39,21 +39,24 @@ Avoid SaaS dashboard tells: bubbly cards, soft blob decoration, oversized rounde
 
 ### Locked Game Start Flow
 
-The player experience starts with Save Selection, not Dashboard.
+The player experience starts with Game Landing / Title Screen, not Save Selection or Dashboard.
 
 The early flow is:
 
-1. Save Selection.
-2. New Game / Contract Signing.
-3. Setup Basics.
-4. Optional Assistant / LLM Setup.
-5. Choose GM.
-6. Select Brand.
-7. Initial Draft.
-8. Draft Recap.
-9. Brand Dashboard / Week 1 Setup.
+1. Game Landing / Title Screen.
+2. Select Save / Continue -> Save Selection.
+3. Start New Game -> Contract Signing.
+4. Setup Basics.
+5. Optional Assistant / LLM Setup.
+6. Choose GM.
+7. Select Brand.
+8. Initial Draft.
+9. Draft Recap.
+10. Brand Dashboard / Week 1 Setup.
 
-Save Selection must feel like a clean sports/wrestling game mode and save-slot screen. It should support preview states for Continue Save, New Game, Empty Slot, and invalid/corrupt save recovery. Save Selection must not look like the main dashboard.
+The player must be able to start a new game directly from the title screen without an existing save file. Save Selection is a save-management surface reached from Select Save / Continue, not the default startup screen.
+
+Game Landing / Title Screen must put the Next GM identity first and feel like a premium wrestling GM game title screen. Save Selection must feel like a clean sports/wrestling save-management screen. It should support preview states for Continue Save, New Game, Empty Slot, and invalid/corrupt save recovery. Save Selection must not look like the main dashboard and must not be required before starting a new game.
 
 ### New Game Setup Flow
 
@@ -311,11 +314,21 @@ Implementation order:
 7. Read-only backend integration only after static screens are approved.
 8. Real mutations only after explicit approval.
 
-The first player-facing screens are Save Selection and New GM Setup.
+The first player-facing screen is Game Landing / Title Screen. Save Selection and New GM Setup are reached from title-screen actions.
+
+### Game Landing / Title Screen
+
+The default view should be a title screen with prominent Next GM identity and clear actions:
+
+- Start New Game -> Contract Signing.
+- Select Save / Continue -> Save Selection.
+- Settings -> Settings.
+
+The title screen should use global Next GM identity more than one specific brand. It should not require a save file, browser storage, URL hash, or persisted state to choose the startup screen.
 
 ### Save Selection
 
-The default view should be save cards. A list mode can exist later for players with many saves.
+Save Selection is a save-management view reached from Select Save / Continue. The default content should be save cards. A list mode can exist later for players with many saves.
 
 Save cards show:
 
@@ -1030,7 +1043,8 @@ This task is complete when:
 - It is structured and readable.
 - It is not just a raw pasted handoff.
 - It clearly separates doctrine, rules, and future implementation sequence.
-- It clearly states that Save Selection and New GM Setup are the first UI screens.
+- It clearly states that Game Landing / Title Screen is the first UI screen.
+- It clearly states that Save Selection and New GM Setup are reached from title-screen actions.
 - It clearly states that early UI is static/mock-first.
 - It clearly preserves no-gameplay/no-persistence/no-GenAI boundaries.
 - No files outside `docs/ui-ux-doctrine.md` are changed unless the docs folder itself must be created.

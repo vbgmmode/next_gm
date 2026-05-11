@@ -107,7 +107,7 @@ for (const port of portsToTry) {
     activeServer = await createPreviewServer(port);
     const url = `http://localhost:${port}${uiRoute}`;
     console.log(`Playable New GM Mode preview serving at ${url}`);
-    console.log("First screen: Save Selection");
+    console.log("First screen: Game Landing / Title Screen");
     console.log("Press Ctrl+C to stop.");
     lastError = undefined;
     break;
