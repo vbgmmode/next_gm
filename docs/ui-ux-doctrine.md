@@ -110,6 +110,37 @@ Management:
 - Analytics.
 - Finance.
 
+### No Full-Page Scrolling / Viewport-First Layout
+
+Player-facing screens should feel like a fixed premium wrestling GM cockpit, not a scrolling webpage or SaaS dashboard. Each major screen should fit inside the visible app viewport, especially on 11-13 inch laptop screens.
+
+The app shell, global header, and primary navigation should remain fixed or visually stable while the player moves through a screen. Full-page vertical scrolling is not the default interaction model. If a screen needs more content than the viewport can show, the extra content belongs inside contained panels, tabs, sub-tabs, drawers, modals, or progressive disclosure.
+
+Allowed internal scroll areas:
+
+- IWC/social feed.
+- Draft talent pool.
+- Roster tables/lists.
+- Analytics report panels.
+- Calendar/event lists.
+- Scouting reports.
+- Save lists when many saves exist.
+- Debug/diagnostic detail panels.
+
+Implementation guidance:
+
+- Use fixed-height screen regions that are sized from the app viewport.
+- Contain overflow inside cards, panels, drawers, modals, and data regions.
+- Do not allow text to spill outside cards or controls.
+- Compress cards responsively on laptop widths before adding page scroll.
+- Use truncation or ellipsis for long names, labels, show titles, and wrestler names.
+- Add internal scrollbars where dense data requires them.
+- Use tabs, sub-tabs, drawers, modals, and progressive disclosure instead of long pages.
+- Avoid layouts that depend on full-page vertical scrolling.
+- Preserve readable hierarchy without letting cards stretch endlessly.
+
+Codex implementation warning: future UI prompts must treat full-page scrolling as a design bug unless explicitly approved. If a screen needs more content than the viewport allows, use contained panel scrolling, tabs, drawers, modals, or progressive disclosure.
+
 ## 5. First UI Implementation Priority
 
 Implementation order:
