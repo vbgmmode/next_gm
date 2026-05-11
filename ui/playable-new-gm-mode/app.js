@@ -219,6 +219,7 @@ import {
     titleDefenseTile: document.getElementById("week-one-hq-title-defense-tile"),
     rivalryPayoffTile: document.getElementById("week-one-hq-rivalry-payoff-tile"),
     historyTile: document.getElementById("week-one-hq-history-tile"),
+    rosterHistoryTile: document.getElementById("week-one-hq-roster-history-tile"),
   };
   const bookingTargets = {
     title: document.getElementById("week-one-booking-title"),
@@ -1155,6 +1156,7 @@ import {
     setText(weekOneHqTargets.titleDefenseTile, projection.displayLabels.titleDefenseLine);
     setText(weekOneHqTargets.rivalryPayoffTile, projection.displayLabels.rivalryPayoffLine);
     setText(weekOneHqTargets.historyTile, projection.displayLabels.showHistoryLine);
+    setText(weekOneHqTargets.rosterHistoryTile, projection.displayLabels.rosterHistoryLine);
     setText(
       weekOneHqTargets.bookingState,
       projection.unlocked ? "Available" : "Locked"

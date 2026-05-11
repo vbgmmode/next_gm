@@ -21,6 +21,7 @@ import {
   createInitialLocalWeekOneBookingState,
   createInitialLocalWeeklyLoopState,
   createLocalSeasonCalendarProjection,
+  createLocalRosterHistorySnapshot,
   createWeeklyHqProjection,
   createWeekOneBookingProjection,
   runLocalWeeklyShow,
@@ -257,6 +258,11 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.match(result.recap.fanResponseNote, /^Fan Response:/);
     assert.equal(result.recap.segmentResults.length, 3);
     assert.equal(result.weeklyState.lastShowRecap?.recapId, "local-week-1-recap");
+    assert.equal(result.weeklyState.rosterHistorySnapshots.length, 1);
+    assert.equal(
+      result.weeklyState.rosterHistorySnapshots[0]?.displayLine,
+      "Roster History: Week 1 - 16 signed, Momentum: Up"
+    );
   });
 
   it("backs local show recap with the Show Engine shell deterministically", () => {
@@ -351,8 +357,39 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.equal(hqProjection.seasonCalendar.nextSpecialEventWeek, 4);
     assert.equal(hqProjection.displayLabels.calendarLine, "Road To Special Event: Week 4 Special Event in 2 weeks");
     assert.equal(hqProjection.displayLabels.showHistoryLine, "Show History: 1 show logged");
+    assert.equal(hqProjection.displayLabels.rosterHistoryLine, "Roster History: Week 1 - 16 signed, Momentum: Up");
     assert.equal(weekTwoRun.actionStatus, "local-weekly-show-ran");
     assert.equal(weekTwoRun.recap.weekNumber, 2);
+  });
+
+  it("creates deterministic local roster history snapshots for weekly HQ", () => {
+    const { miniDraftProgress, setupState, rosterIds } = createCompletedWeekOneSetup();
+    const bookingState = createReadyShowCard({
+      miniDraftProgress,
+      setupState,
+      rosterIds,
+    });
+    const run = runLocalWeeklyShow({
+      selectedBrand,
+      miniDraftProgress,
+      setupState,
+      bookingState,
+      weeklyState: createInitialLocalWeeklyLoopState(),
+    });
+    const explicitSnapshot = createLocalRosterHistorySnapshot({
+      projection: createWeekOneBookingProjection({
+        selectedBrand,
+        miniDraftProgress,
+        setupState,
+        bookingState,
+        weeklyState: createInitialLocalWeeklyLoopState(),
+      }),
+      recap: run.recap,
+    });
+
+    assert.deepEqual(run.weeklyState.rosterHistorySnapshots[0], explicitSnapshot);
+    assert.equal(explicitSnapshot.snapshotId, "local-week-1-roster-snapshot");
+    assert.equal(explicitSnapshot.deltaLine, "Roster Delta: 16 signed, Momentum: Up");
   });
 
   it("projects a deterministic local season calendar and road to special event", () => {
@@ -392,6 +429,7 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.match(html, /id="week-one-hq-title-defense-tile"/);
     assert.match(html, /id="week-one-hq-rivalry-payoff-tile"/);
     assert.match(html, /id="week-one-hq-history-tile"/);
+    assert.match(html, /id="week-one-hq-roster-history-tile"/);
     assert.match(appSource, /runLocalWeeklyShow/);
     assert.match(appSource, /advanceLocalWeek/);
     assert.match(appSource, /showSection\("show-recap"\)/);
@@ -399,6 +437,7 @@ describe("Playable New GM Mode local Week 1 booking builder", () => {
     assert.match(appSource, /titleDefenseTile/);
     assert.match(appSource, /rivalryPayoffTile/);
     assert.match(appSource, /historyTile/);
+    assert.match(appSource, /rosterHistoryTile/);
     assert.match(appSource, /socialBuzzNote/);
     assert.match(appSource, /matchRatingLabel/);
     assert.match(appSource, /crowdResponseLine/);
