@@ -3460,7 +3460,7 @@ dd {
 }
 
 .booking-summary-panel {
-  grid-template-rows: auto auto minmax(0, 0.8fr) minmax(0, 0.58fr) auto;
+  grid-template-rows: auto auto auto minmax(0, 0.72fr) minmax(0, 0.52fr) auto;
   border-top: 4px solid color-mix(in srgb, var(--brand-accent) 54%, var(--border-subtle));
 }
 
@@ -3481,7 +3481,8 @@ dd {
 }
 
 .booking-status-strip span,
-.booking-mini-list span {
+.booking-mini-list span,
+.booking-finance-warning {
   overflow: hidden;
   border-left: 4px solid color-mix(in srgb, var(--brand-primary) 54%, transparent);
   background:
@@ -3495,6 +3496,11 @@ dd {
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.booking-finance-warning {
+  border-left-color: var(--brand-accent);
+  white-space: normal;
 }
 
 .recap-notes {

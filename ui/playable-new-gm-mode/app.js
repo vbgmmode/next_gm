@@ -245,6 +245,7 @@ import {
     rivalryPayoffTile: document.getElementById("week-one-hq-rivalry-payoff-tile"),
     historyTile: document.getElementById("week-one-hq-history-tile"),
     rosterHistoryTile: document.getElementById("week-one-hq-roster-history-tile"),
+    financeObjectiveTile: document.getElementById("week-one-hq-finance-objective-tile"),
   };
   const bookingTargets = {
     title: document.getElementById("week-one-booking-title"),
@@ -264,6 +265,9 @@ import {
     summaryBrand: document.getElementById("booking-summary-brand"),
     summaryRoster: document.getElementById("booking-summary-roster"),
     summaryBudget: document.getElementById("booking-summary-budget"),
+    projectedCost: document.getElementById("booking-summary-projected-cost"),
+    afterCost: document.getElementById("booking-summary-after-cost"),
+    budgetWarning: document.getElementById("booking-summary-budget-warning"),
     summaryChampions: document.getElementById("booking-summary-champions"),
     summaryRivalries: document.getElementById("booking-summary-rivalries"),
     runShow: document.getElementById("booking-run-show-action"),
@@ -282,6 +286,12 @@ import {
     fan: document.getElementById("show-recap-fan"),
     social: document.getElementById("show-recap-social"),
     budget: document.getElementById("show-recap-budget"),
+    financeStarting: document.getElementById("show-recap-finance-starting"),
+    financeCosts: document.getElementById("show-recap-finance-costs"),
+    financeTickets: document.getElementById("show-recap-finance-tickets"),
+    financeMerch: document.getElementById("show-recap-finance-merch"),
+    financeNet: document.getElementById("show-recap-finance-net"),
+    financeUpdated: document.getElementById("show-recap-finance-updated"),
     local: document.getElementById("show-recap-local"),
     segments: document.getElementById("show-recap-segments"),
     advance: document.getElementById("show-recap-advance-week"),
@@ -1392,7 +1402,7 @@ import {
         : projection.displayLabels.statusLine
     );
     setText(weekOneHqTargets.rosterCount, `${projection.signedRosterCount} Signed`);
-    setText(weekOneHqTargets.budget, `Remaining ${formatBudgetUnitsAsMoney(projection.remainingDraftBudget)}`);
+    setText(weekOneHqTargets.budget, `Remaining ${formatBudgetUnitsAsMoney(projection.remainingBudgetUnits)}`);
     setText(
       weekOneHqTargets.setupStatus,
       projection.unlocked ? "Setup Complete" : "Setup Locked"
@@ -1407,7 +1417,8 @@ import {
       projection.unlocked ? "Week 1 Command Center" : "Week 1 HQ Locked"
     );
     setText(weekOneHqTargets.rosterTile, `${projection.signedRosterCount} superstars signed`);
-    setText(weekOneHqTargets.budgetTile, `${formatBudgetUnitsAsMoney(projection.remainingDraftBudget)} remaining`);
+    setText(weekOneHqTargets.budgetTile, `${formatBudgetUnitsAsMoney(projection.remainingBudgetUnits)} remaining`);
+    setText(weekOneHqTargets.financeObjectiveTile, projection.displayLabels.financeObjectiveLine);
     setText(
       weekOneHqTargets.championTile,
       projection.unlocked ? "Setup Complete" : "Locked"
@@ -1511,7 +1522,10 @@ import {
     setText(bookingTargets.readyStatus, projection.displayLabels.readyLine);
     setText(bookingTargets.summaryBrand, projection.brandLabel);
     setText(bookingTargets.summaryRoster, `${projection.signedRosterCount} Signed`);
-    setText(bookingTargets.summaryBudget, `${formatBudgetUnitsAsMoney(projection.remainingDraftBudget)} Remaining`);
+    setText(bookingTargets.summaryBudget, `${formatBudgetUnitsAsMoney(projection.remainingBudgetUnits)} Remaining`);
+    setText(bookingTargets.projectedCost, projection.displayLabels.projectedCostLine);
+    setText(bookingTargets.afterCost, projection.displayLabels.afterCostLine);
+    setText(bookingTargets.budgetWarning, projection.displayLabels.budgetWarningLine);
 
     renderBookingRosterControls(projection);
     renderBookingSummary(projection);
@@ -1550,6 +1564,12 @@ import {
       setText(showRecapTargets.fan, "Fan Response: --");
       setText(showRecapTargets.social, "Social Buzz: --");
       setText(showRecapTargets.budget, "Budget: --");
+      setText(showRecapTargets.financeStarting, "Starting Show Budget: --");
+      setText(showRecapTargets.financeCosts, "Show Costs: --");
+      setText(showRecapTargets.financeTickets, "Ticket Revenue: --");
+      setText(showRecapTargets.financeMerch, "Merch Revenue: --");
+      setText(showRecapTargets.financeNet, "Net: --");
+      setText(showRecapTargets.financeUpdated, "Updated Budget: --");
       setText(showRecapTargets.local, "Local Session Only / Not Saved Yet");
       showRecapTargets.segments?.replaceChildren(createTextSpan("No show has been run yet."));
       if (showRecapTargets.advance) {
@@ -1571,6 +1591,12 @@ import {
     setText(showRecapTargets.fan, recap.fanResponseNote);
     setText(showRecapTargets.social, recap.socialBuzzNote || "Social Buzz: Early chatter");
     setText(showRecapTargets.budget, recap.budgetNote);
+    setText(showRecapTargets.financeStarting, recap.financeResult?.displayLabels?.startingBudgetLine);
+    setText(showRecapTargets.financeCosts, recap.financeResult?.displayLabels?.showCostLine);
+    setText(showRecapTargets.financeTickets, recap.financeResult?.displayLabels?.ticketRevenueLine);
+    setText(showRecapTargets.financeMerch, recap.financeResult?.displayLabels?.merchRevenueLine);
+    setText(showRecapTargets.financeNet, recap.financeResult?.displayLabels?.netLine);
+    setText(showRecapTargets.financeUpdated, recap.financeResult?.displayLabels?.updatedBudgetLine);
     setText(showRecapTargets.local, recap.localOnlyLine);
 
     if (showRecapTargets.segments) {
@@ -1613,6 +1639,9 @@ import {
     const completedRecaps = Array.isArray(uiState.localWeeklyLoop.completedShowRecaps)
       ? uiState.localWeeklyLoop.completedShowRecaps
       : [];
+    const currentBudgetUnits = Number.isFinite(uiState.localWeeklyLoop.currentBudgetUnits)
+      ? uiState.localWeeklyLoop.currentBudgetUnits
+      : uiState.miniDraftProgress.remainingDraftBudget;
 
     return createPlayableNewGMModeGameplayStateModel({
       gameId: "playable-new-gm-mode-local-game",
@@ -1623,7 +1652,7 @@ import {
       budget: {
         startingBudget: uiState.miniDraftProgress.startingDraftBudget,
         spentBudget: uiState.miniDraftProgress.spentDraftBudget,
-        remainingBudget: uiState.miniDraftProgress.remainingDraftBudget,
+        remainingBudget: currentBudgetUnits,
         bookingReserveTarget: uiState.miniDraftProgress.bookingReserveBudget,
       },
       signedRoster: completedPicks.map((pick, index) => ({
@@ -1676,6 +1705,7 @@ import {
         fanResponseLabel: recap.fanResponseNote,
         socialBuzzLabel: recap.socialBuzzNote,
         budgetLabel: recap.budgetNote,
+        financeResult: recap.financeResult,
         cardReadinessLabel: recap.cardReadinessLine,
         segmentResults: recap.segmentResults,
       })),
@@ -1696,6 +1726,7 @@ import {
       financeFanSummaries: completedRecaps.map((recap) => ({
         weekNumber: recap.weekNumber,
         financeLabel: recap.budgetNote,
+        financeObjectiveLabel: recap.financeResult?.financeObjectiveLine,
         fanResponseLabel: recap.fanResponseNote,
       })),
       weekHistory: completedRecaps.map((recap) => ({
@@ -1993,6 +2024,7 @@ import {
         socialBuzzNote:
           readGameplayString(showResult?.socialBuzzLabel) || "Social Buzz: Saved",
         budgetNote: readGameplayString(showResult?.budgetLabel) || "Budget: Saved",
+        financeResult: readGameplayRecord(showResult?.financeResult),
         localOnlyLine: "Loaded from local save",
         cardReadinessLine:
           readGameplayString(showResult?.cardReadinessLabel) || "Card Status: Loaded",
@@ -2007,11 +2039,18 @@ import {
     const lastShowRecap = completedShowRecaps
       .slice()
       .sort((a, b) => b.weekNumber - a.weekNumber)[0];
+    const budget = readGameplayRecord(gameplayStateModel?.budget);
+    const currentBudgetUnits = readGameplayNumber(
+      budget?.remainingBudget,
+      uiState.miniDraftProgress.remainingDraftBudget
+    );
 
     return Object.freeze({
       currentWeekNumber,
+      currentBudgetUnits,
       lastShowRecap,
       completedShowRecaps: Object.freeze(completedShowRecaps),
+      rosterHistorySnapshots: Object.freeze([]),
     });
   }
 
@@ -2076,6 +2115,9 @@ import {
         readGameplayString(segment?.crowdResponseLine) || "Crowd Response: Solid",
       momentumSignalLine:
         readGameplayString(segment?.momentumSignalLine) || "Momentum Signal: Steady",
+      businessImpactLine:
+        readGameplayString(segment?.businessImpactLine) ||
+        "Business: Steady quarter-hour",
       participantNames: Object.freeze(
         Array.isArray(segment?.participantNames)
           ? segment.participantNames.map((name) => readGameplayString(name) || "Signed Talent")
@@ -2208,7 +2250,9 @@ import {
     const title = document.createElement("strong");
     title.textContent = segment.typeLabel;
     const talent = document.createElement("em");
-    talent.textContent = segment.talentLine;
+    talent.textContent = segment.costLine
+      ? `${segment.talentLine} / ${segment.costLine}`
+      : segment.talentLine;
     content.append(title, talent);
 
     const badge = document.createElement("small");
@@ -2258,7 +2302,17 @@ import {
     crowdResponse.textContent = segment.crowdResponseLine || "Crowd Response: Solid";
     const momentumSignal = document.createElement("small");
     momentumSignal.textContent = segment.momentumSignalLine || "Momentum Signal: Steady";
-    content.append(title, talent, result, matchRating, crowdResponse, momentumSignal);
+    const businessImpact = document.createElement("small");
+    businessImpact.textContent = segment.businessImpactLine || "Business: Steady quarter-hour";
+    content.append(
+      title,
+      talent,
+      result,
+      matchRating,
+      crowdResponse,
+      momentumSignal,
+      businessImpact
+    );
     const badge = document.createElement("small");
     badge.textContent = segment.mainEvent ? "Main Event" : segment.qualityBand;
     item.append(number, content, badge);
@@ -2272,7 +2326,10 @@ import {
   }
 
   function updateBookingSegmentControlVisibility() {
-    const isPromo = bookingTargets.segmentType?.value === "promo";
+    const selectedType = bookingTargets.segmentType?.value || "singles-match";
+    const isPromo = LOCAL_WEEK_ONE_SEGMENT_TYPES.find(
+      (type) => type.segmentType === selectedType
+    )?.inputKind === "promo";
 
     bookingTargets.matchFields.forEach((field) => {
       field.hidden = isPromo;

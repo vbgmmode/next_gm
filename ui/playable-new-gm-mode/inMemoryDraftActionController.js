@@ -1177,10 +1177,14 @@ function appendPickSummaryToProgress({ progress, pickSummary, selectedBrand }) {
     pickSummary.candidateId,
   ].filter(Boolean);
   const signingCost = readPositiveOrZeroNumber(pickSummary.signingCost, 0);
-  const budgetSpent = normalizedProgress.budgetSpent + signingCost;
+  const budgetSpent = rivalPick
+    ? normalizedProgress.budgetSpent
+    : normalizedProgress.budgetSpent + signingCost;
   const remainingDraftBudget = Math.max(
     0,
-    normalizedProgress.remainingDraftBudget - signingCost
+    rivalPick
+      ? normalizedProgress.remainingDraftBudget
+      : normalizedProgress.remainingDraftBudget - signingCost
   );
   const currentPickIndex = completedPickSummaries.length + rivalPickSummaries.length;
 

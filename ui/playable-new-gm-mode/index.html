@@ -1197,6 +1197,7 @@
               </article>
               <article class="hq-tile"><strong>Signed Roster</strong><span id="week-one-hq-roster-tile">0 superstars signed</span></article>
               <article class="hq-tile"><strong>Remaining Budget</strong><span id="week-one-hq-budget-tile">$12,000,000 remaining</span></article>
+              <article class="hq-tile"><strong>GM Objective</strong><span id="week-one-hq-finance-objective-tile">Finance Objective: Keep the reserve healthy</span></article>
               <article class="hq-tile"><strong>Championship Setup</strong><span id="week-one-hq-champion-tile">Locked</span></article>
               <article class="hq-tile"><strong>Rivalry Setup</strong><span id="week-one-hq-rivalry-tile">Locked</span></article>
               <article class="hq-tile"><strong>Booking</strong><span id="week-one-hq-booking-tile">Booking Locked</span></article>
@@ -1238,8 +1239,15 @@
                   <span>Segment Type</span>
                   <select id="booking-segment-type">
                     <option value="singles-match">Singles Match</option>
-                    <option value="promo">Promo</option>
                     <option value="main-event-singles-match">Main Event Singles Match</option>
+                    <option value="championship-match">Championship Match</option>
+                    <option value="self-promo">Self Promo</option>
+                    <option value="callout-promo">Callout Promo</option>
+                    <option value="rivalry-promo">Rivalry Promo</option>
+                    <option value="championship-promo">Championship Promo</option>
+                    <option value="backstage-interview">Backstage Interview</option>
+                    <option value="contract-signing">Contract Signing</option>
+                    <option value="promo">Promo</option>
                   </select>
                 </label>
                 <label class="setup-field booking-match-field" for="booking-wrestler-a">
@@ -1288,7 +1296,10 @@
                 <div><dt>Brand</dt><dd id="booking-summary-brand">Raw</dd></div>
                 <div><dt>Signed Roster</dt><dd id="booking-summary-roster">0 Signed</dd></div>
                 <div><dt>Remaining</dt><dd id="booking-summary-budget">120</dd></div>
+                <div><dt>Projected Cost</dt><dd id="booking-summary-projected-cost">$0</dd></div>
+                <div><dt>After Costs</dt><dd id="booking-summary-after-cost">$0</dd></div>
               </dl>
+              <div class="booking-finance-warning" id="booking-summary-budget-warning">Budget Status: Reserve protected.</div>
               <div class="booking-mini-list" id="booking-summary-champions" aria-label="Champions summary">
                 <span>Champions locked</span>
               </div>
@@ -1366,6 +1377,12 @@
                 <span id="show-recap-fan">Fan Response: --</span>
                 <span id="show-recap-social">Social Buzz: --</span>
                 <span id="show-recap-budget">Budget: --</span>
+                <span id="show-recap-finance-starting">Starting Show Budget: --</span>
+                <span id="show-recap-finance-costs">Show Costs: --</span>
+                <span id="show-recap-finance-tickets">Ticket Revenue: --</span>
+                <span id="show-recap-finance-merch">Merch Revenue: --</span>
+                <span id="show-recap-finance-net">Net: --</span>
+                <span id="show-recap-finance-updated">Updated Budget: --</span>
                 <span id="show-recap-local">Local Session Only / Not Saved Yet</span>
                 <button class="panel-button enabled" type="button" data-save-current-game>Save Current Session</button>
                 <em class="js-save-status">Save after the recap to keep this local week.</em>

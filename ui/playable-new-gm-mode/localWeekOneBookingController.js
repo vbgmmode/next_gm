@@ -15,20 +15,76 @@ export const LOCAL_WEEK_ONE_SEGMENT_TYPES = Object.freeze([
     segmentType: "singles-match",
     label: "Singles Match",
     mainEvent: false,
-  }),
-  Object.freeze({
-    segmentType: "promo",
-    label: "Promo",
-    mainEvent: false,
+    inputKind: "match",
+    baseCostUnits: 4,
   }),
   Object.freeze({
     segmentType: "main-event-singles-match",
     label: "Main Event Singles Match",
     mainEvent: true,
+    inputKind: "match",
+    baseCostUnits: 8,
+  }),
+  Object.freeze({
+    segmentType: "championship-match",
+    label: "Championship Match",
+    mainEvent: true,
+    inputKind: "match",
+    baseCostUnits: 9,
+  }),
+  Object.freeze({
+    segmentType: "self-promo",
+    label: "Self Promo",
+    mainEvent: false,
+    inputKind: "promo",
+    baseCostUnits: 2,
+  }),
+  Object.freeze({
+    segmentType: "callout-promo",
+    label: "Callout Promo",
+    mainEvent: false,
+    inputKind: "promo",
+    baseCostUnits: 3,
+  }),
+  Object.freeze({
+    segmentType: "rivalry-promo",
+    label: "Rivalry Promo",
+    mainEvent: false,
+    inputKind: "promo",
+    baseCostUnits: 4,
+  }),
+  Object.freeze({
+    segmentType: "championship-promo",
+    label: "Championship Promo",
+    mainEvent: false,
+    inputKind: "promo",
+    baseCostUnits: 4,
+  }),
+  Object.freeze({
+    segmentType: "backstage-interview",
+    label: "Backstage Interview",
+    mainEvent: false,
+    inputKind: "promo",
+    baseCostUnits: 1,
+  }),
+  Object.freeze({
+    segmentType: "contract-signing",
+    label: "Contract Signing",
+    mainEvent: false,
+    inputKind: "promo",
+    baseCostUnits: 5,
+  }),
+  Object.freeze({
+    segmentType: "promo",
+    label: "Promo",
+    mainEvent: false,
+    inputKind: "promo",
+    baseCostUnits: 2,
   }),
 ]);
 
 export const LOCAL_SPECIAL_EVENT_CADENCE_WEEKS = 4;
+export const LOCAL_WEEK_ONE_PRODUCTION_COST_UNITS = 6;
 
 export function createInitialLocalWeekOneBookingState() {
   return freezeBookingState({
@@ -40,6 +96,7 @@ export function createInitialLocalWeekOneBookingState() {
 export function createInitialLocalWeeklyLoopState() {
   return freezeWeeklyLoopState({
     currentWeekNumber: 1,
+    currentBudgetUnits: undefined,
     lastShowRecap: undefined,
     completedShowRecaps: [],
     rosterHistorySnapshots: [],
@@ -74,8 +131,18 @@ export function createWeeklyHqProjection({
     setupState,
   });
   const currentWeeklyState = normalizeWeeklyLoopState(weeklyState);
-  const weekNumber = currentWeeklyState.currentWeekNumber;
   const lastShowRecap = currentWeeklyState.lastShowRecap;
+  const currentBudgetUnits = resolveCurrentBudgetUnits({
+    miniDraftProgress,
+    weeklyState: currentWeeklyState,
+    fallbackBudgetUnits: hqProjection.remainingDraftBudget,
+  });
+  const financeObjectiveLine = createFinanceObjectiveLine({
+    currentBudgetUnits,
+    reserveBudgetUnits: hqProjection.bookingReserveBudget,
+    lastShowRecap,
+  });
+  const weekNumber = currentWeeklyState.currentWeekNumber;
   const seasonCalendar = createLocalSeasonCalendarProjection({
     weeklyState: currentWeeklyState,
   });
@@ -90,6 +157,10 @@ export function createWeeklyHqProjection({
   return Object.freeze({
     ...hqProjection,
     weekNumber,
+    currentBudgetUnits,
+    remainingBudgetUnits: currentBudgetUnits,
+    remainingDraftBudget: currentBudgetUnits,
+    financeObjectiveLine,
     seasonCalendar,
     specialEventActive,
     lastShowRecap,
@@ -117,7 +188,56 @@ export function createWeeklyHqProjection({
       rivalryPayoffLine: seasonCalendar.displayLabels.rivalryPayoffLine,
       showHistoryLine: seasonCalendar.displayLabels.showHistoryLine,
       rosterHistoryLine: createRosterHistoryDisplayLine(currentWeeklyState),
+      financeObjectiveLine,
     }),
+  });
+}
+
+export function createLocalBookingFinanceProjection({
+  remainingBudgetUnits,
+  reserveBudgetUnits,
+  segments,
+  specialEventActive,
+} = {}) {
+  const startingShowBudgetUnits = readBudgetUnits(remainingBudgetUnits, 0);
+  const segmentCostUnits = Array.isArray(segments)
+    ? segments.reduce(
+        (total, segment) => total + readBudgetUnits(segment?.costUnits, 0),
+        0
+      )
+    : 0;
+  const productionCostUnits =
+    LOCAL_WEEK_ONE_PRODUCTION_COST_UNITS + (specialEventActive ? 4 : 0);
+  const projectedShowCostUnits = segmentCostUnits + productionCostUnits;
+  const projectedBudgetAfterCostUnits =
+    startingShowBudgetUnits - projectedShowCostUnits;
+  const reserveTargetUnits = readBudgetUnits(reserveBudgetUnits, 0);
+  const wouldGoBelowZero = projectedBudgetAfterCostUnits < 0;
+  const dipsBelowReserve =
+    projectedBudgetAfterCostUnits >= 0 &&
+    reserveTargetUnits > 0 &&
+    projectedBudgetAfterCostUnits < reserveTargetUnits;
+
+  return freezeBookingFinanceProjection({
+    startingShowBudgetUnits,
+    productionCostUnits,
+    segmentCostUnits,
+    projectedShowCostUnits,
+    projectedBudgetAfterCostUnits,
+    wouldGoBelowZero,
+    dipsBelowReserve,
+    displayLabels: {
+      currentBudgetLine: `Budget: ${formatBudgetUnitsAsMoney(startingShowBudgetUnits)}`,
+      projectedCostLine: `Projected Show Cost: ${formatBudgetUnitsAsMoney(projectedShowCostUnits)}`,
+      productionCostLine: `Production: ${formatBudgetUnitsAsMoney(productionCostUnits)}`,
+      segmentCostLine: `Segments: ${formatBudgetUnitsAsMoney(segmentCostUnits)}`,
+      afterCostLine: `After Costs: ${formatBudgetUnitsAsMoney(projectedBudgetAfterCostUnits)}`,
+      warningLine: wouldGoBelowZero
+        ? "Budget Warning: This card would push your budget below zero."
+        : dipsBelowReserve
+          ? "Budget Warning: This card dips below your reserve target."
+          : "Budget Status: Reserve protected.",
+    },
   });
 }
 
@@ -209,11 +329,23 @@ export function createWeeklyBookingProjection({
   );
   const segmentCount = projectedSegments.length;
   const hasMainEvent = projectedSegments.some((segment) => segment.mainEvent);
+  const currentBudgetUnits = resolveCurrentBudgetUnits({
+    miniDraftProgress,
+    weeklyState: currentWeeklyState,
+    fallbackBudgetUnits: hqProjection.remainingDraftBudget,
+  });
+  const bookingFinance = createLocalBookingFinanceProjection({
+    remainingBudgetUnits: currentBudgetUnits,
+    reserveBudgetUnits: hqProjection.bookingReserveBudget,
+    segments: projectedSegments,
+    specialEventActive,
+  });
   const readyToRun =
     hqProjection.unlocked &&
     segmentCount > 0 &&
     hasMainEvent &&
-    projectedSegments.every((segment) => segment.valid);
+    projectedSegments.every((segment) => segment.valid) &&
+    !bookingFinance.wouldGoBelowZero;
 
   return Object.freeze({
     locked: !hqProjection.unlocked,
@@ -223,13 +355,18 @@ export function createWeeklyBookingProjection({
     brandLabel: hqProjection.brandLabel,
     rosterOptions,
     signedRosterCount: hqProjection.signedRosterCount,
-    remainingDraftBudget: hqProjection.remainingDraftBudget,
+    remainingDraftBudget: currentBudgetUnits,
+    remainingBudgetUnits: currentBudgetUnits,
+    bookingReserveBudget: hqProjection.bookingReserveBudget,
+    bookingFinance,
     champions: hqProjection.champions,
     rivalries: hqProjection.rivalries,
     segments: Object.freeze(projectedSegments),
     status: Object.freeze({
       segmentCount,
       hasMainEvent,
+      budgetWouldGoBelowZero: bookingFinance.wouldGoBelowZero,
+      budgetDipsBelowReserve: bookingFinance.dipsBelowReserve,
       readyToRun,
       readyToRunComingNext: readyToRun,
     }),
@@ -247,8 +384,14 @@ export function createWeeklyBookingProjection({
       mainEventLine: hasMainEvent ? "Main Event Set" : "Main Event Needed",
       readyLine: readyToRun
         ? "Ready to Run"
-        : "Run Show Locked",
+        : bookingFinance.wouldGoBelowZero
+          ? "Budget Below Zero"
+          : "Run Show Locked",
       runShowLabel: readyToRun ? "Run Show" : "Run Show Locked",
+      budgetLine: bookingFinance.displayLabels.currentBudgetLine,
+      projectedCostLine: bookingFinance.displayLabels.projectedCostLine,
+      afterCostLine: bookingFinance.displayLabels.afterCostLine,
+      budgetWarningLine: bookingFinance.displayLabels.warningLine,
     }),
   });
 }
@@ -280,7 +423,7 @@ export function addLocalWeekOneBookingSegment({
     });
   }
 
-  if (segmentType === "promo") {
+  if (isPromoSegmentType(segmentType)) {
     const featuredWrestlerId = normalizeRosterSelection(
       segmentInput?.featuredWrestlerId,
       projection.rosterOptions
@@ -445,6 +588,7 @@ export function runLocalWeeklyShow({
   });
   const nextWeeklyState = freezeWeeklyLoopState({
     currentWeekNumber: currentWeeklyState.currentWeekNumber,
+    currentBudgetUnits: recap.financeResult.updatedBudgetUnits,
     lastShowRecap: recap,
     completedShowRecaps: [
       ...currentWeeklyState.completedShowRecaps.filter(
@@ -491,6 +635,7 @@ export function advanceLocalWeek({ weeklyState } = {}) {
   );
   const nextWeeklyState = freezeWeeklyLoopState({
     currentWeekNumber: nextWeekNumber,
+    currentBudgetUnits: currentWeeklyState.currentBudgetUnits,
     lastShowRecap,
     completedShowRecaps: currentWeeklyState.completedShowRecaps,
     rosterHistorySnapshots: currentWeeklyState.rosterHistorySnapshots,
@@ -576,6 +721,11 @@ function createLocalShowRecap({ projection, setupState, weeklyState }) {
   const showGrade = createShowGrade(segmentResults);
   const crowdRead = createCrowdRead(showGrade);
   const weekNumber = normalizeWeeklyLoopState(weeklyState).currentWeekNumber;
+  const financeResult = createLocalShowFinanceResult({
+    projection,
+    segmentResults,
+    showGrade,
+  });
 
   return freezeShowRecap({
     recapId: `local-week-${weekNumber}-recap`,
@@ -598,7 +748,8 @@ function createLocalShowRecap({ projection, setupState, weeklyState }) {
         : "Momentum: Steady",
     fanResponseNote: createFanResponseNote({ crowdRead, engineRun }),
     socialBuzzNote: createSocialBuzzNote(engineRun),
-    budgetNote: "Budget: No major change in this local session",
+    budgetNote: financeResult.displayLabels.summaryLine,
+    financeResult,
     localOnlyLine: "Local Session Only / Not Saved Yet",
     cardReadinessLine: createCardReadinessLine(engineRun),
     simulationBacked: engineRun !== undefined,
@@ -642,6 +793,12 @@ function createSegmentResult({
     matchRatingLabel: createMatchRatingLabel({ segment, qualityBand }),
     crowdResponseLine: createCrowdResponseLine({ segment, engineMatchResult }),
     momentumSignalLine: createMomentumSignalLine({ segment, engineMatchResult }),
+    businessImpactLine: createBusinessImpactLine({
+      championInvolved,
+      rivalryInvolved,
+      qualityBand,
+      segment,
+    }),
     participantNames: Object.freeze(
       wrestlerIds.map((candidateId) => findRosterName(rosterOptions, candidateId))
     ),
@@ -670,7 +827,7 @@ function createSegmentQualityBand({ segment, spotlightBonus, engineMatchResult }
     return "Strong";
   }
 
-  if (segment.segmentType === "promo" && spotlightBonus > 0) {
+  if (isPromoSegmentType(segment.segmentType) && spotlightBonus > 0) {
     return "Strong";
   }
 
@@ -678,8 +835,8 @@ function createSegmentQualityBand({ segment, spotlightBonus, engineMatchResult }
 }
 
 function createSegmentResultLine({ segment, qualityBand, engineMatchResult }) {
-  if (segment.segmentType === "promo") {
-    return `${qualityBand} promo segment.`;
+  if (isPromoSegmentType(segment.segmentType)) {
+    return `${qualityBand} ${segment.typeLabel.toLowerCase()} segment.`;
   }
 
   const signalLabels = readEngineSignalLabels(engineMatchResult);
@@ -693,7 +850,7 @@ function createSegmentResultLine({ segment, qualityBand, engineMatchResult }) {
 }
 
 function createMatchRatingLabel({ segment, qualityBand }) {
-  if (segment.segmentType === "promo") {
+  if (isPromoSegmentType(segment.segmentType)) {
     return `Segment Rating: ${qualityBand}`;
   }
 
@@ -701,7 +858,7 @@ function createMatchRatingLabel({ segment, qualityBand }) {
 }
 
 function createCrowdResponseLine({ segment, engineMatchResult }) {
-  if (segment.segmentType === "promo") {
+  if (isPromoSegmentType(segment.segmentType)) {
     return "Crowd Response: Story advanced";
   }
 
@@ -723,7 +880,7 @@ function createCrowdResponseLine({ segment, engineMatchResult }) {
 }
 
 function createMomentumSignalLine({ segment, engineMatchResult }) {
-  if (segment.segmentType === "promo") {
+  if (isPromoSegmentType(segment.segmentType)) {
     return "Momentum Signal: Story beat";
   }
 
@@ -738,6 +895,105 @@ function createMomentumSignalLine({ segment, engineMatchResult }) {
   }
 
   return "Momentum Signal: Steady";
+}
+
+function createBusinessImpactLine({
+  championInvolved,
+  rivalryInvolved,
+  qualityBand,
+  segment,
+}) {
+  if (qualityBand === "Standout" && championInvolved) {
+    return "Business: Champion merch lift";
+  }
+
+  if (qualityBand === "Standout" && rivalryInvolved) {
+    return "Business: Rivalry demand up";
+  }
+
+  if (segment.mainEvent && qualityBand !== "Solid") {
+    return "Business: Ticket buzz up";
+  }
+
+  if (isPromoSegmentType(segment.segmentType) && championInvolved) {
+    return "Business: Title visibility up";
+  }
+
+  return "Business: Steady quarter-hour";
+}
+
+function createLocalShowFinanceResult({
+  projection,
+  segmentResults,
+  showGrade,
+}) {
+  const finance = projection.bookingFinance || createLocalBookingFinanceProjection({
+    remainingBudgetUnits: projection.remainingBudgetUnits,
+    reserveBudgetUnits: projection.bookingReserveBudget,
+    segments: projection.segments,
+    specialEventActive: projection.specialEventActive,
+  });
+  const championFeatureCount = segmentResults.filter(
+    (segment) => segment.championInvolved
+  ).length;
+  const rivalryFeatureCount = segmentResults.filter(
+    (segment) => segment.rivalryInvolved
+  ).length;
+  const standoutCount = segmentResults.filter(
+    (segment) => segment.qualityBand === "Standout"
+  ).length;
+  const gradeRevenueBonus = {
+    A: 24,
+    B: 18,
+    C: 12,
+    D: 8,
+  }[showGrade] || 10;
+  const segmentBonus = Math.min(6, segmentResults.length);
+  const ticketRevenueUnits =
+    gradeRevenueBonus +
+    segmentBonus +
+    (projection.specialEventActive ? 6 : 0) +
+    (segmentResults.some((segment) => segment.mainEvent) ? 2 : 0) +
+    Math.min(4, championFeatureCount * 2) +
+    Math.min(4, rivalryFeatureCount * 2);
+  const merchRevenueUnits =
+    4 +
+    Math.min(6, standoutCount * 2) +
+    Math.min(4, championFeatureCount * 2) +
+    Math.min(3, rivalryFeatureCount);
+  const showCostUnits = finance.projectedShowCostUnits;
+  const netProfitLossUnits = ticketRevenueUnits + merchRevenueUnits - showCostUnits;
+  const updatedBudgetUnits = finance.startingShowBudgetUnits + netProfitLossUnits;
+  const profitKind = netProfitLossUnits >= 0 ? "Profit" : "Loss";
+  const signedNetLine =
+    netProfitLossUnits >= 0
+      ? `Net Profit: +${formatBudgetUnitsAsMoney(netProfitLossUnits)}`
+      : `Net Loss: -${formatBudgetUnitsAsMoney(Math.abs(netProfitLossUnits))}`;
+
+  return freezeShowFinanceResult({
+    startingShowBudgetUnits: finance.startingShowBudgetUnits,
+    showCostUnits,
+    productionCostUnits: finance.productionCostUnits,
+    segmentCostUnits: finance.segmentCostUnits,
+    ticketRevenueUnits,
+    merchRevenueUnits,
+    netProfitLossUnits,
+    updatedBudgetUnits,
+    financeObjectiveLine: createFinanceObjectiveLine({
+      currentBudgetUnits: updatedBudgetUnits,
+      reserveBudgetUnits: projection.bookingReserveBudget,
+      netProfitLossUnits,
+    }),
+    displayLabels: {
+      startingBudgetLine: `Starting Show Budget: ${formatBudgetUnitsAsMoney(finance.startingShowBudgetUnits)}`,
+      showCostLine: `Show Costs: ${formatBudgetUnitsAsMoney(showCostUnits)}`,
+      ticketRevenueLine: `Ticket Revenue: ${formatBudgetUnitsAsMoney(ticketRevenueUnits)}`,
+      merchRevenueLine: `Merch Revenue: ${formatBudgetUnitsAsMoney(merchRevenueUnits)}`,
+      netLine: signedNetLine,
+      updatedBudgetLine: `Updated Budget: ${formatBudgetUnitsAsMoney(updatedBudgetUnits)}`,
+      summaryLine: `Budget: ${profitKind} ${formatBudgetUnitsAsSignedMoney(netProfitLossUnits)} / ${formatBudgetUnitsAsMoney(updatedBudgetUnits)} remaining`,
+    },
+  });
 }
 
 function createShowGrade(segmentResults) {
@@ -862,7 +1118,7 @@ function getQualityRank(qualityBand) {
 }
 
 function getSegmentWrestlerIds(segment) {
-  if (segment.segmentType === "promo") {
+  if (isPromoSegmentType(segment.segmentType)) {
     return [segment.featuredWrestlerId].filter(Boolean);
   }
 
@@ -884,7 +1140,7 @@ function runLocalShowEngineShell({ projection, rivalries, weeklyState }) {
     promotionId: promotion.id,
   });
   const bookedMatches = projection.segments
-    .filter((segment) => segment.segmentType !== "promo")
+    .filter((segment) => !isPromoSegmentType(segment.segmentType))
     .map((segment) =>
       createLocalBookedMatch({
         segment,
@@ -976,7 +1232,7 @@ function createLocalPromotion({ projection }) {
       ticketDemand: 55,
     }),
     financialState: Object.freeze({
-      cashOnHand: projection.remainingDraftBudget,
+      cashOnHand: projection.remainingBudgetUnits,
       weeklyRevenue: 0,
       weeklyExpenses: 0,
       payrollCost: 0,
@@ -1012,17 +1268,17 @@ function createLocalShow({ projection, weekNumber, promotion }) {
     segments: projection.segments.map((segment) =>
       Object.freeze({
         id: segment.segmentId,
-        type: segment.segmentType === "promo" ? "promo" : "match",
+        type: isPromoSegmentType(segment.segmentType) ? "promo" : "match",
         matchId:
-          segment.segmentType === "promo"
+          isPromoSegmentType(segment.segmentType)
             ? undefined
             : createMatchId(segment.segmentId),
         involvedWrestlerIds: getSegmentWrestlerIds(segment),
         rivalryId: undefined,
-        plannedMinutes: segment.mainEvent ? 15 : 8,
+        plannedMinutes: getSegmentPlannedMinutes(segment),
       })
     ),
-    budgetAllocated: 0,
+    budgetAllocated: projection.bookingFinance?.projectedShowCostUnits || 0,
   });
 }
 
@@ -1158,7 +1414,7 @@ function createLocalBookedMatch({
     plannedWinnerId: undefined,
     actualWinnerId: undefined,
     finishType: undefined,
-    plannedMinutes: segment.mainEvent ? 15 : 10,
+    plannedMinutes: getSegmentPlannedMinutes(segment),
     stakes: segment.mainEvent ? "major" : rivalry ? "high" : "medium",
   });
 
@@ -1277,8 +1533,9 @@ function createSegmentProjection({ segment, segmentNumber, rosterOptions }) {
   const segmentType = normalizeSegmentType(segment?.segmentType);
   const segmentDefinition = findSegmentType(segmentType);
   const mainEvent = Boolean(segmentDefinition.mainEvent);
+  const costUnits = readBudgetUnits(segmentDefinition.baseCostUnits, 0);
 
-  if (segmentType === "promo") {
+  if (segmentDefinition.inputKind === "promo") {
     const featuredWrestlerName = findRosterName(
       rosterOptions,
       segment?.featuredWrestlerId
@@ -1290,9 +1547,12 @@ function createSegmentProjection({ segment, segmentNumber, rosterOptions }) {
       segmentType,
       typeLabel: segmentDefinition.label,
       mainEvent,
+      inputKind: "promo",
+      costUnits,
+      costLine: `Cost ${formatBudgetUnitsAsMoney(costUnits)}`,
       featuredWrestlerId: readString(segment?.featuredWrestlerId) || "",
       featuredWrestlerName,
-      talentLine: `${featuredWrestlerName} promo`,
+      talentLine: `${featuredWrestlerName} ${segmentDefinition.label.toLowerCase()}`,
       valid: featuredWrestlerName !== "Missing Wrestler",
     });
   }
@@ -1306,6 +1566,9 @@ function createSegmentProjection({ segment, segmentNumber, rosterOptions }) {
     segmentType,
     typeLabel: segmentDefinition.label,
     mainEvent,
+    inputKind: "match",
+    costUnits,
+    costLine: `Cost ${formatBudgetUnitsAsMoney(costUnits)}`,
     wrestlerAId: readString(segment?.wrestlerAId) || "",
     wrestlerBId: readString(segment?.wrestlerBId) || "",
     wrestlerAName,
@@ -1372,6 +1635,7 @@ function normalizeWeeklyLoopState(weeklyState) {
 
   return freezeWeeklyLoopState({
     currentWeekNumber,
+    currentBudgetUnits: readOptionalBudgetUnits(weeklyState.currentBudgetUnits),
     lastShowRecap,
     completedShowRecaps,
     rosterHistorySnapshots: Array.isArray(weeklyState.rosterHistorySnapshots)
@@ -1385,6 +1649,7 @@ function normalizeWeeklyLoopState(weeklyState) {
 function freezeWeeklyLoopState(state) {
   return Object.freeze({
     currentWeekNumber: state.currentWeekNumber,
+    currentBudgetUnits: readOptionalBudgetUnits(state.currentBudgetUnits),
     lastShowRecap: state.lastShowRecap
       ? freezeShowRecap(state.lastShowRecap)
       : undefined,
@@ -1424,7 +1689,8 @@ function normalizeShowRecap(recap) {
     socialBuzzNote: readString(recap.socialBuzzNote) || "Social Buzz: Early chatter",
     budgetNote:
       readString(recap.budgetNote) ||
-      "Budget: No major change in this local session",
+      "Budget: Awaiting show finance",
+    financeResult: normalizeShowFinanceResult(recap.financeResult),
     localOnlyLine:
       readString(recap.localOnlyLine) || "Local Session Only / Not Saved Yet",
     cardReadinessLine:
@@ -1453,6 +1719,9 @@ function normalizeSegmentResult(segmentResult) {
       readString(segmentResult?.crowdResponseLine) || "Crowd Response: Solid",
     momentumSignalLine:
       readString(segmentResult?.momentumSignalLine) || "Momentum Signal: Steady",
+    businessImpactLine:
+      readString(segmentResult?.businessImpactLine) ||
+      "Business: Steady quarter-hour",
     participantNames: Object.freeze(
       Array.isArray(segmentResult?.participantNames)
         ? segmentResult.participantNames.map((name) => readString(name) || "Signed Talent")
@@ -1477,6 +1746,7 @@ function freezeShowRecap(recap) {
     fanResponseNote: recap.fanResponseNote,
     socialBuzzNote: recap.socialBuzzNote,
     budgetNote: recap.budgetNote,
+    financeResult: freezeShowFinanceResult(recap.financeResult),
     localOnlyLine: recap.localOnlyLine,
     cardReadinessLine: recap.cardReadinessLine,
     simulationBacked: Boolean(recap.simulationBacked),
@@ -1540,6 +1810,166 @@ function createRosterHistoryDisplayLine(weeklyState) {
     : "Roster History: No weekly snapshot yet";
 }
 
+function resolveCurrentBudgetUnits({
+  miniDraftProgress,
+  weeklyState,
+  fallbackBudgetUnits,
+}) {
+  const weeklyBudget = readOptionalBudgetUnits(weeklyState?.currentBudgetUnits);
+
+  if (weeklyBudget !== undefined) {
+    return weeklyBudget;
+  }
+
+  return readBudgetUnits(
+    miniDraftProgress?.remainingDraftBudget,
+    readBudgetUnits(fallbackBudgetUnits, 0)
+  );
+}
+
+function createFinanceObjectiveLine({
+  currentBudgetUnits,
+  reserveBudgetUnits,
+  lastShowRecap,
+  netProfitLossUnits,
+}) {
+  const budgetUnits = readBudgetUnits(currentBudgetUnits, 0);
+  const reserveUnits = readBudgetUnits(reserveBudgetUnits, 0);
+  const latestNet = netProfitLossUnits !== undefined
+    ? readBudgetUnits(netProfitLossUnits, 0)
+    : readOptionalBudgetUnits(lastShowRecap?.financeResult?.netProfitLossUnits);
+
+  if (reserveUnits > 0 && budgetUnits < reserveUnits) {
+    return "Finance Objective: Protect budget reserve";
+  }
+
+  if (latestNet !== undefined && latestNet < 0) {
+    return "Finance Objective: Recover after a loss";
+  }
+
+  if (latestNet !== undefined && latestNet > 0) {
+    return "Finance Objective: Reinvest after profitable show";
+  }
+
+  return "Finance Objective: Keep the reserve healthy";
+}
+
+function freezeBookingFinanceProjection(finance) {
+  return Object.freeze({
+    startingShowBudgetUnits: finance.startingShowBudgetUnits,
+    productionCostUnits: finance.productionCostUnits,
+    segmentCostUnits: finance.segmentCostUnits,
+    projectedShowCostUnits: finance.projectedShowCostUnits,
+    projectedBudgetAfterCostUnits: finance.projectedBudgetAfterCostUnits,
+    wouldGoBelowZero: Boolean(finance.wouldGoBelowZero),
+    dipsBelowReserve: Boolean(finance.dipsBelowReserve),
+    displayLabels: Object.freeze({ ...finance.displayLabels }),
+  });
+}
+
+function normalizeShowFinanceResult(financeResult) {
+  if (!financeResult || typeof financeResult !== "object") {
+    return freezeShowFinanceResult({
+      startingShowBudgetUnits: 0,
+      showCostUnits: 0,
+      productionCostUnits: 0,
+      segmentCostUnits: 0,
+      ticketRevenueUnits: 0,
+      merchRevenueUnits: 0,
+      netProfitLossUnits: 0,
+      updatedBudgetUnits: 0,
+      financeObjectiveLine: "Finance Objective: Keep the reserve healthy",
+      displayLabels: {
+        startingBudgetLine: "Starting Show Budget: $0",
+        showCostLine: "Show Costs: $0",
+        ticketRevenueLine: "Ticket Revenue: $0",
+        merchRevenueLine: "Merch Revenue: $0",
+        netLine: "Net Profit: +$0",
+        updatedBudgetLine: "Updated Budget: $0",
+        summaryLine: "Budget: Awaiting show finance",
+      },
+    });
+  }
+
+  return freezeShowFinanceResult({
+    startingShowBudgetUnits: readBudgetUnits(financeResult.startingShowBudgetUnits, 0),
+    showCostUnits: readBudgetUnits(financeResult.showCostUnits, 0),
+    productionCostUnits: readBudgetUnits(financeResult.productionCostUnits, 0),
+    segmentCostUnits: readBudgetUnits(financeResult.segmentCostUnits, 0),
+    ticketRevenueUnits: readBudgetUnits(financeResult.ticketRevenueUnits, 0),
+    merchRevenueUnits: readBudgetUnits(financeResult.merchRevenueUnits, 0),
+    netProfitLossUnits: readBudgetUnits(financeResult.netProfitLossUnits, 0),
+    updatedBudgetUnits: readBudgetUnits(financeResult.updatedBudgetUnits, 0),
+    financeObjectiveLine:
+      readString(financeResult.financeObjectiveLine) ||
+      "Finance Objective: Keep the reserve healthy",
+    displayLabels: {
+      startingBudgetLine:
+        readString(financeResult.displayLabels?.startingBudgetLine) ||
+        `Starting Show Budget: ${formatBudgetUnitsAsMoney(financeResult.startingShowBudgetUnits)}`,
+      showCostLine:
+        readString(financeResult.displayLabels?.showCostLine) ||
+        `Show Costs: ${formatBudgetUnitsAsMoney(financeResult.showCostUnits)}`,
+      ticketRevenueLine:
+        readString(financeResult.displayLabels?.ticketRevenueLine) ||
+        `Ticket Revenue: ${formatBudgetUnitsAsMoney(financeResult.ticketRevenueUnits)}`,
+      merchRevenueLine:
+        readString(financeResult.displayLabels?.merchRevenueLine) ||
+        `Merch Revenue: ${formatBudgetUnitsAsMoney(financeResult.merchRevenueUnits)}`,
+      netLine:
+        readString(financeResult.displayLabels?.netLine) ||
+        formatBudgetNetLine(financeResult.netProfitLossUnits),
+      updatedBudgetLine:
+        readString(financeResult.displayLabels?.updatedBudgetLine) ||
+        `Updated Budget: ${formatBudgetUnitsAsMoney(financeResult.updatedBudgetUnits)}`,
+      summaryLine:
+        readString(financeResult.displayLabels?.summaryLine) ||
+        "Budget: Show finance logged",
+    },
+  });
+}
+
+function freezeShowFinanceResult(financeResult) {
+  const normalized = financeResult || {};
+
+  return Object.freeze({
+    startingShowBudgetUnits: readBudgetUnits(normalized.startingShowBudgetUnits, 0),
+    showCostUnits: readBudgetUnits(normalized.showCostUnits, 0),
+    productionCostUnits: readBudgetUnits(normalized.productionCostUnits, 0),
+    segmentCostUnits: readBudgetUnits(normalized.segmentCostUnits, 0),
+    ticketRevenueUnits: readBudgetUnits(normalized.ticketRevenueUnits, 0),
+    merchRevenueUnits: readBudgetUnits(normalized.merchRevenueUnits, 0),
+    netProfitLossUnits: readBudgetUnits(normalized.netProfitLossUnits, 0),
+    updatedBudgetUnits: readBudgetUnits(normalized.updatedBudgetUnits, 0),
+    financeObjectiveLine:
+      readString(normalized.financeObjectiveLine) ||
+      "Finance Objective: Keep the reserve healthy",
+    displayLabels: Object.freeze({
+      startingBudgetLine:
+        readString(normalized.displayLabels?.startingBudgetLine) ||
+        "Starting Show Budget: $0",
+      showCostLine:
+        readString(normalized.displayLabels?.showCostLine) ||
+        "Show Costs: $0",
+      ticketRevenueLine:
+        readString(normalized.displayLabels?.ticketRevenueLine) ||
+        "Ticket Revenue: $0",
+      merchRevenueLine:
+        readString(normalized.displayLabels?.merchRevenueLine) ||
+        "Merch Revenue: $0",
+      netLine:
+        readString(normalized.displayLabels?.netLine) ||
+        formatBudgetNetLine(normalized.netProfitLossUnits),
+      updatedBudgetLine:
+        readString(normalized.displayLabels?.updatedBudgetLine) ||
+        "Updated Budget: $0",
+      summaryLine:
+        readString(normalized.displayLabels?.summaryLine) ||
+        "Budget: Show finance logged",
+    }),
+  });
+}
+
 function normalizeSegmentType(value) {
   const segmentType = readString(value);
   return LOCAL_WEEK_ONE_SEGMENT_TYPES.some(
@@ -1555,6 +1985,22 @@ function findSegmentType(segmentType) {
       (type) => type.segmentType === segmentType
     ) || LOCAL_WEEK_ONE_SEGMENT_TYPES[0]
   );
+}
+
+function isPromoSegmentType(segmentType) {
+  return findSegmentType(segmentType).inputKind === "promo";
+}
+
+function getSegmentPlannedMinutes(segment) {
+  if (segment.segmentType === "contract-signing") {
+    return 10;
+  }
+
+  if (isPromoSegmentType(segment.segmentType)) {
+    return 7;
+  }
+
+  return segment.mainEvent ? 15 : 10;
 }
 
 function normalizeRosterSelection(candidateId, rosterOptions) {
@@ -1591,4 +2037,38 @@ function readPositiveNumber(value, fallback) {
   return typeof value === "number" && Number.isFinite(value) && value > 0
     ? Math.floor(value)
     : fallback;
+}
+
+function readBudgetUnits(value, fallback) {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.floor(value)
+    : fallback;
+}
+
+function readOptionalBudgetUnits(value) {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.floor(value)
+    : undefined;
+}
+
+function formatBudgetUnitsAsMoney(value) {
+  const units = readBudgetUnits(value, 0);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(units * 100000);
+}
+
+function formatBudgetUnitsAsSignedMoney(value) {
+  const units = readBudgetUnits(value, 0);
+  const money = formatBudgetUnitsAsMoney(Math.abs(units));
+  return units >= 0 ? `+${money}` : `-${money}`;
+}
+
+function formatBudgetNetLine(value) {
+  const units = readBudgetUnits(value, 0);
+  return units >= 0
+    ? `Net Profit: +${formatBudgetUnitsAsMoney(units)}`
+    : `Net Loss: -${formatBudgetUnitsAsMoney(Math.abs(units))}`;
 }
