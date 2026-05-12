@@ -1769,13 +1769,20 @@ dd {
   gap: 9px;
   border-top: 5px solid var(--brand-primary);
   background:
-    linear-gradient(115deg, var(--brand-soft), transparent 60%),
+    radial-gradient(circle at 32% 22%, color-mix(in srgb, var(--brand-accent) 20%, transparent), transparent 34%),
+    linear-gradient(115deg, color-mix(in srgb, var(--brand-soft) 92%, transparent), transparent 60%),
     repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.032) 0 1px, transparent 1px 13px),
     var(--bg-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.11),
+    0 0 28px color-mix(in srgb, var(--brand-primary) 18%, transparent);
 }
 
 .on-clock h2 {
   color: var(--brand-accent);
+  font-size: clamp(1.95rem, 3.1vw, 3.2rem);
+  line-height: 0.86;
+  text-shadow: 0 0 22px var(--brand-glow);
 }
 
 .pick-badge,
@@ -1796,6 +1803,16 @@ dd {
   white-space: nowrap;
 }
 
+.pick-badge {
+  border-color: color-mix(in srgb, var(--brand-accent) 70%, var(--brand-primary));
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-primary) 24%, transparent), transparent),
+    rgba(0, 0, 0, 0.38);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--brand-primary) 22%, transparent),
+    0 0 18px color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+
 .draft-budget-board {
   display: grid;
   grid-template-columns: 1fr;
@@ -1805,9 +1822,11 @@ dd {
   border: 1px solid color-mix(in srgb, var(--brand-primary) 40%, var(--border-subtle));
   border-left: 5px solid color-mix(in srgb, var(--brand-accent) 58%, var(--brand-primary));
   background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-primary) 16%, transparent), transparent 72%),
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 15px),
     rgba(0, 0, 0, 0.3);
   padding: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .draft-budget-board span {
@@ -1896,10 +1915,14 @@ dd {
   border-top: 5px solid var(--brand-primary);
   border-color: color-mix(in srgb, var(--brand-primary) 52%, var(--border-subtle));
   background:
+    radial-gradient(circle at 78% 2%, color-mix(in srgb, var(--brand-accent) 16%, transparent), transparent 34%),
     radial-gradient(circle at 50% 122%, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 58%),
     linear-gradient(115deg, color-mix(in srgb, var(--brand-soft) 88%, transparent), transparent 62%),
     repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 22px),
     var(--bg-surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 22px color-mix(in srgb, var(--brand-primary) 14%, transparent);
 }
 
 .ownership-note {
@@ -3089,11 +3112,11 @@ dd {
 .brand-dashboard-hero {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1fr) minmax(176px, 0.38fr);
+  grid-template-columns: minmax(0, 0.86fr) minmax(330px, 0.98fr) minmax(210px, 0.46fr);
   gap: 12px;
   align-items: center;
   min-width: 0;
-  min-height: 118px;
+  min-height: 126px;
   overflow: hidden;
   border-color: color-mix(in srgb, var(--brand-primary) 46%, var(--border-subtle));
   border-left: 7px solid var(--brand-primary);
@@ -3250,6 +3273,18 @@ dd {
   min-width: 0;
 }
 
+.hero-actions .hero-cta {
+  min-height: 44px;
+  border-color: color-mix(in srgb, var(--brand-accent) 72%, var(--brand-primary));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.13),
+    0 0 24px color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+
+.hero-actions .ghost-button {
+  opacity: 0.76;
+}
+
 .hero-actions .hero-cta,
 .hero-actions .ghost-button {
   width: 100%;
@@ -3366,8 +3401,8 @@ dd {
 }
 
 .compact-hq {
-  grid-template-columns: minmax(240px, 1.04fr) repeat(2, minmax(145px, 0.7fr));
-  grid-auto-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(210px, 0.9fr) repeat(2, minmax(150px, 0.74fr));
+  grid-auto-rows: minmax(68px, 1fr);
 }
 
 .hq-tile {
@@ -3382,7 +3417,7 @@ dd {
 }
 
 .hq-tile.feature {
-  grid-row: span 2;
+  grid-row: span 1;
   border-color: color-mix(in srgb, var(--brand-primary) 58%, var(--border-subtle));
   border-top-color: var(--brand-primary);
   background:
@@ -3391,9 +3426,30 @@ dd {
     var(--surface-plate);
 }
 
+.compact-hq .hq-tile.feature {
+  opacity: 0.76;
+}
+
+.compact-hq .hq-tile:nth-child(4),
+.compact-hq .hq-tile:nth-child(7) {
+  border-color: color-mix(in srgb, var(--brand-primary) 54%, var(--border-subtle));
+  border-top-color: color-mix(in srgb, var(--brand-accent) 74%, var(--brand-primary));
+  background:
+    linear-gradient(100deg, color-mix(in srgb, var(--brand-primary) 18%, transparent), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.02) 0 1px, transparent 1px 6px),
+    var(--surface-plate);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 18px color-mix(in srgb, var(--brand-primary) 13%, transparent);
+}
+
+.compact-hq .hq-tile:nth-child(n + 8) {
+  opacity: 0.72;
+}
+
 .roster-frame {
-  min-height: 86px;
-  font-size: 2.4rem;
+  min-height: 56px;
+  font-size: 1.55rem;
 }
 
 .booking-screen {
@@ -3408,7 +3464,7 @@ dd {
 
 .show-recap-layout {
   display: grid;
-  grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1fr) minmax(240px, 0.58fr);
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.05fr) minmax(250px, 0.64fr);
   gap: 10px;
   min-width: 0;
   min-height: 0;
@@ -3417,11 +3473,42 @@ dd {
 
 .show-recap-scoreboard {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(74px, auto) minmax(0, 1fr) auto;
   gap: 10px;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+}
+
+.show-recap-scoreboard .command-monitor {
+  border-left-width: 6px;
+  background:
+    radial-gradient(circle at 12% 114%, color-mix(in srgb, var(--brand-primary) 25%, transparent), transparent 58%),
+    linear-gradient(100deg, color-mix(in srgb, var(--brand-primary) 18%, transparent), transparent 72%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 5px),
+    rgba(0, 0, 0, 0.5);
+}
+
+.show-recap-scoreboard .command-monitor strong {
+  color: var(--text-primary);
+  font-size: clamp(0.98rem, 1.35vw, 1.32rem);
+}
+
+.show-recap-scoreboard .hq-tile.feature {
+  min-height: 0;
+  border-top-color: color-mix(in srgb, var(--brand-accent) 70%, var(--brand-primary));
+}
+
+.show-recap-scoreboard .hq-tile.feature h3,
+.show-recap-scoreboard .hq-tile.feature p {
+  white-space: normal;
+}
+
+.show-recap-scoreboard .hq-tile.feature h3 {
+  display: -webkit-box;
+  line-height: 1.02;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .booking-builder-layout {
@@ -3505,10 +3592,27 @@ dd {
 
 .recap-notes {
   align-content: start;
+  gap: 6px;
 }
 
 .recap-notes span {
+  display: block;
+  min-height: 28px;
   white-space: normal;
+  line-height: 1.18;
+}
+
+.recap-notes span:nth-child(1),
+.recap-notes span:nth-child(2),
+.recap-notes span:nth-child(3) {
+  border-left-color: color-mix(in srgb, var(--brand-accent) 64%, var(--brand-primary));
+  color: var(--text-primary);
+}
+
+.recap-notes span:nth-child(n + 4):nth-child(-n + 10) {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-primary) 9%, transparent), transparent 72%),
+    rgba(255, 255, 255, 0.026);
 }
 
 .show-card-list,
@@ -3537,6 +3641,22 @@ dd {
   padding: 10px;
 }
 
+.show-recap-screen .show-card-segment {
+  grid-template-columns: 44px minmax(0, 1fr) minmax(92px, auto);
+  align-items: start;
+  min-height: 76px;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--brand-primary) 13%, transparent), transparent 64%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.014) 0 1px, transparent 1px 18px),
+    rgba(0, 0, 0, 0.42);
+}
+
+.show-recap-screen .show-card-segment > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
 .show-card-segment.main-event {
   border-left-color: var(--brand-accent);
   box-shadow:
@@ -3557,6 +3677,21 @@ dd {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.show-recap-screen .show-card-segment em,
+.show-recap-screen .show-card-segment small {
+  display: -webkit-box;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.12;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.show-recap-screen .show-card-segment strong {
+  white-space: normal;
+  line-height: 1;
 }
 
 .show-card-segment span {
