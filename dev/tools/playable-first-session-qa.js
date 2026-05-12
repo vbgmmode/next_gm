@@ -1,5 +1,4 @@
 import { spawn } from "node:child_process";
-import { existsSync } from "node:fs";
 import { mkdir, rm, writeFile } from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
@@ -8,68 +7,93 @@ import { fileURLToPath } from "node:url";
 
 const repoRoot = path.resolve(fileURLToPath(new URL("../..", import.meta.url)));
 const artifactRoot = path.join(repoRoot, "test-artifacts", "playable-first-session");
-const screenshotDir = path.join(artifactRoot, "screenshots");
-const chromeProfileDir = path.join(artifactRoot, "chrome-profile");
+const screenshotDir = artifactRoot;
 const previewPort = Number.parseInt(process.env.PLAYABLE_QA_PORT || "3197", 10);
-const debugPort = Number.parseInt(process.env.PLAYABLE_QA_DEBUG_PORT || "9223", 10);
 const appUrl = `http://127.0.0.1:${previewPort}/ui/playable-new-gm-mode/`;
 const viewport = Object.freeze({ width: 1366, height: 768 });
 const secondaryViewport = Object.freeze({ width: 1280, height: 800 });
+const qaMode = normalizeQaMode(process.env.PLAYABLE_FIRST_SESSION_QA_MODE);
+const strictBrowserMode = qaMode === "browser";
+const fallbackOnlyMode = qaMode === "fallback";
 
 const screenshotPlan = Object.freeze([
   Object.freeze({
     name: "title screen",
+    screenId: "game-landing",
+    titleIncludes: "Next GM",
     fileName: "01-title-screen.png",
     ctaSelector: '[data-go-to="contract-signing"]',
   }),
   Object.freeze({
     name: "setup basics",
+    screenId: "setup-basics",
+    titleIncludes: "Open a living GM universe",
     fileName: "02-setup-basics.png",
     ctaSelector: '[data-go-to="ai-setup"]',
   }),
   Object.freeze({
     name: "initial draft",
+    screenId: "draft-room",
+    titleIncludes: "Initial Draft",
     fileName: "03-initial-draft.png",
     ctaSelector: "[data-make-pick-action]",
   }),
   Object.freeze({
     name: "post-draft Brand HQ",
+    screenId: "draft-recap",
+    titleIncludes: "Welcome to",
     fileName: "04-post-draft-brand-hq.png",
     ctaSelector: '[data-go-to="championship-setup"]',
   }),
   Object.freeze({
     name: "assign champions",
+    screenId: "championship-setup",
+    titleIncludes: "Assign Champions",
     fileName: "05-assign-champions.png",
     ctaSelector: "#complete-championship-setup",
   }),
   Object.freeze({
     name: "create rivalries",
+    screenId: "rivalry-setup",
+    titleIncludes: "Create Rivalries",
     fileName: "06-create-rivalries.png",
     ctaSelector: "#complete-rivalry-setup",
   }),
   Object.freeze({
     name: "Week 1 HQ",
+    screenId: "brand-dashboard",
+    titleIncludes: "Week 1 HQ",
     fileName: "07-week-1-hq.png",
     ctaSelector: "#week-one-hq-booking-action",
   }),
   Object.freeze({
     name: "booking",
+    screenId: "week-one-booking",
+    titleIncludes: "Booking",
     fileName: "08-booking.png",
     ctaSelector: "#booking-run-show-action",
   }),
   Object.freeze({
     name: "show recap",
+    screenId: "show-recap",
+    titleIncludes: "Recap",
     fileName: "09-show-recap.png",
     ctaSelector: "#show-recap-advance-week",
   }),
   Object.freeze({
     name: "Week 2 HQ",
+    screenId: "brand-dashboard",
+    titleIncludes: "Week 2 HQ",
     fileName: "10-week-2-hq.png",
     ctaSelector: "#week-one-hq-booking-action",
   }),
 ]);
 
 const report = {
+  mode: qaMode,
+  browserVisualQa: "pending",
+  fallbackQa: "not-run",
+  screenshotsCaptured: 0,
   screensVisited: [],
   screenshotsWritten: [],
   productAssertions: [],
@@ -78,14 +102,76 @@ const report = {
 };
 
 let previewProcess;
-let chromeProcess;
 let page;
 
-try {
-  await prepareArtifacts();
-  previewProcess = startPreviewServer();
-  await waitForApp();
-  chromeProcess = startChrome();
+async function main() {
+  try {
+    await prepareArtifacts();
+    previewProcess = startPreviewServer();
+    await waitForApp();
+
+    if (fallbackOnlyMode) {
+      markBrowserSkipped("Fallback mode requested.");
+      await runControllerFallback();
+    } else {
+      await runBrowserQa();
+    }
+  } catch (error) {
+    const errorText = error?.stack || String(error);
+
+    if (strictBrowserMode) {
+      report.browserVisualQa = "failed";
+      report.browserFailureReason = errorText;
+      report.failed = true;
+      report.error = errorText;
+      process.exitCode = 1;
+    } else if (!fallbackOnlyMode) {
+      markBrowserSkipped(errorText);
+      await runControllerFallback().catch((fallbackError) => {
+        report.fallbackQa = "failed";
+        report.failed = true;
+        report.error = fallbackError?.stack || String(fallbackError);
+        process.exitCode = 1;
+      });
+    } else {
+      report.failed = true;
+      report.error = errorText;
+      process.exitCode = 1;
+    }
+  } finally {
+    if (page) {
+      await page.close().catch(() => {});
+    }
+    previewProcess?.kill();
+    report.screenshotsCaptured = report.screenshotsWritten.length;
+    await writeReport();
+    printReport();
+  }
+}
+
+async function prepareArtifacts() {
+  await rm(artifactRoot, { recursive: true, force: true });
+  await mkdir(screenshotDir, { recursive: true });
+}
+
+function normalizeQaMode(value) {
+  if (value === "browser" || value === "fallback") {
+    return value;
+  }
+
+  return "auto";
+}
+
+function markBrowserSkipped(reason) {
+  report.browserVisualQa = "skipped";
+  report.browserFailureReason = reason;
+  report.skippedChecks.push({
+    name: "browser screenshots and visual anti-botch checks",
+    reason,
+  });
+}
+
+async function runBrowserQa() {
   page = await connectToChrome();
   await enablePage(page);
   await navigateToApp(page);
@@ -121,7 +207,8 @@ try {
   );
   await checkProduct(
     "rival pick sequence does not reduce player budget beyond player signing",
-    budgetAfterPlayerPick === rivalBudgetBeforePick - (budgetBeforePick - budgetAfterPlayerPick)
+    budgetAfterPlayerPick ===
+      rivalBudgetBeforePick - (budgetBeforePick - budgetAfterPlayerPick)
   );
   await click(page, "[data-auto-fill-minimum-roster]");
   await waitForEnabled(page, "[data-finish-local-draft]");
@@ -163,42 +250,7 @@ try {
   await captureScreen(page, screenshotPlan[9]);
   await assertWeekTwoHq(page);
   assertNoRecordedFailures();
-} catch (error) {
-  const errorText = error?.stack || String(error);
-  const browserBlocked = errorText.includes("Chrome debugging port did not become available");
-
-  if (browserBlocked) {
-    report.browserLimitation = errorText;
-    report.skippedChecks.push({
-      name: "browser screenshots and visual anti-botch checks",
-      reason: "Chromium debugging did not become available in this Windows headless environment.",
-    });
-    chromeProcess?.kill();
-    chromeProcess = undefined;
-    await runControllerFallback().catch((fallbackError) => {
-      report.failed = true;
-      report.error = fallbackError?.stack || String(fallbackError);
-      process.exitCode = 1;
-    });
-  } else {
-    report.failed = true;
-    report.error = errorText;
-    process.exitCode = 1;
-  }
-} finally {
-  if (page) {
-    await page.close().catch(() => {});
-  }
-  chromeProcess?.kill();
-  previewProcess?.kill();
-  await writeReport();
-  printReport();
-}
-
-async function prepareArtifacts() {
-  await rm(artifactRoot, { recursive: true, force: true });
-  await mkdir(screenshotDir, { recursive: true });
-  await mkdir(chromeProfileDir, { recursive: true });
+  report.browserVisualQa = "passed";
 }
 
 function startPreviewServer() {
@@ -221,49 +273,6 @@ function startPreviewServer() {
   return child;
 }
 
-function startChrome() {
-  const chromePath = findChromePath();
-
-  if (!chromePath) {
-    throw new Error("Chrome or Edge executable was not found for screenshot QA.");
-  }
-
-  const child = spawn(
-    chromePath,
-    [
-      "--headless=new",
-      "--disable-gpu",
-      "--disable-gpu-compositing",
-      "--disable-gpu-rasterization",
-      "--disable-dev-shm-usage",
-      "--disable-features=UseSkiaRenderer,VizDisplayCompositor,CanvasOopRasterization",
-      "--use-angle=swiftshader",
-      "--use-gl=angle",
-      "--single-process",
-      "--no-zygote",
-      "--hide-scrollbars",
-      `--remote-debugging-port=${debugPort}`,
-      `--user-data-dir=${chromeProfileDir}`,
-      "about:blank",
-    ],
-    { stdio: ["ignore", "ignore", "pipe"] }
-  );
-  child.stderr.on("data", (chunk) => {
-    process.stderr.write(`[browser] ${chunk}`);
-  });
-  return child;
-}
-
-function findChromePath() {
-  const candidates = [
-    process.env.CHROME_PATH,
-    "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-  ].filter(Boolean);
-
-  return candidates.find((candidate) => existsSync(candidate));
-}
-
 async function waitForApp() {
   const deadline = Date.now() + 10000;
 
@@ -282,22 +291,80 @@ async function waitForApp() {
 }
 
 async function connectToChrome() {
-  const deadline = Date.now() + 10000;
+  let chromium;
 
-  while (Date.now() < deadline) {
-    try {
-      const target = await requestJson({
-        port: debugPort,
-        pathName: `/json/new?${encodeURIComponent("about:blank")}`,
-        method: "PUT",
-      });
-      return new CdpClient(target.webSocketDebuggerUrl);
-    } catch {
-      await delay(100);
-    }
+  try {
+    ({ chromium } = await import("@playwright/test"));
+  } catch (error) {
+    throw new Error(
+      `Playwright browser QA is unavailable. Run npm install first. ${error.message}`
+    );
   }
 
-  throw new Error("Chrome debugging port did not become available.");
+  const browser = await chromium.launch({
+    channel: process.env.PLAYABLE_QA_BROWSER_CHANNEL || "msedge",
+    headless: true,
+    args: [
+      "--disable-gpu",
+      "--in-process-gpu",
+      "--disable-gpu-compositing",
+      "--disable-gpu-rasterization",
+      "--disable-background-networking",
+      "--disable-component-update",
+      "--disable-default-apps",
+      "--disable-dev-shm-usage",
+      "--disable-features=UseSkiaRenderer,VizDisplayCompositor,CanvasOopRasterization",
+      "--use-angle=swiftshader",
+      "--use-gl=angle",
+      "--no-first-run",
+    ],
+  });
+  const context = await browser.newContext({ viewport });
+  const browserPage = await context.newPage();
+
+  return createPlaywrightClientAdapter({ browser, browserPage, context });
+}
+
+function createPlaywrightClientAdapter({ browser, browserPage, context }) {
+  return {
+    async send(method, params = {}) {
+      if (method === "Page.enable" || method === "Runtime.enable") {
+        return {};
+      }
+
+      if (method === "Emulation.setDeviceMetricsOverride") {
+        await browserPage.setViewportSize({
+          width: params.width,
+          height: params.height,
+        });
+        return {};
+      }
+
+      if (method === "Page.navigate") {
+        await browserPage.goto(params.url, { waitUntil: "load" });
+        return {};
+      }
+
+      if (method === "Runtime.evaluate") {
+        const value = await browserPage.evaluate(params.expression);
+        return { result: { value } };
+      }
+
+      if (method === "Page.captureScreenshot") {
+        const data = await browserPage.screenshot({
+          type: "png",
+          fullPage: false,
+        });
+        return { data: data.toString("base64") };
+      }
+
+      throw new Error(`Unsupported Playwright QA command: ${method}`);
+    },
+    async close() {
+      await context.close().catch(() => {});
+      await browser.close().catch(() => {});
+    },
+  };
 }
 
 async function enablePage(client) {
@@ -344,7 +411,7 @@ async function assertSetupTitleScreen(client) {
 
 async function assertSetupBasics(client) {
   const state = await evaluateValue(client, `(() => ({
-    text: document.querySelector("#setup-basics")?.innerText || "",
+    text: document.querySelector("#setup-basics")?.textContent || "",
     budget: document.querySelector("#setup-starting-budget-summary")?.textContent || "",
     activeBrands: document.querySelector("#setup-active-brand-list")?.textContent || "",
     competitors: document.querySelector("#setup-competing-gm-list")?.textContent || "",
@@ -363,7 +430,7 @@ async function assertDraftBriefing(client) {
 
 async function assertInitialDraftBeforePick(client) {
   const state = await evaluateValue(client, `(() => ({
-    text: document.querySelector("#draft-room")?.innerText || "",
+    text: document.querySelector("#draft-room")?.textContent || "",
     remaining: document.querySelector("#draft-budget-remaining")?.textContent || "",
     rivals: document.querySelector("#draft-competing-brands")?.textContent || "",
     ticker: document.querySelector("#draft-ticker-list")?.textContent || "",
@@ -452,7 +519,7 @@ async function assertWeekOneHq(client) {
 }
 
 async function buildWeekOneCard(client) {
-  await evaluateValue(client, `(() => {
+  const invalidPairingBlocked = await evaluateValue(client, `(() => {
     const values = Array.from(document.querySelector("#booking-wrestler-a").options)
       .filter((option) => option.value)
       .map((option) => option.value);
@@ -470,6 +537,7 @@ async function buildWeekOneCard(client) {
     set("#booking-wrestler-a", values[0]);
     set("#booking-wrestler-b", values[0]);
     document.querySelector("#add-week-one-segment").click();
+    const invalidPairingMessage = document.querySelector("#week-one-booking")?.textContent || "";
 
     set("#booking-wrestler-a", values[0]);
     set("#booking-wrestler-b", values[1]);
@@ -479,36 +547,36 @@ async function buildWeekOneCard(client) {
     set("#booking-wrestler-a", values[2]);
     set("#booking-wrestler-b", values[3]);
     document.querySelector("#add-week-one-segment").click();
-    return true;
+    return invalidPairingMessage.includes("Same wrestler cannot face themselves.");
   })()`);
+  await checkProduct("booking blocks invalid same-person pairing", invalidPairingBlocked);
   await waitForEnabled(client, "#booking-run-show-action");
 }
 
 async function assertBooking(client) {
   const state = await evaluateValue(client, `(() => ({
-    text: document.querySelector("#week-one-booking")?.innerText || "",
+    text: document.querySelector("#week-one-booking")?.textContent || "",
     optionText: Array.from(document.querySelectorAll("#booking-wrestler-a option, #booking-wrestler-b option, #booking-promo-wrestler option")).map((option) => option.textContent || "").join(" "),
     segmentTypes: Array.from(document.querySelector("#booking-segment-type").options).map((option) => option.textContent || ""),
-    card: document.querySelector("#week-one-show-card-list")?.innerText || "",
+    card: document.querySelector("#week-one-show-card-list")?.textContent || "",
   }))()`);
   await checkProduct("booking supports Match and Promo", state.segmentTypes.some((label) => label.includes("Match")) && state.segmentTypes.some((label) => label.includes("Promo")));
   await checkProduct("booking supports match type and promo type", state.segmentTypes.includes("Singles Match") && state.segmentTypes.includes("Self Promo"));
   await checkProduct("booking dropdowns omit source labels", !/Drafted From|Source Pool|Signed to/.test(state.optionText));
   await checkProduct("booking allows promo talent to also wrestle", /Self Promo[\s\S]+Singles Match|Singles Match[\s\S]+Self Promo/.test(state.card));
   await checkProduct("booking shows projected show cost", state.text.includes("Projected Cost") && /\$[0-9,]+/.test(state.text));
-  await checkProduct("booking blocks invalid same-person pairing", state.text.includes("Same wrestler cannot face themselves."));
   await checkProduct("Run Show unlocks only after valid booking state", state.text.includes("Ready to Run"));
 }
 
 async function assertShowRecap(client) {
   const state = await evaluateValue(client, `(() => {
-    const segmentText = document.querySelector("#show-recap-segments")?.innerText || "";
+    const segmentText = document.querySelector("#show-recap-segments")?.textContent || "";
     return {
-      text: document.querySelector("#show-recap")?.innerText || "",
+      text: document.querySelector("#show-recap")?.textContent || "",
       segmentText,
       promoCards: Array.from(document.querySelectorAll("#show-recap-segments article"))
-        .filter((card) => (card.innerText || "").includes("Promo"))
-        .map((card) => card.innerText || ""),
+        .filter((card) => (card.textContent || "").includes("Promo"))
+        .map((card) => card.textContent || ""),
     };
   })()`);
   await checkProduct("show recap includes deterministic match winners", state.segmentText.includes("Winner:"));
@@ -533,6 +601,7 @@ async function assertWeekTwoHq(client) {
 }
 
 async function runControllerFallback() {
+  report.fallbackQa = "running";
   report.screensVisited.push("controller fallback: setup");
   report.screensVisited.push("controller fallback: draft");
   report.screensVisited.push("controller fallback: post-draft setup");
@@ -745,6 +814,7 @@ async function runControllerFallback() {
   });
   await checkProduct("fallback Week 2 HQ shows updated budget", weekTwoHq.weekNumber === 2 && weekTwoHq.remainingBudgetUnits === show.recap.financeResult.updatedBudgetUnits);
   await checkProduct("fallback Week 2 HQ has Book Week 2 Show action", weekTwoHq.displayLabels.bookingLine === "Book Week 2 Show");
+  report.fallbackQa = "passed";
 }
 
 async function runVisualChecks(client, plan) {
@@ -752,15 +822,34 @@ async function runVisualChecks(client, plan) {
     await setViewport(client, size);
     const result = await evaluateValue(client, `(() => {
       const ctaSelector = ${JSON.stringify(plan.ctaSelector)};
+      const expectedScreenId = ${JSON.stringify(plan.screenId)};
+      const expectedTitle = ${JSON.stringify(plan.titleIncludes)};
       const cta = document.querySelector(ctaSelector);
       const dock = document.querySelector(".bottom-nav-dock");
       const doc = document.documentElement;
       const active = document.querySelector(".screen:not([hidden])");
+      const screenTitle = [
+        active?.getAttribute("data-screen-title") || "",
+        ...Array.from(active?.querySelectorAll("h1, h2") || []).map(
+          (node) => node.textContent || ""
+        ),
+      ].join(" ");
       const isVisible = (node) => {
         if (!node) return false;
         const style = getComputedStyle(node);
         const rect = node.getBoundingClientRect();
         return style.visibility !== "hidden" && style.display !== "none" && rect.width > 0 && rect.height > 0;
+      };
+      const isActuallyVisible = (node) => {
+        if (!isVisible(node)) return false;
+        const rect = node.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        if (x < 0 || x > window.innerWidth || y < 0 || y > window.innerHeight) {
+          return false;
+        }
+        const hit = document.elementFromPoint(x, y);
+        return Boolean(hit && (node === hit || node.contains(hit) || hit.contains(node)));
       };
       const ctaRect = cta?.getBoundingClientRect();
       const dockRect = dock?.getBoundingClientRect();
@@ -772,17 +861,24 @@ async function runVisualChecks(client, plan) {
         ctaRect.left < dockRect.right
       );
       const overflowSamples = Array.from(active?.querySelectorAll("button, span, strong, em, p, h2, h3, dd, dt, small, label") || [])
-        .filter((node) => isVisible(node))
+        .filter((node) => node.childElementCount === 0)
+        .filter((node) => isActuallyVisible(node))
         .filter((node) => {
           const rect = node.getBoundingClientRect();
-          const parentRect = node.parentElement?.getBoundingClientRect();
-          return parentRect && (rect.right > parentRect.right + 8 || rect.left < parentRect.left - 8);
+          return (
+            rect.left < -8 ||
+            rect.right > window.innerWidth + 8 ||
+            rect.top < -8 ||
+            rect.bottom > window.innerHeight + 8
+          );
         })
         .slice(0, 5)
         .map((node) => (node.textContent || "").trim().slice(0, 80));
 
       return {
         activeScreenId: active?.id || "",
+        activeScreenMatches: active?.id === expectedScreenId,
+        titleMatches: screenTitle.includes(expectedTitle),
         noHorizontalOverflow: doc.scrollWidth <= window.innerWidth + 2,
         noFullPageVerticalScroll: doc.scrollHeight <= window.innerHeight + 16,
         primaryCtaVisible: isVisible(cta) && !cta.disabled,
@@ -791,6 +887,8 @@ async function runVisualChecks(client, plan) {
         overflowSamples,
       };
     })()`);
+    recordVisual(`${plan.name} ${size.width}x${size.height} active screen marker matches`, result.activeScreenMatches, result);
+    recordVisual(`${plan.name} ${size.width}x${size.height} screen title matches flow step`, result.titleMatches, result);
     recordVisual(`${plan.name} ${size.width}x${size.height} no horizontal overflow`, result.noHorizontalOverflow, result);
     recordVisual(`${plan.name} ${size.width}x${size.height} no full-page vertical scrolling`, result.noFullPageVerticalScroll, result);
     recordVisual(`${plan.name} ${size.width}x${size.height} primary CTA visible`, result.primaryCtaVisible, result);
@@ -836,7 +934,7 @@ async function moneyValue(client, selector) {
 }
 
 async function activeText(client) {
-  return evaluateValue(client, `document.querySelector(".screen:not([hidden])")?.innerText || ""`);
+  return evaluateValue(client, `document.querySelector(".screen:not([hidden])")?.textContent || ""`);
 }
 
 async function waitForActiveScreen(client, screenId) {
@@ -960,6 +1058,12 @@ function printReport() {
   const visualFailed = report.visualChecks.filter((item) => item.status === "failed").length;
 
   console.log("\nPlayable First-Session QA");
+  console.log(`Mode: ${report.mode}`);
+  console.log(`Browser visual QA: ${report.browserVisualQa}`);
+  if (report.browserVisualQa === "skipped" || report.browserVisualQa === "failed") {
+    console.log(`Browser reason: ${report.browserFailureReason}`);
+  }
+  console.log(`Fallback QA: ${report.fallbackQa}`);
   console.log(`Screens visited: ${report.screensVisited.join(" -> ")}`);
   console.log(`Screenshots written: ${report.screenshotsWritten.length}`);
   console.log(`Product assertions: ${productPassed} passed, ${productFailed} failed`);
@@ -968,51 +1072,4 @@ function printReport() {
   console.log(`Report: ${path.relative(repoRoot, path.join(artifactRoot, "report.json"))}`);
 }
 
-class CdpClient {
-  constructor(webSocketUrl) {
-    if (typeof WebSocket !== "function") {
-      throw new Error("Node WebSocket support is required for Chrome QA.");
-    }
-
-    this.nextId = 1;
-    this.pending = new Map();
-    this.socket = new WebSocket(webSocketUrl);
-    this.ready = new Promise((resolve, reject) => {
-      this.socket.addEventListener("open", resolve, { once: true });
-      this.socket.addEventListener("error", reject, { once: true });
-    });
-    this.socket.addEventListener("message", (event) => {
-      const data = event.data instanceof ArrayBuffer
-        ? Buffer.from(event.data).toString("utf8")
-        : String(event.data);
-      const message = JSON.parse(data);
-      if (!message.id || !this.pending.has(message.id)) {
-        return;
-      }
-      const pending = this.pending.get(message.id);
-      this.pending.delete(message.id);
-      if (message.error) {
-        pending.reject(new Error(message.error.message));
-      } else {
-        pending.resolve(message.result || {});
-      }
-    });
-  }
-
-  async send(method, params = {}) {
-    await this.ready;
-    const id = this.nextId;
-    this.nextId += 1;
-    const payload = JSON.stringify({ id, method, params });
-
-    return new Promise((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
-      this.socket.send(payload);
-    });
-  }
-
-  async close() {
-    await this.ready.catch(() => {});
-    this.socket.close();
-  }
-}
+await main();

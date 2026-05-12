@@ -1,3 +1,4 @@
 /test-artifacts/
 /tmp-chrome-profile/
 /playable-preview*.log
+/node_modules/

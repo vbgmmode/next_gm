@@ -11,6 +11,14 @@ describe("Playable New GM Mode first-session QA harness", () => {
       packageJson.scripts["qa:playable-first-session"],
       "node dev/tools/playable-first-session-qa.js"
     );
+    assert.equal(
+      packageJson.scripts["qa:playable-first-session:browser"],
+      "set PLAYABLE_FIRST_SESSION_QA_MODE=browser&& node dev/tools/playable-first-session-qa.js"
+    );
+    assert.equal(
+      packageJson.scripts["qa:playable-first-session:fallback"],
+      "set PLAYABLE_FIRST_SESSION_QA_MODE=fallback&& node dev/tools/playable-first-session-qa.js"
+    );
   });
 
   it("captures the required first-session screens into local artifacts", () => {
@@ -59,6 +67,8 @@ describe("Playable New GM Mode first-session QA harness", () => {
     const source = readHarnessSource();
 
     for (const checkLabel of [
+      "active screen marker matches",
+      "screen title matches flow step",
       "no horizontal overflow",
       "no full-page vertical scrolling",
       "primary CTA visible",
@@ -66,6 +76,39 @@ describe("Playable New GM Mode first-session QA harness", () => {
       "no obvious text overflow",
     ]) {
       assert.match(source, new RegExp(escapeRegExp(checkLabel)));
+    }
+  });
+
+  it("reports browser and fallback mode status clearly", () => {
+    const source = readHarnessSource();
+
+    for (const reportField of [
+      "browserVisualQa",
+      "fallbackQa",
+      "screenshotsCaptured",
+      "browserFailureReason",
+      "Browser visual QA:",
+      "Fallback QA:",
+    ]) {
+      assert.match(source, new RegExp(escapeRegExp(reportField)));
+    }
+
+    assert.match(source, /markBrowserSkipped/);
+    assert.match(source, /strictBrowserMode/);
+    assert.match(source, /process\.exitCode = 1/);
+  });
+
+  it("keeps controller fallback product assertions available", () => {
+    const source = readHarnessSource();
+
+    for (const fallbackAssertion of [
+      "fallback setup exposes starting cash as money",
+      "fallback player draft pick reduces player budget",
+      "fallback booking shows projected show cost",
+      "fallback show recap includes finance output",
+      "fallback Week 2 HQ has Book Week 2 Show action",
+    ]) {
+      assert.match(source, new RegExp(escapeRegExp(fallbackAssertion)));
     }
   });
 
@@ -85,7 +128,7 @@ describe("Playable New GM Mode first-session QA harness", () => {
     const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 
     assert.equal(packageJson.dependencies, undefined);
-    assert.equal(packageJson.devDependencies, undefined);
+    assert.equal(packageJson.devDependencies?.["@playwright/test"], "^1.60.0");
   });
 });
 

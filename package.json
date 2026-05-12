@@ -9,6 +9,11 @@
   "scripts": {
     "preview:playable-ui": "node dev/tools/playable-ui-preview-server.js",
     "qa:playable-first-session": "node dev/tools/playable-first-session-qa.js",
+    "qa:playable-first-session:browser": "set PLAYABLE_FIRST_SESSION_QA_MODE=browser&& node dev/tools/playable-first-session-qa.js",
+    "qa:playable-first-session:fallback": "set PLAYABLE_FIRST_SESSION_QA_MODE=fallback&& node dev/tools/playable-first-session-qa.js",
     "test": "node --test --experimental-strip-types \"tests/**/*.test.ts\""
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
   }
 }

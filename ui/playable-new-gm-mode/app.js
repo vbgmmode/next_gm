@@ -223,6 +223,7 @@ import {
     })),
   };
   const weekOneHqTargets = {
+    screen: document.getElementById("brand-dashboard"),
     title: document.getElementById("brand-dashboard-title"),
     note: document.getElementById("dashboard-preview-note"),
     rosterCount: document.getElementById("week-one-hq-roster-count"),
@@ -1395,8 +1396,10 @@ import {
       setupState: uiState.localPostDraftSetup,
       weeklyState: uiState.localWeeklyLoop,
     });
+    const weekLabel = `Week ${projection.weekNumber} HQ`;
 
-    setText(weekOneHqTargets.title, `Welcome to ${getBrandWelcomeLabel(projection.brandLabel)}`);
+    weekOneHqTargets.screen?.setAttribute("data-screen-title", weekLabel);
+    setText(weekOneHqTargets.title, `Welcome to ${getBrandWelcomeLabel(projection.brandLabel)} ${weekLabel}`);
     setText(
       weekOneHqTargets.note,
       projection.unlocked
@@ -1416,7 +1419,7 @@ import {
     setText(weekOneHqTargets.bookingAction, projection.displayLabels.bookingLine);
     setText(
       weekOneHqTargets.statusCard,
-      projection.unlocked ? "Week 1 Command Center" : "Week 1 HQ Locked"
+      projection.unlocked ? `${weekLabel} Command Center` : `${weekLabel} Locked`
     );
     setText(weekOneHqTargets.rosterTile, `${projection.signedRosterCount} superstars signed`);
     setText(weekOneHqTargets.budgetTile, `${formatBudgetUnitsAsMoney(projection.remainingBudgetUnits)} remaining`);
