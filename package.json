@@ -8,6 +8,7 @@
   },
   "scripts": {
     "preview:playable-ui": "node dev/tools/playable-ui-preview-server.js",
+    "qa:playable-first-session": "node dev/tools/playable-first-session-qa.js",
     "test": "node --test --experimental-strip-types \"tests/**/*.test.ts\""
   }
 }

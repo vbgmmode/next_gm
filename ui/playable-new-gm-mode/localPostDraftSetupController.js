@@ -115,10 +115,9 @@ export function createLocalSetupRosterOptions(
   const brandLabel = resolveBrandTitleSet(selectedBrand, miniDraftProgress).brandLabel;
 
   return Object.freeze(
-    summaries.map((summary, index) =>
-      {
-        const sourceRosterPool = readString(summary?.sourceRosterPool) || "Roster";
-        return Object.freeze({
+    summaries.map((summary, index) => {
+      const sourceRosterPool = readString(summary?.sourceRosterPool) || "Roster";
+      return Object.freeze({
         candidateId: readString(summary?.candidateId) || `signed-${index + 1}`,
         displayName: readString(summary?.candidateName) || `Signed Superstar ${index + 1}`,
         activeBrandLabel: brandLabel,
@@ -131,9 +130,8 @@ export function createLocalSetupRosterOptions(
         pickSource:
           readString(summary?.pickSource) === "auto-fill" ? "Auto-Filled" : "Manual",
         pickNumber: readPositiveNumber(summary?.pickNumber, index + 1),
-        });
-      }
-    )
+      });
+    })
   );
 }
 
@@ -194,14 +192,13 @@ export function createChampionshipSetupProjection({
     canComplete,
     complete,
     championCards: Object.freeze(
-      LOCAL_CHAMPIONSHIP_TITLE_SLOTS.map((slot) =>
-        {
-          const eligibleRosterOptions = findChampionEligibleRosterOptions(
-            rosterOptions,
-            slot
-          );
+      LOCAL_CHAMPIONSHIP_TITLE_SLOTS.map((slot) => {
+        const eligibleRosterOptions = findChampionEligibleRosterOptions(
+          rosterOptions,
+          slot
+        );
 
-          return Object.freeze({
+        return Object.freeze({
           slotId: slot.slotId,
           label: titleSet[slot.titleKey],
           divisionLabel: slot.divisionLabel,
@@ -210,9 +207,8 @@ export function createChampionshipSetupProjection({
           candidateId: champions[slot.slotId],
           displayName: findRosterName(rosterOptions, champions[slot.slotId]),
           selected: Boolean(champions[slot.slotId]),
-          });
-        }
-      )
+        });
+      })
     ),
     tagTitleCards: Object.freeze(
       LOCAL_TAG_TITLE_SLOTS.map((slot) =>
@@ -524,37 +520,45 @@ function normalizeRivalrySlots(rivalries) {
   );
 }
 
-function normalizeChampionSelections(champions, rosterIds) {
-  const rosterOptions = Array.isArray(rosterIds) ? rosterIds : [];
+function normalizeChampionSelections(champions, rosterOptionsInput) {
+  const rosterOptions = Array.isArray(rosterOptionsInput) ? rosterOptionsInput : [];
 
   return {
     mensMainChampionId: normalizeRosterSelection(
       champions?.mensMainChampionId,
-      new Set(findChampionEligibleRosterOptions(
-        rosterOptions,
-        LOCAL_CHAMPIONSHIP_TITLE_SLOTS[0]
-      ).map((option) => option.candidateId))
+      new Set(
+        findChampionEligibleRosterOptions(
+          rosterOptions,
+          LOCAL_CHAMPIONSHIP_TITLE_SLOTS[0]
+        ).map((option) => option.candidateId)
+      )
     ),
     mensMidcardChampionId: normalizeRosterSelection(
       champions?.mensMidcardChampionId,
-      new Set(findChampionEligibleRosterOptions(
-        rosterOptions,
-        LOCAL_CHAMPIONSHIP_TITLE_SLOTS[1]
-      ).map((option) => option.candidateId))
+      new Set(
+        findChampionEligibleRosterOptions(
+          rosterOptions,
+          LOCAL_CHAMPIONSHIP_TITLE_SLOTS[1]
+        ).map((option) => option.candidateId)
+      )
     ),
     womensMainChampionId: normalizeRosterSelection(
       champions?.womensMainChampionId,
-      new Set(findChampionEligibleRosterOptions(
-        rosterOptions,
-        LOCAL_CHAMPIONSHIP_TITLE_SLOTS[2]
-      ).map((option) => option.candidateId))
+      new Set(
+        findChampionEligibleRosterOptions(
+          rosterOptions,
+          LOCAL_CHAMPIONSHIP_TITLE_SLOTS[2]
+        ).map((option) => option.candidateId)
+      )
     ),
     womensMidcardChampionId: normalizeRosterSelection(
       champions?.womensMidcardChampionId,
-      new Set(findChampionEligibleRosterOptions(
-        rosterOptions,
-        LOCAL_CHAMPIONSHIP_TITLE_SLOTS[3]
-      ).map((option) => option.candidateId))
+      new Set(
+        findChampionEligibleRosterOptions(
+          rosterOptions,
+          LOCAL_CHAMPIONSHIP_TITLE_SLOTS[3]
+        ).map((option) => option.candidateId)
+      )
     ),
   };
 }
@@ -567,11 +571,15 @@ function findChampionEligibleRosterOptions(rosterOptions, slot) {
       const divisionCategory = readString(option?.divisionCategory)?.toLowerCase();
 
       if (requiredDivision === "women") {
-        return divisionCategory === "women";
+        return Boolean(divisionCategory?.includes("women"));
       }
 
       if (requiredDivision === "men") {
-        return divisionCategory !== "women" && divisionCategory !== "tag";
+        return (
+          Boolean(divisionCategory?.includes("men")) &&
+          !divisionCategory.includes("women") &&
+          !divisionCategory.includes("tag")
+        );
       }
 
       return true;

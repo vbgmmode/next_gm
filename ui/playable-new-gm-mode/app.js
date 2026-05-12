@@ -2342,7 +2342,7 @@ import {
     });
   }
 
-function renderRosterSelectOptions({
+  function renderRosterSelectOptions({
     select,
     rosterOptions,
     selectedId,
@@ -2361,6 +2361,7 @@ function renderRosterSelectOptions({
         const node = document.createElement("option");
         node.value = option.candidateId;
         node.textContent = option.displayName;
+        node.dataset.divisionCategory = option.divisionCategory || "";
         return node;
       })
     );

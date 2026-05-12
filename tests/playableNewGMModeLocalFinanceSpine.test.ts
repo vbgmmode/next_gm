@@ -14,6 +14,7 @@ import { readLocalGameSetupStartingBudgetUnits } from "../ui/playable-new-gm-mod
 import {
   completeLocalChampionshipSetup,
   completeLocalRivalrySetup,
+  createChampionshipSetupProjection,
   createInitialLocalPostDraftSetupState,
   updateLocalChampionshipSelection,
   updateLocalRivalrySlot,
@@ -223,27 +224,28 @@ function createCompletedWeekOneSetup() {
   const rosterIds = miniDraftProgress.completedPickSummaries
     .slice(0, 6)
     .map((summary) => summary.candidateId);
+  const championRosterIds = createChampionRosterIds(miniDraftProgress);
   let setupState = createInitialLocalPostDraftSetupState();
 
   setupState = updateLocalChampionshipSelection({
     setupState,
     slotId: "mensMainChampionId",
-    candidateId: rosterIds[0],
+    candidateId: championRosterIds.mensMainChampionId,
   });
   setupState = updateLocalChampionshipSelection({
     setupState,
     slotId: "mensMidcardChampionId",
-    candidateId: rosterIds[1],
+    candidateId: championRosterIds.mensMidcardChampionId,
   });
   setupState = updateLocalChampionshipSelection({
     setupState,
     slotId: "womensMainChampionId",
-    candidateId: rosterIds[2],
+    candidateId: championRosterIds.womensMainChampionId,
   });
   setupState = updateLocalChampionshipSelection({
     setupState,
     slotId: "womensMidcardChampionId",
-    candidateId: rosterIds[3],
+    candidateId: championRosterIds.womensMidcardChampionId,
   });
 
   const championship = completeLocalChampionshipSetup({
@@ -275,6 +277,35 @@ function createCompletedWeekOneSetup() {
     miniDraftProgress,
     setupState: rivalry.setupState,
     rosterIds,
+  };
+}
+
+function createChampionRosterIds(
+  miniDraftProgress: ReturnType<typeof createInitialMiniDraftProgress>
+) {
+  const projection = createChampionshipSetupProjection({
+    selectedBrand,
+    miniDraftProgress,
+    setupState: createInitialLocalPostDraftSetupState(),
+  });
+  const used = new Set<string>();
+  const selectedIds: Record<string, string> = {};
+
+  for (const card of projection.championCards) {
+    const candidate = card.eligibleRosterOptions.find(
+      (option) => !used.has(option.candidateId)
+    );
+
+    assert.ok(candidate, `Missing eligible champion option for ${card.slotId}`);
+    used.add(candidate.candidateId);
+    selectedIds[card.slotId] = candidate.candidateId;
+  }
+
+  return selectedIds as {
+    mensMainChampionId: string;
+    mensMidcardChampionId: string;
+    womensMainChampionId: string;
+    womensMidcardChampionId: string;
   };
 }
 

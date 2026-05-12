@@ -47,30 +47,28 @@ describe("Playable New GM Mode local post-draft setup flow", () => {
 
   it("completes championship setup after assigning required unique champions", () => {
     const miniDraftProgress = createFinishedLocalDraftProgress();
-    const rosterIds = miniDraftProgress.completedPickSummaries
-      .slice(0, 4)
-      .map((summary) => summary.candidateId);
+    const championRosterIds = createChampionRosterIds(miniDraftProgress);
     let setupState = createInitialLocalPostDraftSetupState();
 
     setupState = updateLocalChampionshipSelection({
       setupState,
       slotId: "mensMainChampionId",
-      candidateId: rosterIds[0],
+      candidateId: championRosterIds.mensMainChampionId,
     });
     setupState = updateLocalChampionshipSelection({
       setupState,
       slotId: "mensMidcardChampionId",
-      candidateId: rosterIds[1],
+      candidateId: championRosterIds.mensMidcardChampionId,
     });
     setupState = updateLocalChampionshipSelection({
       setupState,
       slotId: "womensMainChampionId",
-      candidateId: rosterIds[2],
+      candidateId: championRosterIds.womensMainChampionId,
     });
     setupState = updateLocalChampionshipSelection({
       setupState,
       slotId: "womensMidcardChampionId",
-      candidateId: rosterIds[3],
+      candidateId: championRosterIds.womensMidcardChampionId,
     });
 
     const result = completeLocalChampionshipSetup({
@@ -116,30 +114,28 @@ describe("Playable New GM Mode local post-draft setup flow", () => {
 
   it("blocks championship setup when the same wrestler is assigned twice", () => {
     const miniDraftProgress = createFinishedLocalDraftProgress();
-    const rosterIds = miniDraftProgress.completedPickSummaries
-      .slice(0, 3)
-      .map((summary) => summary.candidateId);
+    const championRosterIds = createChampionRosterIds(miniDraftProgress);
     let setupState = createInitialLocalPostDraftSetupState();
 
     setupState = updateLocalChampionshipSelection({
       setupState,
       slotId: "mensMainChampionId",
-      candidateId: rosterIds[0],
+      candidateId: championRosterIds.mensMainChampionId,
     });
     setupState = updateLocalChampionshipSelection({
       setupState,
       slotId: "mensMidcardChampionId",
-      candidateId: rosterIds[0],
+      candidateId: championRosterIds.mensMainChampionId,
     });
     setupState = updateLocalChampionshipSelection({
       setupState,
       slotId: "womensMainChampionId",
-      candidateId: rosterIds[1],
+      candidateId: championRosterIds.womensMainChampionId,
     });
     setupState = updateLocalChampionshipSelection({
       setupState,
       slotId: "womensMidcardChampionId",
-      candidateId: rosterIds[2],
+      candidateId: championRosterIds.womensMidcardChampionId,
     });
 
     const projection = createChampionshipSetupProjection({
@@ -313,6 +309,40 @@ describe("Playable New GM Mode local post-draft setup flow", () => {
     }
   });
 
+  it("filters championship selectors by men and women divisions", () => {
+    const miniDraftProgress = createFinishedLocalDraftProgress();
+    const projection = createChampionshipSetupProjection({
+      selectedBrand,
+      miniDraftProgress,
+      setupState: createInitialLocalPostDraftSetupState(),
+    });
+    const mensCards = projection.championCards.filter(
+      (card) => card.requiredDivisionCategory === "men"
+    );
+    const womensCards = projection.championCards.filter(
+      (card) => card.requiredDivisionCategory === "women"
+    );
+
+    assert.equal(mensCards.length, 2);
+    assert.equal(womensCards.length, 2);
+    assert.ok(
+      mensCards.every((card) =>
+        card.eligibleRosterOptions.every(
+          (option) =>
+            !option.divisionCategory.toLowerCase().includes("women") &&
+            !option.divisionCategory.toLowerCase().includes("tag")
+        )
+      )
+    );
+    assert.ok(
+      womensCards.every((card) =>
+        card.eligibleRosterOptions.every((option) =>
+          option.divisionCategory.toLowerCase().includes("women")
+        )
+      )
+    );
+  });
+
   it("wires the local setup screens without browser storage or gameplay calls", () => {
     const changedSource = [
       readPlayableUiFile("index.html"),
@@ -373,27 +403,28 @@ function createCompletedChampionshipState(
   miniDraftProgress: ReturnType<typeof createFinishedLocalDraftProgress>,
   rosterIds: string[]
 ) {
+  const championRosterIds = createChampionRosterIds(miniDraftProgress);
   let setupState = createInitialLocalPostDraftSetupState();
 
   setupState = updateLocalChampionshipSelection({
     setupState,
-      slotId: "mensMainChampionId",
-      candidateId: rosterIds[0],
-    });
+    slotId: "mensMainChampionId",
+    candidateId: championRosterIds.mensMainChampionId,
+  });
   setupState = updateLocalChampionshipSelection({
     setupState,
     slotId: "mensMidcardChampionId",
-    candidateId: rosterIds[1],
+    candidateId: championRosterIds.mensMidcardChampionId,
   });
   setupState = updateLocalChampionshipSelection({
     setupState,
     slotId: "womensMainChampionId",
-    candidateId: rosterIds[2],
+    candidateId: championRosterIds.womensMainChampionId,
   });
   setupState = updateLocalChampionshipSelection({
     setupState,
     slotId: "womensMidcardChampionId",
-    candidateId: rosterIds[3],
+    candidateId: championRosterIds.womensMidcardChampionId,
   });
 
   const championship = completeLocalChampionshipSetup({
@@ -404,6 +435,35 @@ function createCompletedChampionshipState(
 
   assert.equal(championship.actionStatus, "championship-setup-complete");
   return championship.setupState;
+}
+
+function createChampionRosterIds(
+  miniDraftProgress: ReturnType<typeof createFinishedLocalDraftProgress>
+) {
+  const projection = createChampionshipSetupProjection({
+    selectedBrand,
+    miniDraftProgress,
+    setupState: createInitialLocalPostDraftSetupState(),
+  });
+  const used = new Set<string>();
+  const selectedIds: Record<string, string> = {};
+
+  for (const card of projection.championCards) {
+    const candidate = card.eligibleRosterOptions.find(
+      (option) => !used.has(option.candidateId)
+    );
+
+    assert.ok(candidate, `Missing eligible champion option for ${card.slotId}`);
+    used.add(candidate.candidateId);
+    selectedIds[card.slotId] = candidate.candidateId;
+  }
+
+  return selectedIds as {
+    mensMainChampionId: string;
+    mensMidcardChampionId: string;
+    womensMainChampionId: string;
+    womensMidcardChampionId: string;
+  };
 }
 
 function createCompletedRivalryState(
