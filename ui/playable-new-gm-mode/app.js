@@ -1259,7 +1259,9 @@ import {
     Object.entries(championshipSetupTargets.selects).forEach(([slotId, select]) => {
       renderRosterSelectOptions({
         select,
-        rosterOptions: projection.rosterOptions,
+        rosterOptions:
+          projection.championCards.find((card) => card.slotId === slotId)
+            ?.eligibleRosterOptions || projection.rosterOptions,
         selectedId: projection.champions[slotId],
         placeholder: "Select signed wrestler",
       });
@@ -2107,6 +2109,7 @@ import {
       mainEvent: Boolean(segment?.mainEvent),
       championInvolved: Boolean(segment?.championInvolved),
       rivalryInvolved: Boolean(segment?.rivalryInvolved),
+      winnerName: readGameplayString(segment?.winnerName),
       qualityBand: readGameplayString(segment?.qualityBand) || "Solid",
       resultLine: readGameplayString(segment?.resultLine) || "Solid segment.",
       matchRatingLabel:
@@ -2339,7 +2342,7 @@ import {
     });
   }
 
-  function renderRosterSelectOptions({
+function renderRosterSelectOptions({
     select,
     rosterOptions,
     selectedId,
@@ -2357,7 +2360,7 @@ import {
       ...rosterOptions.map((option) => {
         const node = document.createElement("option");
         node.value = option.candidateId;
-        node.textContent = `${option.displayName} / ${option.signedToBrandLine} / ${option.draftedFromLine}`;
+        node.textContent = option.displayName;
         return node;
       })
     );

@@ -42,21 +42,25 @@ export const LOCAL_CHAMPIONSHIP_TITLE_SLOTS = Object.freeze([
     slotId: "mensMainChampionId",
     titleKey: "mensMain",
     divisionLabel: "Men's Main",
+    requiredDivisionCategory: "men",
   }),
   Object.freeze({
     slotId: "mensMidcardChampionId",
     titleKey: "mensMidcard",
     divisionLabel: "Men's Midcard",
+    requiredDivisionCategory: "men",
   }),
   Object.freeze({
     slotId: "womensMainChampionId",
     titleKey: "womensMain",
     divisionLabel: "Women's Main",
+    requiredDivisionCategory: "women",
   }),
   Object.freeze({
     slotId: "womensMidcardChampionId",
     titleKey: "womensMidcard",
     divisionLabel: "Women's Midcard",
+    requiredDivisionCategory: "women",
   }),
 ]);
 
@@ -166,7 +170,7 @@ export function createChampionshipSetupProjection({
   });
   const rosterIds = new Set(rosterOptions.map((option) => option.candidateId));
   const localDraftFinished = Boolean(miniDraftProgress?.localDraftFinished);
-  const champions = normalizeChampionSelections(currentState.champions, rosterIds);
+  const champions = normalizeChampionSelections(currentState.champions, rosterOptions);
   const selectedIds = LOCAL_CHAMPIONSHIP_TITLE_SLOTS
     .map((slot) => champions[slot.slotId])
     .filter(Boolean);
@@ -191,14 +195,23 @@ export function createChampionshipSetupProjection({
     complete,
     championCards: Object.freeze(
       LOCAL_CHAMPIONSHIP_TITLE_SLOTS.map((slot) =>
-        Object.freeze({
+        {
+          const eligibleRosterOptions = findChampionEligibleRosterOptions(
+            rosterOptions,
+            slot
+          );
+
+          return Object.freeze({
           slotId: slot.slotId,
           label: titleSet[slot.titleKey],
           divisionLabel: slot.divisionLabel,
+          requiredDivisionCategory: slot.requiredDivisionCategory,
+          eligibleRosterOptions,
           candidateId: champions[slot.slotId],
           displayName: findRosterName(rosterOptions, champions[slot.slotId]),
           selected: Boolean(champions[slot.slotId]),
-        })
+          });
+        }
       )
     ),
     tagTitleCards: Object.freeze(
@@ -512,24 +525,58 @@ function normalizeRivalrySlots(rivalries) {
 }
 
 function normalizeChampionSelections(champions, rosterIds) {
+  const rosterOptions = Array.isArray(rosterIds) ? rosterIds : [];
+
   return {
     mensMainChampionId: normalizeRosterSelection(
       champions?.mensMainChampionId,
-      rosterIds
+      new Set(findChampionEligibleRosterOptions(
+        rosterOptions,
+        LOCAL_CHAMPIONSHIP_TITLE_SLOTS[0]
+      ).map((option) => option.candidateId))
     ),
     mensMidcardChampionId: normalizeRosterSelection(
       champions?.mensMidcardChampionId,
-      rosterIds
+      new Set(findChampionEligibleRosterOptions(
+        rosterOptions,
+        LOCAL_CHAMPIONSHIP_TITLE_SLOTS[1]
+      ).map((option) => option.candidateId))
     ),
     womensMainChampionId: normalizeRosterSelection(
       champions?.womensMainChampionId,
-      rosterIds
+      new Set(findChampionEligibleRosterOptions(
+        rosterOptions,
+        LOCAL_CHAMPIONSHIP_TITLE_SLOTS[2]
+      ).map((option) => option.candidateId))
     ),
     womensMidcardChampionId: normalizeRosterSelection(
       champions?.womensMidcardChampionId,
-      rosterIds
+      new Set(findChampionEligibleRosterOptions(
+        rosterOptions,
+        LOCAL_CHAMPIONSHIP_TITLE_SLOTS[3]
+      ).map((option) => option.candidateId))
     ),
   };
+}
+
+function findChampionEligibleRosterOptions(rosterOptions, slot) {
+  const requiredDivision = slot?.requiredDivisionCategory;
+
+  return Object.freeze(
+    rosterOptions.filter((option) => {
+      const divisionCategory = readString(option?.divisionCategory)?.toLowerCase();
+
+      if (requiredDivision === "women") {
+        return divisionCategory === "women";
+      }
+
+      if (requiredDivision === "men") {
+        return divisionCategory !== "women" && divisionCategory !== "tag";
+      }
+
+      return true;
+    })
+  );
 }
 
 function normalizeRivalrySlot(slot, rosterIds) {

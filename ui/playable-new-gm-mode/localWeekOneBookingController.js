@@ -779,6 +779,12 @@ function createSegmentResult({
     spotlightBonus,
     engineMatchResult,
   });
+  const winnerName = createDeterministicWinnerName({
+    segment,
+    wrestlerIds,
+    championIds,
+    rosterOptions,
+  });
 
   return Object.freeze({
     segmentNumber: segment.segmentNumber,
@@ -788,8 +794,14 @@ function createSegmentResult({
     mainEvent: segment.mainEvent,
     championInvolved,
     rivalryInvolved,
+    winnerName,
     qualityBand,
-    resultLine: createSegmentResultLine({ segment, qualityBand, engineMatchResult }),
+    resultLine: createSegmentResultLine({
+      segment,
+      qualityBand,
+      engineMatchResult,
+      winnerName,
+    }),
     matchRatingLabel: createMatchRatingLabel({ segment, qualityBand }),
     crowdResponseLine: createCrowdResponseLine({ segment, engineMatchResult }),
     momentumSignalLine: createMomentumSignalLine({ segment, engineMatchResult }),
@@ -834,7 +846,12 @@ function createSegmentQualityBand({ segment, spotlightBonus, engineMatchResult }
   return "Solid";
 }
 
-function createSegmentResultLine({ segment, qualityBand, engineMatchResult }) {
+function createSegmentResultLine({
+  segment,
+  qualityBand,
+  engineMatchResult,
+  winnerName,
+}) {
   if (isPromoSegmentType(segment.segmentType)) {
     return `${qualityBand} ${segment.typeLabel.toLowerCase()} segment.`;
   }
@@ -844,9 +861,28 @@ function createSegmentResultLine({ segment, qualityBand, engineMatchResult }) {
     ? "crowd needs a stronger hook"
     : "crowd stayed with it";
 
-  return segment.mainEvent
+  const matchLine = segment.mainEvent
     ? `${qualityBand} main event match; ${crowdLine}.`
     : `${qualityBand} singles match; ${crowdLine}.`;
+
+  return winnerName ? `Winner: ${winnerName}. ${matchLine}` : matchLine;
+}
+
+function createDeterministicWinnerName({
+  segment,
+  wrestlerIds,
+  championIds,
+  rosterOptions,
+}) {
+  if (isPromoSegmentType(segment.segmentType) || wrestlerIds.length < 2) {
+    return undefined;
+  }
+
+  const championId = wrestlerIds.find((candidateId) => championIds.has(candidateId));
+  const winnerId =
+    championId || wrestlerIds[(segment.segmentNumber + (segment.mainEvent ? 1 : 0)) % wrestlerIds.length];
+
+  return findRosterName(rosterOptions, winnerId);
 }
 
 function createMatchRatingLabel({ segment, qualityBand }) {
@@ -1711,6 +1747,7 @@ function normalizeSegmentResult(segmentResult) {
     mainEvent: Boolean(segmentResult?.mainEvent),
     championInvolved: Boolean(segmentResult?.championInvolved),
     rivalryInvolved: Boolean(segmentResult?.rivalryInvolved),
+    winnerName: readString(segmentResult?.winnerName),
     qualityBand: readString(segmentResult?.qualityBand) || "Solid",
     resultLine: readString(segmentResult?.resultLine) || "Solid segment.",
     matchRatingLabel:
