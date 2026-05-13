@@ -416,7 +416,13 @@ describe("Playable New GM Mode in-memory Make Pick action", () => {
       selectedGm,
     });
 
-    assert.equal(LOCAL_GAME_SETUP_DIFFICULTIES.length, 3);
+    assert.equal(LOCAL_GAME_SETUP_DIFFICULTIES.length, 5);
+    assert.equal(
+      LOCAL_GAME_SETUP_DIFFICULTIES.filter(
+        (difficulty) => difficulty.gameplaySupported
+      ).length,
+      3
+    );
     assert.equal(LOCAL_GAME_SETUP_BRANDS.length, 4);
     assert.equal(LOCAL_GAME_SETUP_STARTING_BUDGET_UNITS, 120);
     assert.equal(projection.selectedDifficulty, "hard");

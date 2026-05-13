@@ -74,7 +74,7 @@
             </div>
 
             <div class="landing-actions" aria-label="Title screen actions">
-              <button class="hero-cta landing-primary" type="button" data-go-to="contract-signing">Start New Game</button>
+              <button class="hero-cta landing-primary" type="button" data-go-to="setup-basics">Start New Game</button>
               <button class="ghost-button landing-secondary" type="button" data-go-to="save-selection">Select Save / Continue</button>
               <button class="ghost-button landing-secondary" type="button" data-go-to="settings-screen">Settings</button>
             </div>
@@ -103,7 +103,7 @@
               <h2 id="save-selection-title">Choose your GM file</h2>
               <p>Continue a campaign, start a new contract, or inspect a damaged slot before any game state is opened.</p>
             </div>
-            <button class="hero-cta" type="button" data-go-to="contract-signing">New Game</button>
+            <button class="hero-cta" type="button" data-go-to="setup-basics">New Game</button>
           </div>
 
           <div class="save-slot-stage">
@@ -136,7 +136,7 @@
                   <span class="broadcast-label">Clean Start</span>
                 </div>
                 <p class="compact-copy">Multi-screen setup, optional assistant step, GM archetype, brand choice, then draft dynamics.</p>
-                <button class="panel-button enabled" type="button" data-go-to="contract-signing">Enter Setup</button>
+                <button class="panel-button enabled" type="button" data-go-to="setup-basics">Enter Setup</button>
               </div>
             </article>
 
@@ -206,50 +206,62 @@
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="game-landing">Back to Title</button>
-            <button class="hero-cta small" type="button" data-go-to="contract-signing">Start New Game</button>
+            <button class="hero-cta small" type="button" data-go-to="setup-basics">Start New Game</button>
           </div>
         </section>
 
         <section
           id="contract-signing"
           class="screen setup-screen"
-          data-screen-title="Contract Signing"
+          data-screen-title="Contract Review / Start Draft"
           data-flow-phase="New Game Setup"
           aria-labelledby="contract-signing-title"
           hidden
         >
-          <div class="contract-stage">
+          <div class="contract-stage review-stage">
             <article class="contract-hero">
               <p class="kicker">League Office</p>
-              <h2 id="contract-signing-title">Sign the GM contract</h2>
-              <p>Step into the office, lock the campaign fantasy, then build toward the first draft-night broadcast.</p>
+              <h2 id="contract-signing-title">Review the contract, then start draft night</h2>
+              <p>Confirm the season labels, active rivals, and draft-night budget before the broadcast opens. Preview-only clauses are clearly marked and do not change simulation outcomes.</p>
               <div class="contract-stamps">
-                <span class="broadcast-label live">New Game</span>
-                <span class="broadcast-label">Multi-Screen Setup</span>
-                <span class="broadcast-label locked">Static Preview</span>
+                <span class="broadcast-label live">Ready For Draft</span>
+                <span class="broadcast-label">Contract Review</span>
+                <span class="broadcast-label locked">Preview Clauses Marked</span>
+              </div>
+              <div class="contract-review-grid" aria-label="Contract review summary">
+                <div class="field-strip"><span>General Manager</span><strong id="contract-review-gm">Maren Vale</strong></div>
+                <div class="field-strip"><span>Player Brand</span><strong id="contract-review-brand">Raw</strong></div>
+                <div class="field-strip"><span>Rivals</span><strong id="contract-review-rivals">SmackDown, NXT, AEW</strong></div>
+                <div class="field-strip"><span>Active Brands</span><strong id="contract-review-active-brands">4 brands</strong></div>
+                <div class="field-strip"><span>Difficulty</span><strong id="contract-review-difficulty">Normal - Balanced owner pressure</strong></div>
+                <div class="field-strip"><span>Starting Budget</span><strong id="contract-review-budget">$12,000,000</strong></div>
+                <div class="field-strip preview-field"><span>Win Condition</span><strong id="contract-review-win-condition">Total Fans - Preview Only</strong></div>
+                <div class="field-strip preview-field"><span>Draft Pool</span><strong id="contract-review-draft-pool">Default - Active static roster snapshot</strong></div>
+                <div class="field-strip preview-field"><span>Roster Scarcity</span><strong id="contract-review-roster-scarcity">Standard - Current draft minimums unchanged</strong></div>
               </div>
             </article>
             <aside class="office-packet">
-              <p class="kicker">Launch Packet</p>
+              <p class="kicker">Draft Rules / Budget Intro</p>
               <dl class="desk-list">
-                <div><dt>Money</dt><dd>Equal baseline</dd></div>
-                <div><dt>Prestige</dt><dd>Equal baseline</dd></div>
-                <div><dt>Difficulty</dt><dd>Player choice</dd></div>
-                <div><dt>First Event</dt><dd>Initial Draft</dd></div>
+                <div><dt>Money</dt><dd>Real money labels</dd></div>
+                <div><dt>Draft Rule</dt><dd>Talent signs to drafting brand</dd></div>
+                <div><dt>Rivals</dt><dd>Visible deterministic picks</dd></div>
+                <div><dt>Source Pool</dt><dd>Metadata only</dd></div>
               </dl>
+              <p class="contract-honesty-note" id="contract-review-honesty">Preview-only labels do not change scoring, candidate pools, draft minimums, draft completion, or simulation outcomes in this slice.</p>
             </aside>
           </div>
 
           <div class="screen-actions">
-            <button class="ghost-button" type="button" data-go-to="save-selection">Back to Saves</button>
-            <button class="hero-cta small" type="button" data-go-to="setup-basics">Continue Setup</button>
+            <button class="ghost-button" type="button" data-go-to="select-brand">Back to Brand Select</button>
+            <button class="hero-cta small" type="button" data-go-to="draft-room">Start Draft</button>
           </div>
         </section>
 
         <section
           id="setup-basics"
           class="screen setup-screen"
-          data-screen-title="Setup Basics"
+          data-screen-title="General Settings"
           data-flow-phase="New Game Setup"
           aria-labelledby="setup-basics-title"
           hidden
@@ -257,7 +269,7 @@
           <div class="screen-header league-launch-header">
             <div>
               <p class="kicker">League Launch Broadcast</p>
-              <h2 id="setup-basics-title">Open a living GM universe</h2>
+              <h2 id="setup-basics-title">General Settings</h2>
             </div>
             <span class="header-badge">Owner Briefing Live</span>
           </div>
@@ -266,51 +278,67 @@
             <article class="setup-spotlight contract-card league-launch-card">
               <p class="kicker">Commissioner's Desk</p>
               <h3>Year One: Prime Time War</h3>
-              <p class="compact-copy">Set the pressure, active brands, and opening money for a league where every rival GM enters draft night with a seat at the table.</p>
+              <p class="compact-copy">Set the active brands, money scale, and preview-only season labels before choosing the GM and show identity.</p>
               <div class="field-strip"><span>Difficulty</span><strong id="setup-difficulty-summary">Normal</strong></div>
+              <div class="field-strip preview-field"><span>Difficulty Effect</span><strong id="setup-difficulty-effect-summary">Balanced owner pressure</strong></div>
               <div class="field-strip"><span>Active Brands</span><strong id="setup-active-brands-summary">4 brands</strong></div>
               <div class="field-strip"><span>Starting Budget</span><strong id="setup-starting-budget-summary">$12,000,000</strong></div>
+              <div class="field-strip preview-field"><span>Win Condition</span><strong id="setup-win-condition-summary">Total Fans - Preview Only</strong></div>
+              <div class="field-strip preview-field"><span>Draft Pool</span><strong id="setup-draft-pool-summary">Default - Active static roster snapshot</strong></div>
+              <div class="field-strip preview-field"><span>Roster Scarcity</span><strong id="setup-roster-scarcity-summary">Standard - Current draft minimums unchanged</strong></div>
               <div class="field-strip"><span>Player Brand</span><strong id="setup-player-brand-summary">Raw</strong></div>
-              <div class="field-strip"><span>Experience</span><strong>Classic GM</strong></div>
               <div class="league-rundown" aria-label="First session flow">
-                <span>Choose GM</span>
-                <span>Set Difficulty</span>
-                <span>Activate Rivals</span>
-                <span>Enter Draft</span>
+                <span>General Settings</span>
+                <span>Select GM</span>
+                <span>Select Brand</span>
+                <span>Review Contract</span>
               </div>
             </article>
 
-            <div class="setup-lanes setup-option-grid" aria-label="Local setup options">
-              <button class="mode-tile active" type="button" data-difficulty="normal" aria-pressed="true">
-                <span>01</span>
-                <strong>Normal</strong>
-                <p>Balanced owner pressure and standard starting budget.</p>
-              </button>
-              <button class="mode-tile" type="button" data-difficulty="easy" aria-pressed="false">
-                <span>02</span>
-                <strong>Easy</strong>
-                <p>Relaxed pressure for learning the first season loop.</p>
-              </button>
-              <button class="mode-tile" type="button" data-difficulty="hard" aria-pressed="false">
-                <span>03</span>
-                <strong>Hard</strong>
-                <p>Tighter pressure preview for future owner goals.</p>
-              </button>
-              <button class="mode-tile" type="button" data-active-brand-count="2" aria-pressed="false">
-                <span>04</span>
-                <strong>2 Brands</strong>
-                <p>Smaller universe setup for a focused rivalry race.</p>
-              </button>
-              <button class="mode-tile" type="button" data-active-brand-count="3" aria-pressed="false">
-                <span>05</span>
-                <strong>3 Brands</strong>
-                <p>Expanded universe setup with a middle lane.</p>
-              </button>
-              <button class="mode-tile active" type="button" data-active-brand-count="4" aria-pressed="true">
-                <span>06</span>
-                <strong>4 Brands</strong>
-                <p>Raw, SmackDown, NXT, and AEW visible in the universe.</p>
-              </button>
+            <div class="setup-lanes setup-option-grid setup-control-bank" aria-label="Local setup options">
+              <section class="setup-control-group" aria-label="Number of brands">
+                <p class="kicker">Number of Brands</p>
+                <div class="setup-button-row">
+                  <button class="mode-tile" type="button" data-active-brand-count="2" aria-pressed="false"><strong>2 Brands</strong><p>Focused rivalry race.</p></button>
+                  <button class="mode-tile" type="button" data-active-brand-count="3" aria-pressed="false"><strong>3 Brands</strong><p>Middle lane active.</p></button>
+                  <button class="mode-tile active" type="button" data-active-brand-count="4" aria-pressed="true"><strong>4 Brands</strong><p>All brands visible.</p></button>
+                </div>
+              </section>
+              <section class="setup-control-group" aria-label="Difficulty">
+                <p class="kicker">Difficulty</p>
+                <div class="setup-button-row five-up">
+                  <button class="mode-tile" type="button" data-difficulty="easy" aria-pressed="false"><strong>Easy</strong><p>Supported budget behavior.</p></button>
+                  <button class="mode-tile active" type="button" data-difficulty="normal" aria-pressed="true"><strong>Normal</strong><p>Supported budget behavior.</p></button>
+                  <button class="mode-tile" type="button" data-difficulty="hard" aria-pressed="false"><strong>Hard</strong><p>Supported budget behavior.</p></button>
+                  <button class="mode-tile preview-choice" type="button" data-difficulty="extreme" aria-pressed="false"><strong>Extreme</strong><p>Preview Only.</p></button>
+                  <button class="mode-tile preview-choice" type="button" data-difficulty="immortal" aria-pressed="false"><strong>Immortal</strong><p>Preview Only.</p></button>
+                </div>
+              </section>
+              <section class="setup-control-group" aria-label="Starting budget">
+                <p class="kicker">Starting Budget</p>
+                <div class="setup-button-row">
+                  <button class="mode-tile" type="button" data-starting-budget="tight" aria-pressed="false"><strong>$10M</strong><p>Current viable tight budget.</p></button>
+                  <button class="mode-tile active" type="button" data-starting-budget="standard" aria-pressed="true"><strong>$12M</strong><p>Current standard budget.</p></button>
+                  <button class="mode-tile" type="button" data-starting-budget="premium" aria-pressed="false"><strong>$15M</strong><p>Current premium budget.</p></button>
+                </div>
+              </section>
+              <section class="setup-control-group" aria-label="Preview-only season labels">
+                <p class="kicker">Preview-Only Labels</p>
+                <div class="setup-button-row two-up">
+                  <button class="mode-tile preview-choice active" type="button" data-win-condition="total-fans" aria-pressed="true"><strong>Total Fans</strong><p>Preview Only; no scoring effect.</p></button>
+                  <button class="mode-tile preview-choice" type="button" data-win-condition="hall-of-fame-trophies" aria-pressed="false"><strong>Hall of Fame Trophies</strong><p>Preview Only; no trophy logic.</p></button>
+                </div>
+                <div class="setup-button-row">
+                  <button class="mode-tile active" type="button" data-draft-pool="default" aria-pressed="true"><strong>Default</strong><p>Active static roster snapshot.</p></button>
+                  <button class="mode-tile preview-choice" type="button" data-draft-pool="custom" aria-pressed="false"><strong>Custom</strong><p>Setup Preview Only.</p></button>
+                  <button class="mode-tile preview-choice" type="button" data-draft-pool="randomized" aria-pressed="false"><strong>Randomized</strong><p>Setup Preview Only; no randomness.</p></button>
+                </div>
+                <div class="setup-button-row">
+                  <button class="mode-tile active" type="button" data-roster-scarcity="standard" aria-pressed="true"><strong>Standard</strong><p>Draft minimums unchanged.</p></button>
+                  <button class="mode-tile preview-choice" type="button" data-roster-scarcity="lean" aria-pressed="false"><strong>Lean Pool</strong><p>Preview Only.</p></button>
+                  <button class="mode-tile preview-choice" type="button" data-roster-scarcity="scarce" aria-pressed="false"><strong>Scarce Market</strong><p>Preview Only.</p></button>
+                </div>
+              </section>
             </div>
 
             <aside class="setup-desk league-control-room">
@@ -320,14 +348,15 @@
                 <span id="setup-active-brand-list">Raw: Player GM | SmackDown: Talia Quinn | NXT: Soren Drake | AEW: Maya Blaze</span>
                 <span id="setup-competing-gm-list">SmackDown: Talia Quinn | NXT: Soren Drake | AEW: Maya Blaze</span>
                 <span>Rival brands are present on draft night</span>
-                <span>Difficulty sets the displayed starting budget</span>
+                <span>Budget choices use current viable draft tuning</span>
+                <span>Preview-only labels do not alter simulation</span>
               </div>
             </aside>
           </div>
 
           <div class="screen-actions">
-            <button class="ghost-button" type="button" data-go-to="contract-signing">Back</button>
-            <button class="hero-cta small" type="button" data-go-to="ai-setup">Assistant Setup</button>
+            <button class="ghost-button" type="button" data-go-to="save-selection">Back to Saves</button>
+            <button class="hero-cta small" type="button" data-go-to="choose-gm">Select General Manager</button>
           </div>
         </section>
 
@@ -371,7 +400,7 @@
         <section
           id="choose-gm"
           class="screen setup-screen"
-          data-screen-title="Choose GM"
+          data-screen-title="Select General Manager"
           data-flow-phase="New Game Setup"
           aria-labelledby="choose-gm-title"
           hidden
@@ -379,12 +408,24 @@
           <div class="screen-header">
             <div>
               <p class="kicker">GM Archetypes</p>
-              <h2 id="choose-gm-title">Pick your front-office style</h2>
+              <h2 id="choose-gm-title">Select General Manager</h2>
             </div>
-            <span class="header-badge">Fictional Profiles</span>
+            <span class="header-badge">Static Profiles</span>
           </div>
 
           <div class="gm-card-grid">
+            <article class="gm-card gm-random-card" data-gm-id="random-gm-label" tabindex="0" role="button" aria-pressed="false">
+              <span class="portrait-frame gm-frame" aria-hidden="true">?</span>
+              <div>
+                <p class="kicker">Visible Label Only</p>
+                <h3>Random GM</h3>
+                <p>Marks the contract as Random GM without rolling or choosing a hidden manager.</p>
+              </div>
+              <div class="gm-stat-block" aria-label="Random GM preview-only status">
+                <div class="field-strip preview-field"><span>Status</span><strong>Setup Label Only</strong></div>
+                <div class="field-strip preview-field"><span>Randomness</span><strong>Not Called</strong></div>
+              </div>
+            </article>
             <article class="gm-card selected" data-gm-id="maren-vale" tabindex="0" role="button" aria-pressed="true">
               <span class="portrait-frame gm-frame" aria-hidden="true">RG</span>
               <div>
@@ -556,7 +597,7 @@
           </div>
 
           <div class="screen-actions">
-            <button class="ghost-button" type="button" data-go-to="ai-setup">Back</button>
+            <button class="ghost-button" type="button" data-go-to="setup-basics">Back to General Settings</button>
             <button class="hero-cta small" type="button" data-go-to="select-brand">Select Brand</button>
           </div>
         </section>
@@ -619,23 +660,23 @@
             <span id="brand-baseline-competitors">Competitors: SmackDown, NXT, AEW</span>
           </div>
 
-          <section class="draft-briefing-panel" aria-label="Draft rules and budget briefing">
+          <section class="draft-briefing-panel" aria-label="Rival brand participation briefing">
             <div class="briefing-copy">
-              <p class="kicker">League Draft Briefing</p>
-              <h3>Draft Rules / Budget Intro</h3>
-              <p>Every active brand enters the same televised draft order. Your picks sign to your brand, rival picks stay visible, and the budget uses real money labels from the opening difficulty.</p>
+              <p class="kicker">Rival Brand Participation</p>
+              <h3>Choose who you run against</h3>
+              <p>Every active rival enters draft night with visible turns. Source roster labels stay as Drafted From metadata, not ownership.</p>
             </div>
             <div class="draft-briefing-grid">
               <span><strong>Your Brand</strong><em class="js-brand-name">Raw</em></span>
-              <span><strong>Budget</strong><em>Real money labels</em></span>
-              <span><strong>Rivals</strong><em>Visible pick order</em></span>
-              <span><strong>Draft Rule</strong><em>Talent belongs to drafting brand</em></span>
+              <span><strong>Rivals</strong><em>Visible on draft night</em></span>
+              <span><strong>AI Brands</strong><em>Deterministic picks</em></span>
+              <span><strong>Ownership</strong><em>Drafting brand signs talent</em></span>
             </div>
           </section>
 
           <div class="screen-actions">
             <button class="ghost-button" type="button" data-go-to="choose-gm">Back</button>
-            <button class="hero-cta small" type="button" data-go-to="draft-room">Enter Draft Room</button>
+            <button class="hero-cta small" type="button" data-go-to="contract-signing">Review Contract</button>
           </div>
         </section>
 

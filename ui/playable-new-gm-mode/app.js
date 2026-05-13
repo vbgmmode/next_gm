@@ -4,6 +4,11 @@ import {
 } from "./draftSelectionIntentAdapter.js";
 import { createMockDraftRecapPreviewState } from "./draftRecapPreviewState.js";
 import {
+  LOCAL_GAME_SETUP_DRAFT_POOLS,
+  LOCAL_GAME_SETUP_DIFFICULTIES,
+  LOCAL_GAME_SETUP_ROSTER_SCARCITY_OPTIONS,
+  LOCAL_GAME_SETUP_STARTING_BUDGET_OPTIONS,
+  LOCAL_GAME_SETUP_WIN_CONDITIONS,
   createLocalDraftOrderPreviewProjection,
   createLocalGameSetupProjection,
   readLocalGameSetupStartingBudgetUnits,
@@ -76,6 +81,10 @@ import {
   const brandControls = Array.from(document.querySelectorAll("[data-brand]"));
   const difficultyControls = Array.from(document.querySelectorAll("[data-difficulty]"));
   const activeBrandCountControls = Array.from(document.querySelectorAll("[data-active-brand-count]"));
+  const startingBudgetControls = Array.from(document.querySelectorAll("[data-starting-budget]"));
+  const winConditionControls = Array.from(document.querySelectorAll("[data-win-condition]"));
+  const draftPoolControls = Array.from(document.querySelectorAll("[data-draft-pool]"));
+  const rosterScarcityControls = Array.from(document.querySelectorAll("[data-roster-scarcity]"));
   const activeLabel = document.getElementById("active-screen-label");
   const railActiveLabel = document.getElementById("rail-active-label");
   const brandBug = document.getElementById("brand-bug");
@@ -104,11 +113,27 @@ import {
   const brandNameTargets = Array.from(document.querySelectorAll(".js-brand-name"));
   const setupBasicsTargets = {
     difficulty: document.getElementById("setup-difficulty-summary"),
+    difficultyEffect: document.getElementById("setup-difficulty-effect-summary"),
     activeBrands: document.getElementById("setup-active-brands-summary"),
     startingBudget: document.getElementById("setup-starting-budget-summary"),
+    winCondition: document.getElementById("setup-win-condition-summary"),
+    draftPool: document.getElementById("setup-draft-pool-summary"),
+    rosterScarcity: document.getElementById("setup-roster-scarcity-summary"),
     playerBrand: document.getElementById("setup-player-brand-summary"),
     activeBrandList: document.getElementById("setup-active-brand-list"),
     competingGmList: document.getElementById("setup-competing-gm-list"),
+  };
+  const contractReviewTargets = {
+    gm: document.getElementById("contract-review-gm"),
+    brand: document.getElementById("contract-review-brand"),
+    rivals: document.getElementById("contract-review-rivals"),
+    difficulty: document.getElementById("contract-review-difficulty"),
+    budget: document.getElementById("contract-review-budget"),
+    winCondition: document.getElementById("contract-review-win-condition"),
+    draftPool: document.getElementById("contract-review-draft-pool"),
+    rosterScarcity: document.getElementById("contract-review-roster-scarcity"),
+    activeBrands: document.getElementById("contract-review-active-brands"),
+    honesty: document.getElementById("contract-review-honesty"),
   };
   const intentPreviewTargets = {
     candidate: document.getElementById("intent-preview-candidate"),
@@ -321,11 +346,10 @@ import {
   };
   const flowOrder = [
     "save-selection",
-    "contract-signing",
     "setup-basics",
-    "ai-setup",
     "choose-gm",
     "select-brand",
+    "contract-signing",
     "draft-room",
     "draft-recap",
     "championship-setup",
@@ -360,11 +384,20 @@ import {
     nxt: { label: "NXT", mark: "NXT" },
     aew: { label: "AEW", mark: "AEW" },
   };
+  const difficultyBudgetDefaults = {
+    easy: "premium",
+    normal: "standard",
+    hard: "tight",
+  };
   const uiState = {
     currentScreenId: "game-landing",
     selectedGmId: "maren-vale",
     selectedBrandId: "raw",
     selectedDifficulty: "normal",
+    selectedStartingBudgetId: "standard",
+    selectedWinConditionId: "total-fans",
+    selectedDraftPoolId: "default",
+    selectedRosterScarcityId: "standard",
     activeBrandCount: 4,
     selectedCandidateId: "candidate-roman-reigns",
     selectedDraftIntentPreview: undefined,
@@ -488,6 +521,10 @@ import {
       updateSetupBasicsSurface();
     }
 
+    if (resolvedTargetId === "contract-signing") {
+      updateContractReviewSurface();
+    }
+
     if (resolvedTargetId === "draft-room") {
       updateDraftPickOrderSurface();
     }
@@ -550,6 +587,7 @@ import {
 
     resetDraftProgressForSetupIfSafe();
     updateSetupBasicsSurface();
+    updateContractReviewSurface();
     updateDraftPickOrderSurface();
     updatePostDraftRosterHub();
 
@@ -567,16 +605,22 @@ import {
       item.classList.toggle("selected", isSelected);
       item.setAttribute("aria-pressed", String(isSelected));
     });
+    updateSetupBasicsSurface();
+    updateContractReviewSurface();
   }
 
   function setDifficulty(difficulty) {
-    if (!["easy", "normal", "hard"].includes(difficulty)) {
+    if (!LOCAL_GAME_SETUP_DIFFICULTIES.some((item) => item.difficultyId === difficulty)) {
       return;
     }
 
     uiState.selectedDifficulty = difficulty;
+    if (difficultyBudgetDefaults[difficulty]) {
+      uiState.selectedStartingBudgetId = difficultyBudgetDefaults[difficulty];
+    }
     resetDraftProgressForSetupIfSafe();
     updateSetupBasicsSurface();
+    updateContractReviewSurface();
   }
 
   function setActiveBrandCount(activeBrandCount) {
@@ -589,6 +633,48 @@ import {
     uiState.activeBrandCount = normalizedCount;
     resetDraftProgressForSetupIfSafe();
     updateSetupBasicsSurface();
+    updateContractReviewSurface();
+  }
+
+  function setStartingBudget(startingBudgetId) {
+    if (!LOCAL_GAME_SETUP_STARTING_BUDGET_OPTIONS.some((item) => item.budgetId === startingBudgetId)) {
+      return;
+    }
+
+    uiState.selectedStartingBudgetId = startingBudgetId;
+    resetDraftProgressForSetupIfSafe();
+    updateSetupBasicsSurface();
+    updateContractReviewSurface();
+  }
+
+  function setWinCondition(winConditionId) {
+    if (!LOCAL_GAME_SETUP_WIN_CONDITIONS.some((item) => item.winConditionId === winConditionId)) {
+      return;
+    }
+
+    uiState.selectedWinConditionId = winConditionId;
+    updateSetupBasicsSurface();
+    updateContractReviewSurface();
+  }
+
+  function setDraftPool(draftPoolId) {
+    if (!LOCAL_GAME_SETUP_DRAFT_POOLS.some((item) => item.draftPoolId === draftPoolId)) {
+      return;
+    }
+
+    uiState.selectedDraftPoolId = draftPoolId;
+    updateSetupBasicsSurface();
+    updateContractReviewSurface();
+  }
+
+  function setRosterScarcity(rosterScarcityId) {
+    if (!LOCAL_GAME_SETUP_ROSTER_SCARCITY_OPTIONS.some((item) => item.rosterScarcityId === rosterScarcityId)) {
+      return;
+    }
+
+    uiState.selectedRosterScarcityId = rosterScarcityId;
+    updateSetupBasicsSurface();
+    updateContractReviewSurface();
   }
 
   function resetDraftProgressForSetupIfSafe() {
@@ -603,7 +689,8 @@ import {
     uiState.miniDraftProgress = createInitialMiniDraftProgress({
       selectedBrand: getSelectedBrandDisplay(),
       startingDraftBudget: readLocalGameSetupStartingBudgetUnits(
-        uiState.selectedDifficulty
+        uiState.selectedDifficulty,
+        uiState.selectedStartingBudgetId
       ),
     });
     updateDraftBudgetPanel();
@@ -615,6 +702,10 @@ import {
       selectedDifficulty: uiState.selectedDifficulty,
       activeBrandCount: uiState.activeBrandCount,
       selectedBrandId: uiState.selectedBrandId,
+      selectedStartingBudgetId: uiState.selectedStartingBudgetId,
+      selectedWinConditionId: uiState.selectedWinConditionId,
+      selectedDraftPoolId: uiState.selectedDraftPoolId,
+      selectedRosterScarcityId: uiState.selectedRosterScarcityId,
       selectedGm: getSelectedGmDisplay(),
     });
 
@@ -630,9 +721,37 @@ import {
       control.setAttribute("aria-pressed", String(active));
     });
 
+    startingBudgetControls.forEach((control) => {
+      const active = control.dataset.startingBudget === uiState.selectedStartingBudgetId;
+      control.classList.toggle("active", active);
+      control.setAttribute("aria-pressed", String(active));
+    });
+
+    winConditionControls.forEach((control) => {
+      const active = control.dataset.winCondition === uiState.selectedWinConditionId;
+      control.classList.toggle("active", active);
+      control.setAttribute("aria-pressed", String(active));
+    });
+
+    draftPoolControls.forEach((control) => {
+      const active = control.dataset.draftPool === uiState.selectedDraftPoolId;
+      control.classList.toggle("active", active);
+      control.setAttribute("aria-pressed", String(active));
+    });
+
+    rosterScarcityControls.forEach((control) => {
+      const active = control.dataset.rosterScarcity === uiState.selectedRosterScarcityId;
+      control.classList.toggle("active", active);
+      control.setAttribute("aria-pressed", String(active));
+    });
+
     setText(setupBasicsTargets.difficulty, setupProjection.displayLabels.difficultyLine);
+    setText(setupBasicsTargets.difficultyEffect, setupProjection.displayLabels.difficultyEffectLine);
     setText(setupBasicsTargets.activeBrands, setupProjection.displayLabels.activeBrandsLine);
     setText(setupBasicsTargets.startingBudget, setupProjection.displayLabels.startingBudgetLine);
+    setText(setupBasicsTargets.winCondition, `${setupProjection.displayLabels.winConditionLine} - Preview Only`);
+    setText(setupBasicsTargets.draftPool, `${setupProjection.displayLabels.draftPoolLine} - ${setupProjection.displayLabels.draftPoolEffectLine}`);
+    setText(setupBasicsTargets.rosterScarcity, `${setupProjection.displayLabels.rosterScarcityLine} - ${setupProjection.displayLabels.rosterScarcityEffectLine}`);
     setText(setupBasicsTargets.playerBrand, getBrandLabel());
     setText(setupBasicsTargets.activeBrandList, setupProjection.displayLabels.activeBrandLine);
     setText(setupBasicsTargets.competingGmList, setupProjection.displayLabels.competingGmLine);
@@ -651,6 +770,40 @@ import {
     setText(
       document.getElementById("brand-baseline-competitors"),
       `Competitors: ${setupProjection.competingBrands.map((brand) => brand.brandLabel).join(", ")}`
+    );
+  }
+
+  function createCurrentSetupProjection() {
+    return createLocalGameSetupProjection({
+      selectedDifficulty: uiState.selectedDifficulty,
+      activeBrandCount: uiState.activeBrandCount,
+      selectedBrandId: uiState.selectedBrandId,
+      selectedStartingBudgetId: uiState.selectedStartingBudgetId,
+      selectedWinConditionId: uiState.selectedWinConditionId,
+      selectedDraftPoolId: uiState.selectedDraftPoolId,
+      selectedRosterScarcityId: uiState.selectedRosterScarcityId,
+      selectedGm: getSelectedGmDisplay(),
+    });
+  }
+
+  function updateContractReviewSurface() {
+    const setupProjection = createCurrentSetupProjection();
+    const competingBrands = setupProjection.competingBrands
+      .map((brand) => brand.brandLabel)
+      .join(", ");
+
+    setText(contractReviewTargets.gm, getSelectedGmDisplay().displayName || "Player GM");
+    setText(contractReviewTargets.brand, getBrandLabel());
+    setText(contractReviewTargets.rivals, competingBrands || "No rival brands active");
+    setText(contractReviewTargets.difficulty, `${setupProjection.displayLabels.difficultyLine} - ${setupProjection.displayLabels.difficultyEffectLine}`);
+    setText(contractReviewTargets.budget, setupProjection.displayLabels.startingBudgetLine);
+    setText(contractReviewTargets.winCondition, `${setupProjection.displayLabels.winConditionLine} - Preview Only`);
+    setText(contractReviewTargets.draftPool, `${setupProjection.displayLabels.draftPoolLine} - ${setupProjection.displayLabels.draftPoolEffectLine}`);
+    setText(contractReviewTargets.rosterScarcity, `${setupProjection.displayLabels.rosterScarcityLine} - ${setupProjection.displayLabels.rosterScarcityEffectLine}`);
+    setText(contractReviewTargets.activeBrands, setupProjection.displayLabels.activeBrandsLine);
+    setText(
+      contractReviewTargets.honesty,
+      "Preview-only labels do not change scoring, candidate pools, draft minimums, draft completion, or simulation outcomes in this slice."
     );
   }
 
@@ -815,6 +968,7 @@ import {
       selectedDifficulty: uiState.selectedDifficulty,
       activeBrandCount: uiState.activeBrandCount,
       selectedBrandId: uiState.selectedBrandId,
+      selectedStartingBudgetId: uiState.selectedStartingBudgetId,
       selectedGm: getSelectedGmDisplay(),
     });
     const currentTurn = getCurrentDraftTurnBrand(projection.rows);
@@ -927,6 +1081,10 @@ import {
       selectedDifficulty: uiState.selectedDifficulty,
       activeBrandCount: uiState.activeBrandCount,
       selectedBrandId: uiState.selectedBrandId,
+      selectedStartingBudgetId: uiState.selectedStartingBudgetId,
+      selectedWinConditionId: uiState.selectedWinConditionId,
+      selectedDraftPoolId: uiState.selectedDraftPoolId,
+      selectedRosterScarcityId: uiState.selectedRosterScarcityId,
       selectedGm: getSelectedGmDisplay(),
     }).competingBrands;
   }
@@ -1499,6 +1657,8 @@ import {
       easy: "Easy",
       normal: "Normal",
       hard: "Hard",
+      extreme: "Extreme - Preview Only",
+      immortal: "Immortal - Preview Only",
     }[uiState.selectedDifficulty] || "Normal";
   }
 
@@ -3058,6 +3218,30 @@ import {
   activeBrandCountControls.forEach((control) => {
     control.addEventListener("click", () => {
       setActiveBrandCount(control.dataset.activeBrandCount);
+    });
+  });
+
+  startingBudgetControls.forEach((control) => {
+    control.addEventListener("click", () => {
+      setStartingBudget(control.dataset.startingBudget);
+    });
+  });
+
+  winConditionControls.forEach((control) => {
+    control.addEventListener("click", () => {
+      setWinCondition(control.dataset.winCondition);
+    });
+  });
+
+  draftPoolControls.forEach((control) => {
+    control.addEventListener("click", () => {
+      setDraftPool(control.dataset.draftPool);
+    });
+  });
+
+  rosterScarcityControls.forEach((control) => {
+    control.addEventListener("click", () => {
+      setRosterScarcity(control.dataset.rosterScarcity);
     });
   });
 

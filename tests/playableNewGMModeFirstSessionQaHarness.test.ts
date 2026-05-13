@@ -26,15 +26,18 @@ describe("Playable New GM Mode first-session QA harness", () => {
 
     for (const fileName of [
       "01-title-screen.png",
-      "02-setup-basics.png",
-      "03-initial-draft.png",
-      "04-post-draft-brand-hq.png",
-      "05-assign-champions.png",
-      "06-create-rivalries.png",
-      "07-week-1-hq.png",
-      "08-booking.png",
-      "09-show-recap.png",
-      "10-week-2-hq.png",
+      "02-general-settings.png",
+      "03-select-general-manager.png",
+      "04-select-brand.png",
+      "05-contract-review-start-draft.png",
+      "06-initial-draft.png",
+      "07-post-draft-brand-hq.png",
+      "08-assign-champions.png",
+      "09-create-rivalries.png",
+      "10-week-1-hq.png",
+      "11-booking.png",
+      "12-show-recap.png",
+      "13-week-2-hq.png",
     ]) {
       assert.match(source, new RegExp(fileName.replace(".", "\\.")));
     }
@@ -48,6 +51,13 @@ describe("Playable New GM Mode first-session QA harness", () => {
 
     for (const assertionText of [
       "setup exposes starting cash as money",
+      "setup marks win condition preview-only",
+      "setup marks randomized draft pool preview-only",
+      "setup marks roster scarcity preview-only",
+      "GM selection includes Random GM label",
+      "Random GM is honest label only",
+      "contract review reflects selected settings",
+      "contract review marks unsupported options honestly",
       "draft screen shows rival brands",
       "player draft pick reduces player budget",
       "post-draft HQ has Assign Champions next action",

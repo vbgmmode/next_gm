@@ -32,15 +32,18 @@ Screenshots are written directly into that folder as:
 
 ```text
 01-title-screen.png
-02-setup-basics.png
-03-initial-draft.png
-04-post-draft-brand-hq.png
-05-assign-champions.png
-06-create-rivalries.png
-07-week-1-hq.png
-08-booking.png
-09-show-recap.png
-10-week-2-hq.png
+02-general-settings.png
+03-select-general-manager.png
+04-select-brand.png
+05-contract-review-start-draft.png
+06-initial-draft.png
+07-post-draft-brand-hq.png
+08-assign-champions.png
+09-create-rivalries.png
+10-week-1-hq.png
+11-booking.png
+12-show-recap.png
+13-week-2-hq.png
 ```
 
 The report is written to:
@@ -52,7 +55,10 @@ test-artifacts/playable-first-session/report.json
 ## Screens Covered
 
 - Title screen
-- Setup basics
+- General Settings
+- Select General Manager
+- Select Brand
+- Contract Review / Start Draft
 - Initial draft
 - Post-draft Brand HQ
 - Assign champions
@@ -65,6 +71,8 @@ test-artifacts/playable-first-session/report.json
 ## Rules Covered
 
 - Setup exposes brand, rivals, difficulty, and starting cash with real money labels.
+- Setup labels unsupported win condition, draft pool, roster scarcity, and Random GM choices as preview/static only.
+- Contract Review reflects selected setup labels without implying unsupported systems are active.
 - Draft shows rival brands, player budget, recent picks, and player signing cost movement.
 - Post-draft HQ shows remaining budget, roster count, and Assign Champions as the next action.
 - Championship selectors are split by men and women division eligibility.

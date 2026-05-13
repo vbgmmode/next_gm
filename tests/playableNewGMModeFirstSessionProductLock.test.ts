@@ -3,6 +3,9 @@ import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 
 import {
+  LOCAL_GAME_SETUP_DRAFT_POOLS,
+  LOCAL_GAME_SETUP_ROSTER_SCARCITY_OPTIONS,
+  LOCAL_GAME_SETUP_WIN_CONDITIONS,
   createLocalGameSetupProjection,
   readLocalGameSetupStartingBudgetUnits,
 } from "../ui/playable-new-gm-mode/localGameSetupController.js";
@@ -47,6 +50,32 @@ describe("Playable New GM Mode first-session product lock", () => {
     assert.equal(setup.displayLabels.startingBudgetLine, "$10,000,000");
   });
 
+  it("keeps display-only setup options honest and local-only", () => {
+    const setup = createLocalGameSetupProjection({
+      selectedDifficulty: "immortal",
+      selectedStartingBudgetId: "premium",
+      selectedWinConditionId: "hall-of-fame-trophies",
+      selectedDraftPoolId: "randomized",
+      selectedRosterScarcityId: "scarce",
+      activeBrandCount: 4,
+      selectedBrandId: "raw",
+      selectedGm,
+    });
+
+    assert.equal(setup.selectedDifficulty, "immortal");
+    assert.equal(setup.startingBudgetUnits, 150);
+    assert.equal(setup.displayLabels.difficultyEffectLine.includes("gameplay unchanged"), true);
+    assert.equal(setup.displayLabels.winConditionLine, "Hall of Fame Trophies");
+    assert.equal(setup.displayLabels.winConditionEffectLine.includes("Preview Only"), true);
+    assert.equal(setup.displayLabels.draftPoolLine, "Randomized");
+    assert.equal(setup.displayLabels.draftPoolEffectLine.includes("no randomness"), true);
+    assert.equal(setup.displayLabels.rosterScarcityLine, "Scarce Market");
+    assert.equal(setup.displayLabels.rosterScarcityEffectLine.includes("draft completion unchanged"), true);
+    assert.equal(LOCAL_GAME_SETUP_WIN_CONDITIONS.length, 2);
+    assert.equal(LOCAL_GAME_SETUP_DRAFT_POOLS.length, 3);
+    assert.equal(LOCAL_GAME_SETUP_ROSTER_SCARCITY_OPTIONS.length, 3);
+  });
+
   it("keeps the selected player brand out of competing brands when active count changes", () => {
     const setup = createLocalGameSetupProjection({
       selectedDifficulty: "normal",
@@ -70,6 +99,11 @@ describe("Playable New GM Mode first-session product lock", () => {
     const html = readPlayableUiFile("index.html");
 
     assert.match(html, /Starting Budget: \$12,000,000/);
+    assert.match(html, /General Settings/);
+    assert.match(html, /Contract Review \/ Start Draft/);
+    assert.match(html, /Random GM/);
+    assert.match(html, /Setup Preview Only/);
+    assert.match(html, /Preview-only labels do not change scoring/);
     assert.match(html, /Remaining Budget: \$12,000,000/);
     assert.match(html, /Signing Cost: \$1,800,000/);
     assert.match(html, /Booking Reserve/);

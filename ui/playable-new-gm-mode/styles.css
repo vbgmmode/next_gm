@@ -1288,6 +1288,15 @@ dd {
   white-space: nowrap;
 }
 
+.field-strip.preview-field {
+  align-items: flex-start;
+}
+
+.field-strip.preview-field span,
+.field-strip.preview-field strong {
+  white-space: normal;
+}
+
 .field-strip span {
   color: var(--text-secondary);
   font-size: 0.7rem;
@@ -1308,6 +1317,42 @@ dd {
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+}
+
+.setup-control-bank {
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-rows: auto;
+  align-content: start;
+  overflow: hidden auto;
+  padding-right: 4px;
+}
+
+.setup-control-group {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-left: 4px solid color-mix(in srgb, var(--brand-primary) 42%, transparent);
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.014) 0 1px, transparent 1px 18px),
+    rgba(255, 255, 255, 0.026);
+  padding: 8px;
+}
+
+.setup-button-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  min-width: 0;
+}
+
+.setup-button-row.two-up {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.setup-button-row.five-up {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .mode-tile {
@@ -1336,9 +1381,39 @@ dd {
     transform 170ms ease;
 }
 
+.setup-control-bank .mode-tile {
+  gap: 4px;
+  padding: 7px;
+}
+
+.setup-control-bank .mode-tile strong {
+  font-size: 0.76rem;
+}
+
+.setup-control-bank .mode-tile p {
+  font-size: 0.68rem;
+  -webkit-line-clamp: 2;
+}
+
 .mode-tile.active {
   border-color: color-mix(in srgb, var(--brand-primary) 62%, var(--border-subtle));
   border-left-color: var(--brand-primary);
+}
+
+.mode-tile.preview-choice {
+  border-style: dashed;
+}
+
+.mode-tile.preview-choice::after,
+.preview-field::after {
+  content: "Preview";
+  justify-self: start;
+  color: var(--warning);
+  font-size: 0.58rem;
+  font-weight: 950;
+  font-family: var(--font-data);
+  letter-spacing: 0;
+  text-transform: uppercase;
 }
 
 .mode-tile span {
@@ -1423,6 +1498,14 @@ dd {
 .gm-card.selected {
   border-color: color-mix(in srgb, var(--brand-primary) 64%, var(--border-subtle));
   border-top-color: var(--brand-primary);
+}
+
+.gm-random-card {
+  border-style: dashed;
+  background:
+    radial-gradient(circle at 18% 0%, color-mix(in srgb, var(--warning) 14%, transparent), transparent 38%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 18px),
+    var(--surface-plate);
 }
 
 .gm-card > div {
@@ -1671,6 +1754,41 @@ dd {
   gap: 6px;
   min-width: 0;
   min-height: 0;
+}
+
+.review-stage {
+  grid-template-columns: minmax(0, 1.25fr) minmax(270px, 0.55fr);
+}
+
+.review-stage .contract-hero {
+  align-content: start;
+  gap: 9px;
+}
+
+.contract-review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.contract-review-grid .field-strip {
+  min-height: 46px;
+  gap: 8px;
+  padding: 7px;
+}
+
+.contract-honesty-note {
+  margin: 8px 0 0;
+  overflow: hidden;
+  color: var(--warning);
+  font-size: 0.78rem;
+  font-weight: 800;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
 }
 
 .draft-briefing-grid span {

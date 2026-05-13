@@ -22,69 +22,90 @@ const screenshotPlan = Object.freeze([
     screenId: "game-landing",
     titleIncludes: "Next GM",
     fileName: "01-title-screen.png",
-    ctaSelector: '[data-go-to="contract-signing"]',
+    ctaSelector: '#game-landing [data-go-to="setup-basics"]',
   }),
   Object.freeze({
-    name: "setup basics",
+    name: "general settings",
     screenId: "setup-basics",
-    titleIncludes: "Open a living GM universe",
-    fileName: "02-setup-basics.png",
-    ctaSelector: '[data-go-to="ai-setup"]',
+    titleIncludes: "General Settings",
+    fileName: "02-general-settings.png",
+    ctaSelector: '#setup-basics [data-go-to="choose-gm"]',
+  }),
+  Object.freeze({
+    name: "select general manager",
+    screenId: "choose-gm",
+    titleIncludes: "Select General Manager",
+    fileName: "03-select-general-manager.png",
+    ctaSelector: '#choose-gm [data-go-to="select-brand"]',
+  }),
+  Object.freeze({
+    name: "select brand",
+    screenId: "select-brand",
+    titleIncludes: "Choose the show identity",
+    fileName: "04-select-brand.png",
+    ctaSelector: '#select-brand [data-go-to="contract-signing"]',
+  }),
+  Object.freeze({
+    name: "contract review",
+    screenId: "contract-signing",
+    titleIncludes: "Contract Review",
+    fileName: "05-contract-review-start-draft.png",
+    ctaSelector: '#contract-signing [data-go-to="draft-room"]',
   }),
   Object.freeze({
     name: "initial draft",
     screenId: "draft-room",
     titleIncludes: "Initial Draft",
-    fileName: "03-initial-draft.png",
+    fileName: "06-initial-draft.png",
     ctaSelector: "[data-make-pick-action]",
   }),
   Object.freeze({
     name: "post-draft Brand HQ",
     screenId: "draft-recap",
     titleIncludes: "Welcome to",
-    fileName: "04-post-draft-brand-hq.png",
+    fileName: "07-post-draft-brand-hq.png",
     ctaSelector: '[data-go-to="championship-setup"]',
   }),
   Object.freeze({
     name: "assign champions",
     screenId: "championship-setup",
     titleIncludes: "Assign Champions",
-    fileName: "05-assign-champions.png",
+    fileName: "08-assign-champions.png",
     ctaSelector: "#complete-championship-setup",
   }),
   Object.freeze({
     name: "create rivalries",
     screenId: "rivalry-setup",
     titleIncludes: "Create Rivalries",
-    fileName: "06-create-rivalries.png",
+    fileName: "09-create-rivalries.png",
     ctaSelector: "#complete-rivalry-setup",
   }),
   Object.freeze({
     name: "Week 1 HQ",
     screenId: "brand-dashboard",
     titleIncludes: "Week 1 HQ",
-    fileName: "07-week-1-hq.png",
+    fileName: "10-week-1-hq.png",
     ctaSelector: "#week-one-hq-booking-action",
   }),
   Object.freeze({
     name: "booking",
     screenId: "week-one-booking",
     titleIncludes: "Booking",
-    fileName: "08-booking.png",
+    fileName: "11-booking.png",
     ctaSelector: "#booking-run-show-action",
   }),
   Object.freeze({
     name: "show recap",
     screenId: "show-recap",
     titleIncludes: "Recap",
-    fileName: "09-show-recap.png",
+    fileName: "12-show-recap.png",
     ctaSelector: "#show-recap-advance-week",
   }),
   Object.freeze({
     name: "Week 2 HQ",
     screenId: "brand-dashboard",
     titleIncludes: "Week 2 HQ",
-    fileName: "10-week-2-hq.png",
+    fileName: "13-week-2-hq.png",
     ctaSelector: "#week-one-hq-booking-action",
   }),
 ]);
@@ -179,21 +200,32 @@ async function runBrowserQa() {
   await captureScreen(page, screenshotPlan[0]);
   await assertSetupTitleScreen(page);
 
-  await click(page, '[data-go-to="contract-signing"]');
   await click(page, '[data-go-to="setup-basics"]');
-  await click(page, '[data-difficulty="hard"]');
+  await click(page, '[data-difficulty="extreme"]');
   await click(page, '[data-active-brand-count="4"]');
+  await click(page, '[data-starting-budget="premium"]');
+  await click(page, '[data-win-condition="hall-of-fame-trophies"]');
+  await click(page, '[data-draft-pool="randomized"]');
+  await click(page, '[data-roster-scarcity="scarce"]');
   await captureScreen(page, screenshotPlan[1]);
-  await assertSetupBasics(page);
+  await assertGeneralSettings(page);
 
-  await click(page, '[data-go-to="ai-setup"]');
   await click(page, '[data-go-to="choose-gm"]');
+  await click(page, '[data-gm-id="random-gm-label"]');
+  await captureScreen(page, screenshotPlan[2]);
+  await assertSelectGeneralManager(page);
+
   await click(page, '[data-go-to="select-brand"]');
   await click(page, '[data-brand="smackdown"]');
-  await assertDraftBriefing(page);
+  await captureScreen(page, screenshotPlan[3]);
+  await assertBrandSelection(page);
+
+  await click(page, '[data-go-to="contract-signing"]');
+  await captureScreen(page, screenshotPlan[4]);
+  await assertContractReview(page);
   await click(page, '[data-go-to="draft-room"]');
   await waitForEnabled(page, "[data-make-pick-action]");
-  await captureScreen(page, screenshotPlan[2]);
+  await captureScreen(page, screenshotPlan[5]);
   await assertInitialDraftBeforePick(page);
 
   const budgetBeforePick = await moneyValue(page, "#draft-budget-remaining");
@@ -214,40 +246,40 @@ async function runBrowserQa() {
   await waitForEnabled(page, "[data-finish-local-draft]");
   await click(page, "[data-finish-local-draft]");
   await waitForActiveScreen(page, "draft-recap");
-  await captureScreen(page, screenshotPlan[3]);
+  await captureScreen(page, screenshotPlan[6]);
   await assertPostDraftHq(page);
 
   await click(page, '[data-go-to="championship-setup"]');
   await waitForActiveScreen(page, "championship-setup");
   await assignChampions(page);
-  await captureScreen(page, screenshotPlan[4]);
+  await captureScreen(page, screenshotPlan[7]);
   await assertChampionSelectors(page);
   await click(page, "#complete-championship-setup");
   await waitForActiveScreen(page, "rivalry-setup");
 
   await createRivalry(page);
-  await captureScreen(page, screenshotPlan[5]);
+  await captureScreen(page, screenshotPlan[8]);
   await assertRivalrySetup(page);
   await click(page, "#complete-rivalry-setup");
   await waitForEnabled(page, "#rivalry-continue-week-one");
   await click(page, "#rivalry-continue-week-one");
   await waitForActiveScreen(page, "brand-dashboard");
-  await captureScreen(page, screenshotPlan[6]);
+  await captureScreen(page, screenshotPlan[9]);
   await assertWeekOneHq(page);
 
   await click(page, "#week-one-hq-booking-action");
   await waitForActiveScreen(page, "week-one-booking");
   await buildWeekOneCard(page);
-  await captureScreen(page, screenshotPlan[7]);
+  await captureScreen(page, screenshotPlan[10]);
   await assertBooking(page);
   await click(page, "#booking-run-show-action");
   await waitForActiveScreen(page, "show-recap");
-  await captureScreen(page, screenshotPlan[8]);
+  await captureScreen(page, screenshotPlan[11]);
   await assertShowRecap(page);
 
   await click(page, "#show-recap-advance-week");
   await waitForActiveScreen(page, "brand-dashboard");
-  await captureScreen(page, screenshotPlan[9]);
+  await captureScreen(page, screenshotPlan[12]);
   await assertWeekTwoHq(page);
   assertNoRecordedFailures();
   report.browserVisualQa = "passed";
@@ -409,23 +441,44 @@ async function assertSetupTitleScreen(client) {
   await checkProduct("title screen exposes Continue path", /Continue|Select Save/.test(text));
 }
 
-async function assertSetupBasics(client) {
+async function assertGeneralSettings(client) {
   const state = await evaluateValue(client, `(() => ({
     text: document.querySelector("#setup-basics")?.textContent || "",
     budget: document.querySelector("#setup-starting-budget-summary")?.textContent || "",
     activeBrands: document.querySelector("#setup-active-brand-list")?.textContent || "",
     competitors: document.querySelector("#setup-competing-gm-list")?.textContent || "",
+    winCondition: document.querySelector("#setup-win-condition-summary")?.textContent || "",
+    draftPool: document.querySelector("#setup-draft-pool-summary")?.textContent || "",
+    rosterScarcity: document.querySelector("#setup-roster-scarcity-summary")?.textContent || "",
   }))()`);
-  await checkProduct("setup exposes difficulty", state.text.includes("Hard"));
+  await checkProduct("setup exposes difficulty", state.text.includes("Extreme"));
   await checkProduct("setup exposes starting cash as money", /\$[0-9,]+/.test(state.budget));
   await checkProduct("setup exposes player brand", state.text.includes("Player Brand"));
   await checkProduct("setup exposes active rival brands", state.activeBrands.includes("SmackDown") && state.competitors.includes("AEW"));
+  await checkProduct("setup marks win condition preview-only", state.winCondition.includes("Preview Only"));
+  await checkProduct("setup marks randomized draft pool preview-only", state.draftPool.includes("no randomness"));
+  await checkProduct("setup marks roster scarcity preview-only", state.rosterScarcity.includes("draft completion unchanged"));
 }
 
-async function assertDraftBriefing(client) {
+async function assertSelectGeneralManager(client) {
   const text = await activeText(client);
-  await checkProduct("draft briefing explains budget intro", text.includes("Draft Rules / Budget Intro") && text.includes("Real money labels"));
-  await checkProduct("draft briefing shows rival presence", text.includes("Visible pick order") || text.includes("Rivals"));
+  await checkProduct("GM selection includes Random GM label", text.includes("Random GM"));
+  await checkProduct("Random GM is honest label only", text.includes("Not Called") && text.includes("Setup Label Only"));
+}
+
+async function assertBrandSelection(client) {
+  const text = await activeText(client);
+  await checkProduct("brand selection shows player brand choices", text.includes("Raw") && text.includes("SmackDown") && text.includes("NXT") && text.includes("AEW"));
+  await checkProduct("brand selection shows rival participation", text.includes("Rival Brand Participation") && text.includes("Deterministic picks"));
+}
+
+async function assertContractReview(client) {
+  const text = await activeText(client);
+  await checkProduct("contract review reflects selected GM label", text.includes("Random GM"));
+  await checkProduct("contract review reflects selected brand", text.includes("SmackDown"));
+  await checkProduct("contract review reflects selected settings", text.includes("Hall of Fame Trophies") && text.includes("$15,000,000"));
+  await checkProduct("contract review marks unsupported options honestly", text.includes("Preview Only") && text.includes("candidate pools") && text.includes("draft minimums"));
+  await checkProduct("contract review explains draft rules and budget", text.includes("Draft Rules / Budget Intro") && text.includes("Real money labels"));
 }
 
 async function assertInitialDraftBeforePick(client) {
